@@ -1,0 +1,4114 @@
+{
+  "schema_version": "0.1",
+  "title": "诡秘之主：血雾班西 / 第一幕：今夜，请不要开门。",
+  "start_node": "intro",
+  "world_clock": {
+    "start_local": "1350-01-09 22:17",
+    "ship_departure_minute": 463,
+    "telegraph_empty_minute": 683,
+    "sea_window_from_minute": 1803,
+    "sea_window_to_minute": 1823,
+    "doom_minute": 4320,
+    "note": "基于游戏改编时间线，内部使用从起点累积的分钟数",
+    "home_knock_minute": 18,
+    "gehrman_arrival_minute": 123,
+    "tavern_collision_minute": 128,
+    "gehrman_leaves_minute": 173,
+    "dock_parley_from_minute": 403,
+    "dock_parley_to_minute": 433,
+    "harbor_from_minute": 703,
+    "harbor_to_minute": 823,
+    "tide_from_minute": 1063,
+    "tide_to_minute": 1183
+  },
+  "dialogue_windows": {
+    "gehrman": {
+      "closes_at": "gehrman_leaves_minute"
+    }
+  },
+  "initial_state": {
+    "elapsed_minutes": 0,
+    "stats": {
+      "sanity": 100,
+      "stamina": 4,
+      "stamina_max": 4,
+      "loss_of_control": 0,
+      "gehrman_trust": 0,
+      "marena_favor": 0,
+      "donna_favor": 0,
+      "vitality": 1,
+      "pathway": null,
+      "sequence": null
+    },
+    "inventory_limit": 2,
+    "inventory": [],
+    "clues": [],
+    "skills": [],
+    "flags": {
+      "ship_departed": false,
+      "telegraph_staff_present": true,
+      "contamination_screen_passed": false,
+      "has_verified_evidence": false,
+      "is_hunter": false,
+      "gehrman_refused": false
+    },
+    "ending": null
+  },
+  "scheduled_events": [
+    {
+      "id": "home_knock",
+      "at_minute": 18,
+      "go_to": "home_door",
+      "interrupt_when": [
+        {
+          "type": "node_in",
+          "ids": [
+            "home_wake",
+            "home_search",
+            "home_window",
+            "home_remember",
+            "home_exit"
+          ]
+        }
+      ],
+      "notice": {
+        "requires": [
+          {
+            "type": "node_in",
+            "ids": [
+              "street",
+              "street_encounter"
+            ]
+          }
+        ],
+        "text": [
+          "身后的雾里响起三下叩击，像是隔着几条街从你家的方向传来。"
+        ]
+      }
+    },
+    {
+      "id": "gehrman_arrival",
+      "at_minute": 123
+    },
+    {
+      "id": "tavern_collision",
+      "at_minute": 128
+    },
+    {
+      "id": "kitchen_expired",
+      "at_minute": 169,
+      "effects": [
+        {
+          "type": "resolve_event",
+          "id": "marena_kitchen",
+          "value": "missed"
+        }
+      ]
+    },
+    {
+      "id": "rescue_expired",
+      "at_minute": 169,
+      "effects": [
+        {
+          "type": "resolve_event",
+          "id": "donna_rescue",
+          "value": "resolved_elsewhere"
+        }
+      ]
+    },
+    {
+      "id": "gehrman_leaves",
+      "at_minute": 173
+    },
+    {
+      "id": "dock_parley_open",
+      "at_minute": 403
+    },
+    {
+      "id": "dock_parley_closed",
+      "at_minute": 434
+    },
+    {
+      "id": "ship_departure",
+      "at_minute": 463,
+      "effects": [
+        {
+          "type": "set_flag",
+          "key": "ship_departed",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "telegraph_empty",
+      "at_minute": 683,
+      "effects": [
+        {
+          "type": "set_flag",
+          "key": "telegraph_staff_present",
+          "value": false
+        }
+      ]
+    },
+    {
+      "id": "harbor_open",
+      "at_minute": 703
+    },
+    {
+      "id": "harbor_expired",
+      "at_minute": 824,
+      "effects": [
+        {
+          "type": "resolve_event",
+          "id": "harbor_records",
+          "value": "missed"
+        }
+      ]
+    },
+    {
+      "id": "tide_open",
+      "at_minute": 1063
+    },
+    {
+      "id": "tide_expired",
+      "at_minute": 1184,
+      "effects": [
+        {
+          "type": "resolve_event",
+          "id": "lighthouse_tide",
+          "value": "missed"
+        }
+      ]
+    },
+    {
+      "id": "grey_gull_arrival",
+      "at_minute": 1803
+    },
+    {
+      "id": "grey_gull_departure",
+      "at_minute": 1824,
+      "effects": [
+        {
+          "type": "resolve_event",
+          "id": "grey_gull_rescue",
+          "value": "missed"
+        }
+      ]
+    },
+    {
+      "id": "bansy_destruction",
+      "at_minute": 4320,
+      "go_to": "doom"
+    }
+  ],
+  "global_failure_rules": [
+    {
+      "if": {
+        "type": "stat_gte",
+        "key": "loss_of_control",
+        "value": 100
+      },
+      "go_to": "ending_f"
+    },
+    {
+      "if": {
+        "type": "stat_lte",
+        "key": "sanity",
+        "value": 0
+      },
+      "go_to": "doom",
+      "note": "首版精神崩溃可进入失败占位；正式版另写专属场景"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "intro",
+      "title": "灰雾之上",
+      "location": "序章",
+      "kind": "scene",
+      "text": [
+        "这是一个充满神秘与疯狂的世界。",
+        "在这里，知识可能比生命更加昂贵。",
+        "你所看到的，未必是真实。",
+        "你所相信的，也未必值得信任。",
+        "当你凝视深渊时，请不要忘记……",
+        "你究竟为何成为你自己。",
+        "“愿你在疯狂之中，守住自己的本心。”"
+      ],
+      "choices": [
+        {
+          "label": "开始第一幕：今夜，请不要开门",
+          "next": "home_wake",
+          "minutes": 0,
+          "id": "begin"
+        }
+      ],
+      "background": "main_menu"
+    },
+    {
+      "id": "home_wake",
+      "title": "苏醒",
+      "location": "玩家住所",
+      "kind": "scene",
+      "text": [
+        "你睁开眼睛。首先映入眼帘的是泛黄的天花板。木板之间的缝隙渗着潮气。耳边传来海浪的声音。",
+        "你尝试起身，脑袋却传来一阵剧痛。你记得自己的名字，记得这里是班西港，也记得昨天还在码头搬运货物。但关于今天发生的一切，你的记忆像是被人挖走了一块。",
+        "“我……睡了多久？”",
+        "屋内的煤油灯早已熄灭，窗外却透进一种不自然的红光。",
+        "你望向窗户。今夜的班西港，是红色的。"
+      ],
+      "choices": [
+        {
+          "label": "检查房间",
+          "next": "home_search",
+          "minutes": 0,
+          "id": "search"
+        },
+        {
+          "label": "观察窗外",
+          "next": "home_window",
+          "minutes": 4,
+          "id": "window",
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "floating_light"
+            }
+          ]
+        },
+        {
+          "label": "站在门边听一会儿",
+          "next": "home_door",
+          "minutes": 0,
+          "id": "approach_door",
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 18
+            }
+          ]
+        },
+        {
+          "label": "尝试回忆",
+          "next": "home_remember",
+          "minutes": 5,
+          "id": "recall",
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "last_night_job"
+            }
+          ]
+        }
+      ],
+      "background": "bedroom",
+      "safe_inventory": true
+    },
+    {
+      "id": "home_search",
+      "title": "检查房间",
+      "location": "玩家住所",
+      "kind": "scene",
+      "text": [
+        "你扶着床沿站起身。房间里的东西并不多，但它们的摆放位置，与你记忆中略有不同。",
+        "桌上摆着一盏黄铜手提灯，玻璃罩内还残留着煤油；刀架上是一把生锈的水果刀。碗碟中凝固着深色酱汁，气味里有刺鼻的铁锈味。",
+        "一封没有寄出的信被压在晚餐盘子下面。信封上的字迹分明属于你自己：",
+        "“不要让他们知道，我还记得。”",
+        "你不记得写过这句话。",
+        "桌角下还夹着一张收据。收货人一栏写着：风暴教堂，米勒主教。货物一栏：密封木箱一件。",
+        "你第一次意识到：你失去的不是几个小时的记忆，而是某件或许有人不愿让你想起的事。"
+      ],
+      "choices": [
+        {
+          "label": "拾取黄铜手提灯",
+          "next": "home_search",
+          "minutes": 5,
+          "requires": [
+            {
+              "type": "inventory_space",
+              "value": 1
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_item",
+              "id": "brass_lantern"
+            }
+          ],
+          "fallback": "背包已满。可在此放下物品再拾取。",
+          "id": "lantern",
+          "visible_when": [
+            {
+              "type": "item_missing",
+              "id": "brass_lantern"
+            }
+          ],
+          "feedback": [
+            "你把黄铜手提灯放进了行囊。玻璃罩里还留着煤油。"
+          ]
+        },
+        {
+          "label": "拾取生锈水果刀",
+          "next": "home_search",
+          "minutes": 2,
+          "requires": [
+            {
+              "type": "inventory_space",
+              "value": 1
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_item",
+              "id": "rusty_knife"
+            },
+            {
+              "type": "set_flag",
+              "key": "visitor_heard_noise",
+              "value": true,
+              "when": [
+                {
+                  "type": "flag_true",
+                  "key": "visitor_active"
+                }
+              ]
+            }
+          ],
+          "fallback": "背包已满。可在此放下物品再拾取。",
+          "id": "knife",
+          "visible_when": [
+            {
+              "type": "item_missing",
+              "id": "rusty_knife"
+            }
+          ],
+          "feedback": [
+            "你取下生锈的水果刀，将它收进行囊。"
+          ]
+        },
+        {
+          "label": "阅读未寄出的信",
+          "next": "home_search",
+          "minutes": 5,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "read_letter"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "unsent_letter"
+            },
+            {
+              "type": "set_flag",
+              "key": "read_letter",
+              "value": true
+            }
+          ],
+          "once": true,
+          "id": "letter",
+          "feedback": [
+            "“不要让他们知道，我还记得。”"
+          ]
+        },
+        {
+          "label": "检查教堂收据",
+          "next": "home_search",
+          "minutes": 5,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "read_receipt"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "church_receipt"
+            },
+            {
+              "type": "set_flag",
+              "key": "read_receipt",
+              "value": true
+            }
+          ],
+          "once": true,
+          "id": "receipt",
+          "feedback": [
+            "收货人：风暴教堂，米勒主教。货物：密封木箱一件。",
+            "你把收货人与货物栏拓录进线索簿。"
+          ]
+        },
+        {
+          "label": "闻一闻晚餐",
+          "next": "home_search",
+          "minutes": 2,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "inspected_meal"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "bloody_meal"
+            },
+            {
+              "type": "add_stat",
+              "key": "sanity",
+              "value": -3
+            },
+            {
+              "type": "set_flag",
+              "key": "inspected_meal",
+              "value": true
+            }
+          ],
+          "once": true,
+          "id": "meal",
+          "feedback": [
+            "碗碟中凝固着深色酱汁，气味里有刺鼻的铁锈味。理智 −3。"
+          ]
+        },
+        {
+          "label": "停下调查，听听门外",
+          "next": "home_door",
+          "minutes": 0,
+          "id": "check_door",
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 18
+            }
+          ]
+        },
+        {
+          "label": "先去窗边查看",
+          "next": "home_window",
+          "minutes": 4,
+          "id": "window",
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "floating_light"
+            }
+          ]
+        },
+        {
+          "label": "准备离开房间",
+          "next": "home_exit",
+          "minutes": 3,
+          "id": "leave_early"
+        },
+        {
+          "id": "box",
+          "label": "拉出床下的储物箱",
+          "next": "home_search",
+          "minutes": 8,
+          "max_uses": 1,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "bedside_crate"
+            },
+            {
+              "type": "set_flag",
+              "key": "visitor_heard_noise",
+              "value": true,
+              "when": [
+                {
+                  "type": "flag_true",
+                  "key": "visitor_active"
+                }
+              ]
+            }
+          ],
+          "feedback": [
+            "木箱下露出一条新鲜的擦痕。地板上的积灰缺了很长一块。"
+          ]
+        }
+      ],
+      "background": "bedroom",
+      "safe_inventory": true,
+      "redirects": [
+        {
+          "next": "home_door",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "visitor_heard_noise"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "home_window",
+      "title": "血色窗外",
+      "location": "玩家住所",
+      "kind": "scene",
+      "text": [
+        "红雾笼罩石板街。远处一团黄光在半空缓缓移动，却看不见提灯的人。"
+      ],
+      "choices": [
+        {
+          "label": "记下异常并回房",
+          "next": "home_search",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "floating_light"
+            }
+          ],
+          "id": "record_light"
+        },
+        {
+          "label": "站在门边听一会儿",
+          "next": "home_door",
+          "minutes": 0,
+          "id": "approach_door",
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 18
+            }
+          ]
+        }
+      ],
+      "background": "bedroom",
+      "safe_inventory": true
+    },
+    {
+      "id": "home_remember",
+      "title": "失去的记忆",
+      "location": "玩家住所",
+      "kind": "scene",
+      "text": [
+        "你想起暴雨、教堂、被布裹住的木箱，以及有人把钱塞进你手里。",
+        "“今天的事，不要告诉别人。”"
+      ],
+      "choices": [
+        {
+          "label": "记录回忆并检查房间",
+          "next": "home_search",
+          "minutes": 1,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "last_night_job"
+            }
+          ],
+          "id": "record_memory"
+        }
+      ],
+      "background": "bedroom"
+    },
+    {
+      "id": "home_door",
+      "title": "门外的访客",
+      "location": "玩家住所",
+      "kind": "scene",
+      "text": [
+        "咚。咚。咚。像潮湿的布反复拍打木门。",
+        "门外：“开……门……”",
+        "“外……面……冷……”",
+        "你屏住呼吸。",
+        "“我……知道……你……在……里面……”",
+        "随后那个声音贴近门缝：“我……看见……灯……了……”"
+      ],
+      "choices": [
+        {
+          "label": "保持安静，等他离开",
+          "next": "home_exit",
+          "minutes": 8,
+          "id": "quiet",
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "visitor_active",
+              "value": false
+            },
+            {
+              "type": "set_flag",
+              "key": "visitor_heard_noise",
+              "value": false
+            }
+          ]
+        },
+        {
+          "label": "隔门问对方是谁",
+          "next": "door_talk",
+          "minutes": 3,
+          "id": "talk",
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "questioned_visitor"
+            }
+          ],
+          "max_uses": 1
+        },
+        {
+          "label": "从门缝观察",
+          "next": "door_peek",
+          "minutes": 2,
+          "id": "peek",
+          "max_uses": 1
+        },
+        {
+          "label": "伸手去拉门闩",
+          "next": "door_confirm",
+          "minutes": 1,
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "door_warning_seen"
+            }
+          ],
+          "fallback": "先听听门外的动静。",
+          "id": "open"
+        },
+        {
+          "id": "search_quietly",
+          "label": "等敲门声停一停，继续搜查",
+          "next": "home_search",
+          "minutes": 3,
+          "effects": [
+            {
+              "type": "add_stat",
+              "key": "sanity",
+              "value": -3
+            },
+            {
+              "type": "set_flag",
+              "key": "visitor_heard_noise",
+              "value": false
+            }
+          ],
+          "feedback": [
+            "你退回床边。门外的声音更低了，像是正贴着门板听你挪动东西。"
+          ]
+        }
+      ],
+      "on_enter": [
+        {
+          "type": "set_flag",
+          "key": "door_warning_seen",
+          "value": true
+        },
+        {
+          "type": "set_flag",
+          "key": "visitor_active",
+          "value": true
+        }
+      ],
+      "background": "bedroom",
+      "variants": [
+        {
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "visitor_heard_noise"
+            }
+          ],
+          "text": [
+            "咚。咚。咚。像潮湿的布反复拍打木门。",
+            "门外：“开……门……”",
+            "“外……面……冷……”",
+            "你屏住呼吸。",
+            "“我……知道……你……在……里面……”",
+            "随后那个声音贴近门缝：“我……看见……灯……了……”",
+            "木头发出一声干响。门外突然没了动静，接着有人慢慢压下了门把。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "door_talk",
+      "title": "邻居",
+      "location": "玩家住所",
+      "kind": "scene",
+      "text": [
+        "玩家：“你是谁？”",
+        "未知访客：“我是……你的……邻居……”",
+        "玩家：“你叫什么名字？”",
+        "长久沉默。",
+        "未知访客：“邻……居……”",
+        "玩家：“你来做什么？”",
+        "未知访客：“我……来……找……你……”",
+        "玩家：“为什么？”",
+        "门外响起湿润的咀嚼声。",
+        "未知访客：“因……为……我们……是……邻……居……”"
+      ],
+      "choices": [
+        {
+          "label": "不再回答，等他离开",
+          "next": "home_exit",
+          "minutes": 6,
+          "id": "quiet",
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "visitor_active",
+              "value": false
+            },
+            {
+              "type": "set_flag",
+              "key": "visitor_heard_noise",
+              "value": false
+            }
+          ]
+        },
+        {
+          "label": "伸手去拉门闩",
+          "next": "door_confirm",
+          "minutes": 1,
+          "id": "open"
+        }
+      ],
+      "background": "bedroom",
+      "on_enter": [
+        {
+          "type": "add_clue",
+          "id": "mechanical_neighbor"
+        },
+        {
+          "type": "set_flag",
+          "key": "questioned_visitor",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "door_peek",
+      "title": "门缝之后",
+      "location": "玩家住所",
+      "kind": "scene",
+      "text": [
+        "门外是一双带血的靴子。阴影中，斗篷肩部上方似乎没有头颅。"
+      ],
+      "choices": [
+        {
+          "label": "把门锁好，等待离开",
+          "next": "home_exit",
+          "minutes": 6,
+          "id": "lock_and_wait",
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "visitor_active",
+              "value": false
+            },
+            {
+              "type": "set_flag",
+              "key": "visitor_heard_noise",
+              "value": false
+            }
+          ]
+        },
+        {
+          "label": "伸手去拉门闩",
+          "next": "door_confirm",
+          "minutes": 1,
+          "id": "open"
+        }
+      ],
+      "background": "bedroom",
+      "on_enter": [
+        {
+          "type": "add_clue",
+          "id": "headless_shadow"
+        },
+        {
+          "type": "add_stat",
+          "key": "sanity",
+          "value": -8
+        }
+      ]
+    },
+    {
+      "id": "home_exit",
+      "title": "踏出家门",
+      "location": "玩家住所",
+      "kind": "scene",
+      "text": [
+        "门外的脚步最终远去。你握住冰冷门把，决定前往街道。"
+      ],
+      "choices": [
+        {
+          "label": "带着物品离家",
+          "next": "street_encounter",
+          "minutes": 5,
+          "id": "leave"
+        },
+        {
+          "id": "pack",
+          "label": "返回房内整理行囊",
+          "next": "home_search",
+          "minutes": 0
+        }
+      ],
+      "background": "bedroom",
+      "safe_inventory": true,
+      "redirects": [
+        {
+          "next": "home_door",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "visitor_active"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "door_warning_seen"
+            }
+          ],
+          "text": [
+            "门外没有脚步声。你收好行囊，握住门把。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "street",
+      "title": "血雾旧街",
+      "location": "旧街区",
+      "kind": "scene",
+      "text": [
+        "风很大。整条街被雾气吞没。远处的风暴教堂几乎隐在红光中，港口方向偶尔传来汽笛声。",
+        "你意识到：今晚有外来的客船停靠港口。"
+      ],
+      "choices": [
+        {
+          "label": "前往青柠檬餐厅",
+          "next": "tavern",
+          "minutes": 12,
+          "id": "tavern",
+          "map": true,
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ]
+        },
+        {
+          "label": "走向电报局（夜）",
+          "next": "telegraph_night",
+          "minutes": 12,
+          "id": "telegraph_night",
+          "map": true,
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 683
+            }
+          ]
+        },
+        {
+          "label": "前往码头",
+          "next": "dock",
+          "minutes": 15,
+          "id": "dock",
+          "map": true,
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ]
+        },
+        {
+          "label": "去风暴教堂外围看看",
+          "next": "church_outside",
+          "minutes": 15,
+          "id": "church",
+          "map": true,
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ]
+        },
+        {
+          "label": "回到家",
+          "next": "home_search",
+          "minutes": 10,
+          "id": "home",
+          "map": true,
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ]
+        },
+        {
+          "label": "在屋檐下等到次日上午 09:40",
+          "next": "ship_missed",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 683
+            }
+          ],
+          "id": "rest_to_day"
+        },
+        {
+          "id": "wait_for_dawn",
+          "label": "躲进屋檐下，等到清晨 06:00",
+          "next": "ship_missed",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 463
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ]
+        },
+        {
+          "id": "see_departure",
+          "label": "去码头看看已经离港的船",
+          "next": "ship_missed",
+          "minutes": 0,
+          "visible_when": [
+            {
+              "type": "minute_gte",
+              "value": 463
+            },
+            {
+              "type": "flag_false",
+              "key": "saw_ship_missed"
+            }
+          ]
+        }
+      ],
+      "notes": "执行节点进入时，全局时间事件应先判断船是否离港/电报职员是否消失。",
+      "background": "red_street",
+      "redirects": [
+        {
+          "next": "day_street",
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 683
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "text": [
+            "天已经亮了。港口方向没有再响起白玛瑙号的汽笛。",
+            "电报局仍没有开门。"
+          ],
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 463
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tavern",
+      "title": "青柠檬餐厅",
+      "location": "餐厅",
+      "kind": "scene",
+      "text": [
+        "你推开餐厅木门。浓郁香料味扑面而来。几位打扮体面的旅客围坐一旁，女店员用切肉刀处理一块颜色过深的肉。",
+        "玛蕾娜：“欢迎……光临……”“请……坐……”"
+      ],
+      "choices": [
+        {
+          "label": "去厨房看看玛蕾娜为何争吵",
+          "next": "marena_talk",
+          "minutes": 25,
+          "id": "marena",
+          "visible_when": [
+            {
+              "type": "exclusive_open",
+              "id": "marena_reply"
+            },
+            {
+              "type": "event_pending",
+              "id": "marena_kitchen"
+            }
+          ],
+          "available_from": 128,
+          "available_until": 168
+        },
+        {
+          "label": "询问年幼的堂娜",
+          "next": "donna_talk",
+          "minutes": 5,
+          "id": "donna",
+          "visible_when": [
+            {
+              "type": "exclusive_open",
+              "id": "donna_reply"
+            }
+          ],
+          "available_until": 165
+        },
+        {
+          "label": "寻找那位冷淡的陌生冒险家",
+          "next": "gehrman",
+          "minutes": 15,
+          "id": "gehrman",
+          "visible_when": [
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 0
+            },
+            {
+              "type": "flag_false",
+              "key": "gehrman_farewell"
+            }
+          ],
+          "permanent_lock": "gehrman_refused",
+          "available_from": 123,
+          "available_until": 170
+        },
+        {
+          "label": "跟上走向后门的堂娜",
+          "next": "rescue",
+          "minutes": 12,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "rescue_done"
+            }
+          ],
+          "id": "investigate_rescue",
+          "visible_when": [
+            {
+              "type": "flag_false",
+              "key": "rescue_done"
+            },
+            {
+              "type": "event_pending",
+              "id": "donna_rescue"
+            }
+          ],
+          "available_from": 128,
+          "available_until": 160
+        },
+        {
+          "label": "返回旧街",
+          "next": "street",
+          "minutes": 10,
+          "id": "return"
+        },
+        {
+          "id": "wait_gehrman",
+          "label": "在餐桌旁等到 00:20",
+          "next": "tavern",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 123
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 123
+            }
+          ],
+          "max_uses": 1
+        },
+        {
+          "id": "wait_collision",
+          "label": "留在餐厅等到 00:25",
+          "next": "tavern",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 128
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 128
+            }
+          ],
+          "max_uses": 1
+        }
+      ],
+      "background": "lemon_tavern",
+      "safe_inventory": true,
+      "redirects": [
+        {
+          "next": "tavern_later",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "ship_departed"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 169
+            },
+            {
+              "type": "minute_lt",
+              "value": 173
+            },
+            {
+              "type": "clue",
+              "id": "rescued_passenger"
+            }
+          ],
+          "text": [
+            "你推开餐厅木门。浓郁香料味扑面而来。几位打扮体面的旅客围坐一旁，女店员用切肉刀处理一块颜色过深的肉。",
+            "玛蕾娜：“欢迎……光临……”“请……坐……”",
+            "厨房里安静下来。堂娜已经回到桌边。"
+          ]
+        },
+        {
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 169
+            },
+            {
+              "type": "minute_lt",
+              "value": 173
+            }
+          ],
+          "text": [
+            "你推开餐厅木门。浓郁香料味扑面而来。几位打扮体面的旅客围坐一旁，女店员用切肉刀处理一块颜色过深的肉。",
+            "玛蕾娜：“欢迎……光临……”“请……坐……”",
+            "厨房里安静下来。一名旅客把堂娜从后门带回了桌边。"
+          ]
+        },
+        {
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 128
+            },
+            {
+              "type": "minute_lt",
+              "value": 169
+            }
+          ],
+          "text": [
+            "你推开餐厅木门。浓郁香料味扑面而来。几位打扮体面的旅客围坐一旁，女店员用切肉刀处理一块颜色过深的肉。",
+            "玛蕾娜：“欢迎……光临……”“请……坐……”",
+            "厨房传来争执声。堂娜朝后门张望，格尔曼和达尼兹已经到了。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "marena_talk",
+      "title": "我们的家人",
+      "location": "餐厅",
+      "kind": "scene",
+      "text": [
+        "你循着厨房传出的争执声走过去。玛蕾娜手里的刀停在砧板上。",
+        "玩家：“今晚发生什么事了？”",
+        "玛蕾娜：“天气……不好……”",
+        "玩家：“街上为什么一个人都没有？”",
+        "玛蕾娜：“大家……都在……家里……”",
+        "玩家：“外面有奇怪的东西。”",
+        "玛蕾娜停刀：“你……看见……了？”",
+        "玩家：“那是什么？”",
+        "很久之后：“那是……我们的……家人……”",
+        "玩家：“你的丈夫呢？”",
+        "玛蕾娜：“他……出去了……”",
+        "玩家：“什么时候回来？”",
+        "玛蕾娜：“快……回来了……”",
+        "玩家：“你确定吗？”",
+        "切肉刀敲在砧板上，一、二、三。",
+        "玛蕾娜：“他……已经……回来……了。”",
+        "镜头扫过窗外，一名无头人影静静站在那里。再回头时，玛蕾娜已恢复服务姿态：",
+        "“客人……需要……加餐吗？”"
+      ],
+      "choices": [
+        {
+          "label": "记录她的异常并离开",
+          "next": "tavern",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "returned_husband"
+            },
+            {
+              "type": "add_stat",
+              "key": "marena_favor",
+              "value": 5
+            },
+            {
+              "type": "resolve_event",
+              "id": "marena_kitchen",
+              "value": "completed"
+            }
+          ],
+          "id": "record_husband",
+          "once": true,
+          "visible_when": [
+            {
+              "type": "event_pending",
+              "id": "marena_kitchen"
+            }
+          ],
+          "feedback": [
+            "你把玛蕾娜提到的事记进线索簿。"
+          ],
+          "available_from": 128,
+          "available_until": 168,
+          "exclusive_group": "marena_reply"
+        },
+        {
+          "label": "劝她别再靠近窗户",
+          "next": "tavern",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "returned_husband"
+            },
+            {
+              "type": "add_stat",
+              "key": "marena_favor",
+              "value": 10
+            },
+            {
+              "type": "set_flag",
+              "key": "helped_marena",
+              "value": true
+            },
+            {
+              "type": "resolve_event",
+              "id": "marena_kitchen",
+              "value": "completed"
+            }
+          ],
+          "id": "help_marena",
+          "once": true,
+          "feedback": [
+            "玛蕾娜握住怀表，慢慢从窗口退开。"
+          ],
+          "visible_when": [
+            {
+              "type": "event_pending",
+              "id": "marena_kitchen"
+            }
+          ],
+          "available_from": 128,
+          "available_until": 168,
+          "exclusive_group": "marena_reply"
+        },
+        {
+          "id": "return",
+          "label": "回到餐厅",
+          "next": "tavern",
+          "minutes": 0,
+          "available_from": 128,
+          "available_until": 168,
+          "visible_when": [
+            {
+              "type": "event_pending",
+              "id": "marena_kitchen"
+            }
+          ],
+          "effects": [
+            {
+              "type": "resolve_event",
+              "id": "marena_kitchen",
+              "value": "missed"
+            }
+          ],
+          "exclusive_group": "marena_reply"
+        }
+      ],
+      "background": "lemon_tavern",
+      "redirects": [
+        {
+          "next": "tavern_later",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "ship_departed"
+            }
+          ]
+        },
+        {
+          "next": "tavern",
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 169
+            }
+          ]
+        },
+        {
+          "next": "tavern",
+          "requires": [
+            {
+              "type": "minute_lt",
+              "value": 128
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "donna_talk",
+      "title": "堂娜的目击",
+      "location": "餐厅",
+      "kind": "scene",
+      "text": [
+        "堂娜：“你是这里的人吗？”",
+        "玩家：“是。”",
+        "堂娜：“我刚刚好像看见了一个没有脑袋的人……可是，大人们都不相信我。”"
+      ],
+      "choices": [
+        {
+          "label": "说自己也看见过",
+          "next": "tavern",
+          "minutes": 4,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "donna_testimony"
+            },
+            {
+              "type": "add_stat",
+              "key": "donna_favor",
+              "value": 10
+            }
+          ],
+          "id": "believe",
+          "once": true,
+          "feedback": [
+            "堂娜四下看了看，压低声音告诉你她看见那个人的经过。"
+          ],
+          "exclusive_group": "donna_reply",
+          "available_until": 168
+        },
+        {
+          "label": "询问她所在的船何时离开",
+          "next": "tavern",
+          "minutes": 4,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "white_agate_lead"
+            },
+            {
+              "type": "set_flag",
+              "key": "ship_lead_known",
+              "value": true
+            }
+          ],
+          "id": "ask_ship",
+          "once": true,
+          "feedback": [
+            "白玛瑙号将在清晨 06:00 离港。任务更新：离开班西港。"
+          ],
+          "exclusive_group": "donna_reply",
+          "available_until": 168
+        },
+        {
+          "label": "安慰她可能是看错了",
+          "next": "tavern",
+          "minutes": 3,
+          "effects": [
+            {
+              "type": "add_stat",
+              "key": "donna_favor",
+              "value": 2
+            }
+          ],
+          "id": "comfort",
+          "once": true,
+          "feedback": [
+            "堂娜低下头，没有再说下去。"
+          ],
+          "exclusive_group": "donna_reply",
+          "available_until": 168
+        },
+        {
+          "id": "ask_travelers",
+          "label": "打听同行的成年人",
+          "next": "tavern",
+          "minutes": 4,
+          "once": true,
+          "feedback": [
+            "堂娜提到了艾尔兰船长，以及一位戴礼帽的冒险家和一个紧张的金发男子。"
+          ],
+          "exclusive_group": "donna_reply",
+          "available_until": 168
+        },
+        {
+          "id": "return",
+          "label": "结束谈话",
+          "next": "tavern",
+          "minutes": 0
+        }
+      ],
+      "background": "lemon_tavern",
+      "redirects": [
+        {
+          "next": "tavern_later",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "ship_departed"
+            }
+          ]
+        },
+        {
+          "next": "tavern",
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 169
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gehrman",
+      "title": "冷淡的冒险家",
+      "location": "餐厅",
+      "kind": "scene",
+      "text": [
+        "餐厅的门被推开。穿黑色长礼服、戴丝绸礼帽的年轻男人走入，后面跟着一个衣服带焦痕、神情紧张的金发男子。",
+        "达尼兹：“真是见鬼，这地方的人怎么一个比一个古怪……”",
+        "他看到玩家：“喂，你也是这里的居民？你不会也……”",
+        "格尔曼：“达尼兹。”",
+        "达尼兹闭嘴。",
+        "格尔曼盯着玩家：“你为什么还在外面？”"
+      ],
+      "choices": [
+        {
+          "label": "坦白自己刚醒且街道异常",
+          "next": "gehrman",
+          "minutes": 3,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "told_truth"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_stat",
+              "key": "gehrman_trust",
+              "value": 10
+            },
+            {
+              "type": "set_flag",
+              "key": "told_truth",
+              "value": true
+            },
+            {
+              "type": "set_flag",
+              "key": "gehrman_intro_done",
+              "value": true
+            }
+          ],
+          "once": true,
+          "id": "truth",
+          "feedback": [
+            "你说起醒来时窗外的红光，以及半夜异常安静的街道。格尔曼听完，没有急于追问。"
+          ],
+          "visible_when": [
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 0
+            }
+          ],
+          "available_from": 123,
+          "available_until": 173,
+          "exclusive_group": "gehrman_intro",
+          "permanent_lock": "gehrman_refused",
+          "max_uses": 1
+        },
+        {
+          "label": "出示教堂运输收据",
+          "next": "gehrman_receipt",
+          "minutes": 2,
+          "requires": [
+            {
+              "type": "clue",
+              "id": "church_receipt"
+            },
+            {
+              "type": "flag_false",
+              "key": "receipt_shown"
+            }
+          ],
+          "fallback": "需要先在家中查到教堂运输收据。",
+          "id": "receipt",
+          "visible_when": [
+            {
+              "type": "flag_false",
+              "key": "receipt_shown"
+            },
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 0
+            },
+            {
+              "type": "flag_true",
+              "key": "gehrman_intro_done"
+            }
+          ],
+          "available_from": 123,
+          "available_until": 171,
+          "permanent_lock": "gehrman_refused"
+        },
+        {
+          "label": "展示可核验的异常线索",
+          "next": "gehrman_verify",
+          "minutes": 2,
+          "requires": [
+            {
+              "type": "clue_any",
+              "ids": [
+                "donna_testimony",
+                "headless_shadow",
+                "telegram_notes",
+                "floating_light",
+                "bloodied_telegram",
+                "telegraph_silhouettes"
+              ]
+            },
+            {
+              "type": "flag_false",
+              "key": "verified_given"
+            }
+          ],
+          "fallback": "目前缺少能够交叉核验的目击线索。",
+          "id": "verify",
+          "visible_when": [
+            {
+              "type": "flag_false",
+              "key": "verified_given"
+            },
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 0
+            },
+            {
+              "type": "flag_true",
+              "key": "gehrman_intro_done"
+            }
+          ],
+          "available_from": 123,
+          "available_until": 170,
+          "permanent_lock": "gehrman_refused"
+        },
+        {
+          "label": "坦白自己记忆断片且担心受到污染",
+          "next": "gehrman",
+          "minutes": 3,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "admitted_risk"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_stat",
+              "key": "gehrman_trust",
+              "value": 15
+            },
+            {
+              "type": "set_flag",
+              "key": "admitted_risk",
+              "value": true
+            }
+          ],
+          "once": true,
+          "id": "risk",
+          "feedback": [
+            "你告诉格尔曼，自己不记得白天的事，也无法确定自己是否受到污染。"
+          ],
+          "visible_when": [
+            {
+              "type": "flag_false",
+              "key": "admitted_risk"
+            },
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 0
+            },
+            {
+              "type": "flag_false",
+              "key": "bluffed"
+            },
+            {
+              "type": "flag_true",
+              "key": "gehrman_intro_done"
+            }
+          ],
+          "available_from": 123,
+          "available_until": 173,
+          "permanent_lock": "gehrman_refused"
+        },
+        {
+          "label": "直接询问能否登船",
+          "next": "gehrman",
+          "minutes": 3,
+          "id": "ask_boarding",
+          "visible_when": [
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 0
+            }
+          ],
+          "available_from": 123,
+          "available_until": 173,
+          "exclusive_group": "gehrman_intro",
+          "permanent_lock": "gehrman_refused",
+          "max_uses": 1,
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "gehrman_intro_done",
+              "value": true
+            }
+          ],
+          "feedback": [
+            "格尔曼说，登船要由船长决定。你得给出能核验的理由。"
+          ]
+        },
+        {
+          "label": "空口宣称知道全部真相",
+          "next": "gehrman",
+          "minutes": 3,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "bluffed"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_stat",
+              "key": "gehrman_trust",
+              "value": -15
+            },
+            {
+              "type": "set_flag",
+              "key": "bluffed",
+              "value": true
+            },
+            {
+              "type": "set_flag",
+              "key": "gehrman_intro_done",
+              "value": true
+            }
+          ],
+          "once": true,
+          "id": "bluff",
+          "feedback": [
+            "格尔曼要你说出亲眼所见的时间和地点。你答不上来。"
+          ],
+          "visible_when": [
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 0
+            },
+            {
+              "type": "flag_false",
+              "key": "admitted_risk"
+            }
+          ],
+          "available_from": 123,
+          "available_until": 173,
+          "exclusive_group": "gehrman_intro",
+          "permanent_lock": "gehrman_refused",
+          "max_uses": 1
+        },
+        {
+          "label": "告别格尔曼，回到餐厅",
+          "next": "tavern",
+          "minutes": 3,
+          "id": "return",
+          "max_uses": 1,
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "gehrman_farewell",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "background": "lemon_tavern",
+      "redirects": [
+        {
+          "next": "ship_missed",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "ship_departed"
+            }
+          ]
+        },
+        {
+          "next": "gehrman_closed",
+          "requires": [
+            {
+              "type": "stat_lt",
+              "key": "gehrman_trust",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "next": "gehrman_closed",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "gehrman_refused"
+            }
+          ]
+        },
+        {
+          "next": "gehrman_closed",
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 173
+            }
+          ]
+        },
+        {
+          "next": "tavern",
+          "requires": [
+            {
+              "type": "minute_lt",
+              "value": 123
+            }
+          ]
+        }
+      ],
+      "dialogue_window": "gehrman"
+    },
+    {
+      "id": "gehrman_receipt",
+      "title": "教堂的委托",
+      "location": "餐厅",
+      "kind": "scene",
+      "text": [
+        "格尔曼：“你见过箱子里面的东西吗？”",
+        "玩家：“没有。”",
+        "格尔曼：“为什么没有？”",
+        "玩家：“委托人不允许打开。”",
+        "格尔曼：“你把它送去了哪里？”",
+        "玩家：“教堂地下的储藏室。”",
+        "格尔曼转头：“达尼兹，记住这个地方。”",
+        "达尼兹：“啊？你不会还想过去吧？”",
+        "格尔曼没有回答。"
+      ],
+      "choices": [
+        {
+          "label": "交付线索，回到问答",
+          "next": "gehrman",
+          "minutes": 2,
+          "effects": [
+            {
+              "type": "add_stat",
+              "key": "gehrman_trust",
+              "value": 25
+            },
+            {
+              "type": "set_flag",
+              "key": "receipt_shown",
+              "value": true
+            },
+            {
+              "type": "set_flag",
+              "key": "has_verified_evidence",
+              "value": true
+            }
+          ],
+          "once": true,
+          "id": "submit_receipt",
+          "visible_when": [
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 0
+            }
+          ],
+          "permanent_lock": "gehrman_refused",
+          "available_from": 123,
+          "available_until": 173
+        },
+        {
+          "id": "return",
+          "label": "结束这段问答",
+          "next": "gehrman",
+          "minutes": 0
+        }
+      ],
+      "background": "lemon_tavern",
+      "redirects": [
+        {
+          "next": "ship_missed",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "ship_departed"
+            }
+          ]
+        },
+        {
+          "next": "gehrman_closed",
+          "requires": [
+            {
+              "type": "stat_lt",
+              "key": "gehrman_trust",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "next": "gehrman_closed",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "gehrman_refused"
+            }
+          ]
+        },
+        {
+          "next": "gehrman_closed",
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 173
+            }
+          ]
+        },
+        {
+          "next": "tavern",
+          "requires": [
+            {
+              "type": "minute_lt",
+              "value": 123
+            }
+          ]
+        }
+      ],
+      "dialogue_window": "gehrman"
+    },
+    {
+      "id": "gehrman_verify",
+      "title": "可核实的异常",
+      "location": "餐厅",
+      "kind": "scene",
+      "text": [
+        "你把时间、地点和具体描述讲给格尔曼。他没有马上表态，而是逐项验证。",
+        "“至少这部分，你没有撒谎。”"
+      ],
+      "choices": [
+        {
+          "label": "接受他的判断",
+          "next": "gehrman",
+          "minutes": 3,
+          "effects": [
+            {
+              "type": "add_stat",
+              "key": "gehrman_trust",
+              "value": 20
+            },
+            {
+              "type": "set_flag",
+              "key": "verified_given",
+              "value": true
+            },
+            {
+              "type": "set_flag",
+              "key": "has_verified_evidence",
+              "value": true
+            }
+          ],
+          "once": true,
+          "id": "submit_evidence",
+          "visible_when": [
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 0
+            }
+          ],
+          "permanent_lock": "gehrman_refused",
+          "available_from": 123,
+          "available_until": 173
+        },
+        {
+          "id": "return",
+          "label": "结束这段问答",
+          "next": "gehrman",
+          "minutes": 0
+        }
+      ],
+      "background": "lemon_tavern",
+      "redirects": [
+        {
+          "next": "ship_missed",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "ship_departed"
+            }
+          ]
+        },
+        {
+          "next": "gehrman_closed",
+          "requires": [
+            {
+              "type": "stat_lt",
+              "key": "gehrman_trust",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "next": "gehrman_closed",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "gehrman_refused"
+            }
+          ]
+        },
+        {
+          "next": "gehrman_closed",
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 173
+            }
+          ]
+        },
+        {
+          "next": "tavern",
+          "requires": [
+            {
+              "type": "minute_lt",
+              "value": 123
+            }
+          ]
+        }
+      ],
+      "dialogue_window": "gehrman"
+    },
+    {
+      "id": "gehrman_closed",
+      "title": "谈话结束",
+      "location": "餐厅",
+      "kind": "scene",
+      "background": "lemon_tavern",
+      "text": [
+        "格尔曼瞥了一眼时间，结束了谈话。"
+      ],
+      "variants": [
+        {
+          "text": [
+            "格尔曼不再回答，转身走开了。"
+          ],
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "gehrman_refused"
+            }
+          ]
+        }
+      ],
+      "choices": [
+        {
+          "id": "return",
+          "label": "回到餐厅",
+          "next": "tavern",
+          "minutes": 0
+        },
+        {
+          "id": "dock",
+          "label": "前往码头",
+          "next": "dock",
+          "minutes": 8
+        }
+      ]
+    },
+    {
+      "id": "rescue",
+      "title": "旅客陷入危险",
+      "location": "餐厅",
+      "kind": "scene",
+      "text": [
+        "一名旅客被一团奇怪的光吸引，正打算离开安全的餐厅。你从细节发现门外可能有无头者。",
+        "走向后门的是堂娜。她回头找同行的人，脚下却没有停。"
+      ],
+      "choices": [
+        {
+          "label": "拦住旅客，告诉他你看见了什么",
+          "next": "tavern",
+          "minutes": 8,
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "rescue_done",
+              "value": true
+            },
+            {
+              "type": "add_stat",
+              "key": "gehrman_trust",
+              "value": 35
+            },
+            {
+              "type": "set_flag",
+              "key": "has_verified_evidence",
+              "value": true
+            },
+            {
+              "type": "add_clue",
+              "id": "rescued_passenger"
+            },
+            {
+              "type": "resolve_event",
+              "id": "donna_rescue",
+              "value": "completed"
+            }
+          ],
+          "once": true,
+          "id": "help",
+          "requires": [
+            {
+              "type": "clue_any",
+              "ids": [
+                "headless_shadow",
+                "donna_testimony",
+                "returned_husband",
+                "floating_light",
+                "telegram_notes"
+              ]
+            }
+          ],
+          "fallback": "先亲眼观察街上的异常，或向堂娜和玛蕾娜了解实情。",
+          "feedback": [
+            "你拉住旅客，指给他看灯下空荡荡的街面。他退回屋内，门外的脚步没有停下。"
+          ],
+          "visible_when": [
+            {
+              "type": "event_pending",
+              "id": "donna_rescue"
+            }
+          ],
+          "exclusive_group": "donna_rescue_response",
+          "available_from": 128,
+          "available_until": 168
+        },
+        {
+          "label": "装作没看见",
+          "next": "tavern",
+          "minutes": 2,
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "rescue_done",
+              "value": true
+            },
+            {
+              "type": "resolve_event",
+              "id": "donna_rescue",
+              "value": "resolved_elsewhere"
+            }
+          ],
+          "id": "ignore",
+          "visible_when": [
+            {
+              "type": "event_pending",
+              "id": "donna_rescue"
+            }
+          ],
+          "exclusive_group": "donna_rescue_response",
+          "available_from": 128,
+          "available_until": 168
+        }
+      ],
+      "background": "lemon_tavern",
+      "redirects": [
+        {
+          "next": "ship_missed",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "ship_departed"
+            }
+          ]
+        },
+        {
+          "next": "tavern",
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 169
+            }
+          ]
+        },
+        {
+          "next": "tavern",
+          "requires": [
+            {
+              "type": "minute_lt",
+              "value": 128
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "church_outside",
+      "title": "风暴教堂外",
+      "location": "教堂",
+      "kind": "scene",
+      "text": [
+        "高大的徽记隐在雨中。教堂侧门紧闭，附近残留搬运沉重木箱的痕迹。",
+        "这不是普通人应当闯入的地方。"
+      ],
+      "choices": [
+        {
+          "label": "记录脚印，退出",
+          "next": "street",
+          "minutes": 5,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "church_crate_tracks"
+            }
+          ],
+          "id": "record_tracks"
+        },
+        {
+          "label": "直接回旧街",
+          "next": "street",
+          "minutes": 5,
+          "id": "return"
+        }
+      ],
+      "background": "red_street"
+    },
+    {
+      "id": "telegraph_night",
+      "title": "深夜电报局",
+      "location": "电报局",
+      "kind": "scene",
+      "text": [
+        "木门紧闭，房间内亮着灯，电报机仍在敲击：滴、滴滴、滴。",
+        "门后的两道人影始终一动不动。"
+      ],
+      "choices": [
+        {
+          "label": "隔门询问",
+          "next": "telegraph_night",
+          "minutes": 5,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "telegram_talk_done"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "telegram_notes"
+            },
+            {
+              "type": "set_flag",
+              "key": "telegram_talk_done",
+              "value": true
+            }
+          ],
+          "once": true,
+          "id": "talk",
+          "feedback": [
+            "玩家：“有人吗？”",
+            "梅兰妮：“有……什么……事？”",
+            "玩家：“我想发一封电报。”",
+            "梅兰妮：“今天……已经……关门……”",
+            "玩家：“可是里面明明有人。”",
+            "梅兰妮：“有人……但……关门……”",
+            "帕沃：“夜里……不要……出来……”",
+            "玩家：“你们为什么不出来？”",
+            "帕沃：“我们……不能……出来……”",
+            "玩家：“为什么？”",
+            "两人同时沉默。片刻后，梅兰妮低声说：“因为……我们……已经……在……里面……”"
+          ],
+          "available_until": 682
+        },
+        {
+          "label": "从门缝观察",
+          "next": "telegraph_night",
+          "minutes": 4,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "telegram_peek_done"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "telegraph_silhouettes"
+            }
+          ],
+          "once": true,
+          "id": "peek",
+          "feedback": [
+            "两道静止的人影映在玻璃上。电报机仍在敲响，没有一个人影抬手。"
+          ],
+          "available_until": 682
+        },
+        {
+          "id": "bloodied_paper",
+          "label": "查看门下露出的纸条",
+          "next": "telegraph_night",
+          "minutes": 3,
+          "once": true,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "bloodied_telegram"
+            },
+            {
+              "type": "add_stat",
+              "key": "sanity",
+              "value": -5
+            }
+          ],
+          "feedback": [
+            "纸上有未干的血，边缘黏在门槛上。理智 −5。"
+          ],
+          "available_until": 682
+        },
+        {
+          "label": "强行进入电报局",
+          "next": "death_telegraph",
+          "minutes": 0,
+          "id": "force_entry",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "telegraph_staff_present"
+            },
+            {
+              "type": "minute_lt",
+              "value": 683
+            }
+          ],
+          "available_until": 682
+        },
+        {
+          "label": "离开电报局",
+          "next": "street",
+          "minutes": 10,
+          "id": "return"
+        }
+      ],
+      "background": "telegraph_night",
+      "redirects": [
+        {
+          "next": "telegraph_day",
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "telegraph_staff_present"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dock",
+      "title": "白玛瑙号",
+      "location": "码头",
+      "kind": "scene",
+      "text": [
+        "凌晨海风变冷，白玛瑙号的水手开始收起缆绳。船长艾尔兰拒绝在污染可疑的情况下无条件收留陌生班西居民。",
+        "艾尔兰：“你是班西港的人？抱歉，这种情况下，我不能随意带一个陌生人上船。”"
+      ],
+      "choices": [
+        {
+          "label": "接受船员污染筛查",
+          "next": "dock",
+          "minutes": 8,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "screened"
+            },
+            {
+              "type": "stat_lt",
+              "key": "loss_of_control",
+              "value": 50
+            }
+          ],
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "screened",
+              "value": true
+            },
+            {
+              "type": "set_flag",
+              "key": "contamination_screen_passed",
+              "value": true
+            }
+          ],
+          "once": true,
+          "id": "screen",
+          "feedback": [
+            "船员问完你在岸上的经历，检查你是否受伤，随后点头。污染筛查通过。"
+          ],
+          "available_until": 462
+        },
+        {
+          "label": "请格尔曼担保并请求登船",
+          "next": "dock_board",
+          "minutes": 0,
+          "requires": [
+            {
+              "type": "minute_lt",
+              "value": 463
+            },
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 60
+            },
+            {
+              "type": "flag_true",
+              "key": "has_verified_evidence"
+            },
+            {
+              "type": "flag_true",
+              "key": "contamination_screen_passed"
+            },
+            {
+              "type": "flag_false",
+              "key": "ship_departed"
+            }
+          ],
+          "fallback": "需要未离港、格尔曼信任至少60、已核验证据和污染筛查通过。",
+          "id": "request_boarding",
+          "visible_when": [
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 0
+            }
+          ],
+          "max_uses": 1,
+          "permanent_lock": "gehrman_refused",
+          "available_from": 403,
+          "available_until": 433,
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "boarding_approved",
+              "value": true
+            },
+            {
+              "type": "resolve_event",
+              "id": "dock_parley",
+              "value": "completed"
+            }
+          ]
+        },
+        {
+          "label": "再去调查",
+          "next": "street",
+          "minutes": 10,
+          "requires": [
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ],
+          "id": "leave"
+        },
+        {
+          "id": "wait_parley",
+          "label": "在码头等到 05:00",
+          "next": "dock",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 403
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 403
+            }
+          ],
+          "max_uses": 1
+        },
+        {
+          "id": "wait_departure",
+          "label": "留在码头等到 06:00",
+          "next": "ship_missed",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 463
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ],
+          "max_uses": 1
+        },
+        {
+          "id": "resume_boarding",
+          "label": "持许可回到登船处",
+          "next": "dock_board",
+          "minutes": 0,
+          "visible_when": [
+            {
+              "type": "flag_true",
+              "key": "boarding_approved"
+            },
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ],
+          "permanent_lock": "gehrman_refused"
+        }
+      ],
+      "background": "dock_ship",
+      "redirects": [
+        {
+          "next": "ship_missed",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "ship_departed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dock_board",
+      "title": "登船前的最后请求",
+      "location": "码头",
+      "kind": "scene",
+      "text": [
+        "格尔曼：“他可以上船。”",
+        "艾尔兰：“你确定？”",
+        "格尔曼简单陈述已核实的证据。艾尔兰点头：“好。但上船之后，你必须遵守我的安排。”",
+        "玛蕾娜披着带血外套，握住旧怀表：“你们……要……走……了？可以……带我……一起……走吗？”"
+      ],
+      "choices": [
+        {
+          "label": "交给艾尔兰正式检查",
+          "next": "dock_board",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "marena_fate",
+              "value": "screening_requested"
+            },
+            {
+              "type": "set_flag",
+              "key": "marena_boarding_answered",
+              "value": true
+            }
+          ],
+          "id": "honest_check",
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "ship_departed"
+            },
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ],
+          "feedback": [
+            "你把已知情况告诉艾尔兰。船员请玛蕾娜留在岸上等待检查。"
+          ],
+          "exclusive_group": "marena_boarding"
+        },
+        {
+          "label": "告诉她无法带她走",
+          "next": "dock_board",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "marena_fate",
+              "value": "left_behind"
+            },
+            {
+              "type": "set_flag",
+              "key": "marena_boarding_answered",
+              "value": true
+            }
+          ],
+          "id": "refuse",
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "ship_departed"
+            },
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ],
+          "feedback": [
+            "玛蕾娜攥紧掌心的旧怀表，没有跟上来。"
+          ],
+          "exclusive_group": "marena_boarding"
+        },
+        {
+          "label": "替她向船员交涉，不提她的情况",
+          "next": "dock",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "add_stat",
+              "key": "gehrman_trust",
+              "value": -50
+            },
+            {
+              "type": "set_flag",
+              "key": "contamination_screen_passed",
+              "value": false
+            },
+            {
+              "type": "set_flag",
+              "key": "boarding_approved",
+              "value": false
+            }
+          ],
+          "id": "conceal",
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "ship_departed"
+            },
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ],
+          "feedback": [
+            "格尔曼察觉你隐瞒了她的状况。船员收回登船许可。信任 −50。"
+          ],
+          "exclusive_group": "marena_boarding"
+        },
+        {
+          "id": "board",
+          "label": "登上白玛瑙号",
+          "next": "ending_a",
+          "minutes": 10,
+          "finish_before_events": true,
+          "max_uses": 1,
+          "available_until": 463,
+          "permanent_lock": "gehrman_refused",
+          "visible_when": [
+            {
+              "type": "flag_true",
+              "key": "boarding_approved"
+            },
+            {
+              "type": "flag_true",
+              "key": "marena_boarding_answered"
+            }
+          ],
+          "requires": [
+            {
+              "type": "stat_gte",
+              "key": "gehrman_trust",
+              "value": 60
+            },
+            {
+              "type": "flag_true",
+              "key": "has_verified_evidence"
+            },
+            {
+              "type": "flag_true",
+              "key": "contamination_screen_passed"
+            },
+            {
+              "type": "flag_false",
+              "key": "ship_departed"
+            }
+          ],
+          "effects": [
+            {
+              "type": "resolve_event",
+              "id": "white_agate_boarding",
+              "value": "completed"
+            }
+          ]
+        },
+        {
+          "id": "wait_boarding",
+          "label": "等到 05:50，再看登船安排",
+          "next": "dock_board",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 453
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 453
+            }
+          ],
+          "max_uses": 1
+        },
+        {
+          "id": "wait_departure",
+          "label": "在码头等到船离港",
+          "next": "ship_missed",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 463
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 463
+            }
+          ],
+          "max_uses": 1
+        },
+        {
+          "id": "leave",
+          "label": "返回街区",
+          "next": "street",
+          "minutes": 10
+        }
+      ],
+      "background": "dock_ship",
+      "redirects": [
+        {
+          "next": "ship_missed",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "ship_departed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ship_missed",
+      "title": "被留下的人",
+      "location": "码头",
+      "kind": "scene",
+      "text": [
+        "汽笛声从远处传来。你拼命跑向码头，却只看见白玛瑙号缓缓驶出港口。你挥手，没有人回应。",
+        "你被留在了班西港。"
+      ],
+      "choices": [
+        {
+          "label": "等到上午，寻找其他离港方式",
+          "next": "day_street",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 683
+            },
+            {
+              "type": "set_flag",
+              "key": "ship_departed",
+              "value": true
+            }
+          ],
+          "id": "find_other_way",
+          "feedback": [
+            "不远处反复传来昨晚熟悉的声音：“天气……不好……”“今天……已经……关门……”“大家……都在……家里……”仿佛小镇正在重复某段被扭曲的生活。"
+          ]
+        }
+      ],
+      "background": "dock_ship",
+      "on_enter": [
+        {
+          "type": "set_flag",
+          "key": "saw_ship_missed",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "day_street",
+      "title": "第二天的班西",
+      "location": "旧街区",
+      "kind": "scene",
+      "text": [
+        "街上的声音像昨天一样重复，电报局的门却已敞开。",
+        "白玛瑙号不会再回来，你需要新的离港方式。"
+      ],
+      "choices": [
+        {
+          "label": "调查已开门的电报局",
+          "next": "telegraph_day",
+          "minutes": 12,
+          "id": "telegraph_day",
+          "map": true,
+          "visible_when": [
+            {
+              "type": "minute_gte",
+              "value": 683
+            }
+          ]
+        },
+        {
+          "label": "去港务值班室查航运记录",
+          "next": "harbor_log",
+          "minutes": 15,
+          "id": "harbor",
+          "map": true,
+          "visible_when": [
+            {
+              "type": "event_pending",
+              "id": "harbor_records"
+            }
+          ],
+          "available_until": 813
+        },
+        {
+          "label": "前往旧灯塔",
+          "next": "lighthouse",
+          "minutes": 20,
+          "id": "lighthouse",
+          "map": true
+        },
+        {
+          "id": "tavern_later",
+          "label": "去青柠檬餐厅",
+          "next": "tavern_later",
+          "minutes": 12,
+          "map": true
+        },
+        {
+          "id": "rest",
+          "label": "在屋檐下休息一小时",
+          "next": "day_street",
+          "minutes": 60,
+          "feedback": [
+            "你在屋檐下歇了一小时。风吹过街角，雨声一直没有停。"
+          ]
+        },
+        {
+          "id": "wait_for_tomorrow",
+          "label": "在街区等到 1月12日凌晨",
+          "next": "day_street",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 2983
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 2983
+            }
+          ],
+          "feedback": [
+            "你等到午夜。街上关着的窗户没有一扇亮起。"
+          ]
+        },
+        {
+          "label": "留在街区，等到 1月12日 22:17",
+          "next": "doom",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 4320
+            }
+          ],
+          "id": "wait_for_doom"
+        }
+      ],
+      "background": "red_street",
+      "safe_inventory": true,
+      "variants": [
+        {
+          "text": [
+            "街边的门窗都关上了。偶尔传来的脚步声很快便消失在红雾里。",
+            "白玛瑙号已经离港，旧灯塔外的航线也不再有可用的船。"
+          ],
+          "requires": [
+            {
+              "type": "minute_gt",
+              "value": 1823
+            }
+          ]
+        },
+        {
+          "text": [
+            "天色已黑。电报局的门依旧敞着。",
+            "若要离港，只能赶在外海的补给船经过时求救。"
+          ],
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 1183
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "telegraph_day",
+      "title": "只剩下血",
+      "location": "电报局",
+      "kind": "scene",
+      "text": [
+        "昨夜紧锁的木门已经敞开。屋内没有人，地上是两滩暗红血迹，轮廓像完整的人突然被压扁。血迹末端像细长的手指，指向墙壁。",
+        "“昨夜还在说话的人，今天只剩下两滩血。可他们究竟死了，还是去了某个地方？”"
+      ],
+      "choices": [
+        {
+          "label": "仔细记录血迹并观察旧墙",
+          "next": "mural",
+          "minutes": 10,
+          "id": "inspect_wall"
+        },
+        {
+          "label": "转身离开",
+          "next": "day_street",
+          "minutes": 10,
+          "id": "return"
+        }
+      ],
+      "background": "telegraph_day",
+      "on_enter": [
+        {
+          "type": "add_clue",
+          "id": "missing_operators"
+        }
+      ]
+    },
+    {
+      "id": "mural",
+      "title": "被掩盖的壁画",
+      "location": "电报局",
+      "kind": "scene",
+      "text": [
+        "墙皮自行剥落，露出一幅古老神像图案。你看见奇异的触手状头部、三叉戟、雷电和海浪。"
+      ],
+      "choices": [
+        {
+          "label": "立即远离",
+          "next": "day_street",
+          "minutes": 5,
+          "id": "return"
+        },
+        {
+          "label": "只观察并记录",
+          "next": "mural",
+          "minutes": 5,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "observed_mural"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "mural_sketch"
+            },
+            {
+              "type": "add_stat",
+              "key": "sanity",
+              "value": -10
+            },
+            {
+              "type": "set_flag",
+              "key": "observed_mural",
+              "value": true
+            }
+          ],
+          "once": true,
+          "id": "sketch",
+          "feedback": [
+            "你将三叉戟和浪纹描进线索簿。理智 −10。"
+          ]
+        },
+        {
+          "label": "伸手触碰旧墙",
+          "next": "hunter_awaken",
+          "minutes": 3,
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "is_hunter"
+            }
+          ],
+          "id": "touch",
+          "max_uses": 1,
+          "visible_when": [
+            {
+              "type": "flag_false",
+              "key": "is_hunter"
+            }
+          ]
+        },
+        {
+          "id": "listen_risk",
+          "label": "靠近旧墙，继续听墙内的声响",
+          "next": "mural",
+          "minutes": 5,
+          "visible_when": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_stat",
+              "key": "loss_of_control",
+              "value": 25
+            }
+          ],
+          "feedback": [
+            "墙后的战鼓愈发清晰，血腥味却像从你自己身上传来。失控度 +25。"
+          ]
+        }
+      ],
+      "background": "mural",
+      "variants": [
+        {
+          "requires": [
+            {
+              "type": "stat_gte",
+              "key": "loss_of_control",
+              "value": 70
+            }
+          ],
+          "text": [
+            "墙皮自行剥落，露出一幅古老神像图案。你看见奇异的触手状头部、三叉戟、雷电和海浪。",
+            "墙皮没有动，墙上的影子却向前跨了一步。你眨了眨眼，它仍留在原处。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunter_awaken",
+      "title": "猩红的馈赠",
+      "location": "电报局",
+      "kind": "scene",
+      "text": [
+        "你的手触碰到墙壁。墙体内传来战鼓、马蹄与刀剑碰撞声。遥远处有战场、燃烧的旗帜和数不清的惨叫。",
+        "有人在身后问：“你想……活下去？”",
+        "壁画内部一枚封存的暗红结晶状物体破裂，血红液滴透过伤口渗入身体。你剧烈痉挛，感到嗅觉和知觉被强行拉开。",
+        "“那就去……狩猎吧。”",
+        "你以异常方式吸收了猎人序列的非凡特性，而非按正规方法服用魔药。",
+        "重新看血迹时，你看出喷射方向、站位和异常破裂痕迹。",
+        "你闻到鲜血的味道，忽然觉得……有些饿了。"
+      ],
+      "choices": [
+        {
+          "label": "挣扎着站起身",
+          "next": "day_street",
+          "minutes": 15,
+          "id": "get_up"
+        }
+      ],
+      "on_enter": [
+        {
+          "type": "set_flag",
+          "key": "is_hunter",
+          "value": true
+        },
+        {
+          "type": "set_stat",
+          "key": "pathway",
+          "value": "red_priest"
+        },
+        {
+          "type": "set_stat",
+          "key": "sequence",
+          "value": 9
+        },
+        {
+          "type": "set_stat",
+          "key": "stamina_max",
+          "value": 7
+        },
+        {
+          "type": "set_stat",
+          "key": "stamina",
+          "value": 7
+        },
+        {
+          "type": "set_stat_min",
+          "key": "loss_of_control",
+          "value": 50
+        },
+        {
+          "type": "unlock_skill",
+          "id": "hunter_instinct"
+        },
+        {
+          "type": "unlock_achievement",
+          "id": "hunter_born"
+        }
+      ],
+      "background": "mural"
+    },
+    {
+      "id": "harbor_log",
+      "title": "港务记录",
+      "location": "港务值班室",
+      "kind": "scene",
+      "text": [
+        "临时航运记录",
+        "白玛瑙号：1月10日清晨，已离港。",
+        "灰鸥号：1月11日04:30左右经过旧灯塔外海，不入港。",
+        "下一班定期客轮：预计1月15日，不可靠。"
+      ],
+      "choices": [
+        {
+          "label": "记下正确的航线",
+          "next": "day_street",
+          "minutes": 10,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "grey_gull_schedule"
+            },
+            {
+              "type": "set_flag",
+              "key": "ship_schedule_known",
+              "value": true
+            },
+            {
+              "type": "resolve_event",
+              "id": "harbor_records",
+              "value": "completed"
+            }
+          ],
+          "id": "record_schedule",
+          "max_uses": 1,
+          "available_from": 703,
+          "available_until": 823,
+          "visible_when": [
+            {
+              "type": "event_pending",
+              "id": "harbor_records"
+            },
+            {
+              "type": "flag_false",
+              "key": "ship_schedule_known"
+            }
+          ]
+        },
+        {
+          "label": "离开",
+          "next": "day_street",
+          "minutes": 5,
+          "id": "return"
+        },
+        {
+          "id": "wait_records",
+          "label": "等到 10:00 交班",
+          "next": "harbor_log",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 703
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 703
+            }
+          ],
+          "max_uses": 1
+        }
+      ],
+      "background": "dock_ship",
+      "safe_inventory": true,
+      "variants": [
+        {
+          "requires": [
+            {
+              "type": "minute_lt",
+              "value": 703
+            }
+          ],
+          "text": [
+            "值班室的柜台空着。桌上压着一张十点交班的便条。"
+          ]
+        },
+        {
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 824
+            }
+          ],
+          "text": [
+            "值班桌上的航运登记已经被收走了。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lighthouse",
+      "title": "旧灯塔",
+      "location": "旧灯塔",
+      "kind": "scene",
+      "text": [
+        "灯塔下海浪暴烈，旧守灯人在远处不自然地徘徊。",
+        "正面冲突几乎没有胜算。"
+      ],
+      "choices": [
+        {
+          "label": "观察潮汐并避开守灯人",
+          "next": "lighthouse_route",
+          "minutes": 12,
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            }
+          ],
+          "fallback": "你还辨不清两侧水流的差别。",
+          "id": "find_route",
+          "available_from": 1063,
+          "available_until": 1178,
+          "visible_when": [
+            {
+              "type": "event_pending",
+              "id": "lighthouse_tide"
+            },
+            {
+              "type": "flag_false",
+              "key": "safe_sea_route_known"
+            }
+          ]
+        },
+        {
+          "label": "取一面求救信号布",
+          "next": "lighthouse",
+          "minutes": 5,
+          "requires": [
+            {
+              "type": "inventory_space",
+              "value": 1
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_item",
+              "id": "signal_cloth"
+            }
+          ],
+          "once": true,
+          "id": "pick_signal",
+          "visible_when": [
+            {
+              "type": "item_missing",
+              "id": "signal_cloth"
+            }
+          ],
+          "fallback": "背包已满。可回街区卸下一件物品。",
+          "feedback": [
+            "你折好信号布，放进行囊。"
+          ]
+        },
+        {
+          "label": "退回街区",
+          "next": "day_street",
+          "minutes": 15,
+          "id": "return"
+        },
+        {
+          "id": "wait_for_ship",
+          "label": "原地等到 1月11日 04:20",
+          "next": "sea_prep",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 1803
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 1803
+            },
+            {
+              "type": "flag_true",
+              "key": "ship_schedule_known"
+            }
+          ]
+        },
+        {
+          "id": "survey_water",
+          "label": "前往崖边，查看海面",
+          "next": "sea_prep",
+          "minutes": 0
+        },
+        {
+          "id": "wait_tide",
+          "label": "等到 16:00 观察潮汐",
+          "next": "lighthouse",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 1063
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 1063
+            }
+          ],
+          "max_uses": 1
+        }
+      ],
+      "background": "lighthouse"
+    },
+    {
+      "id": "lighthouse_route",
+      "title": "潮汐窗口",
+      "location": "旧灯塔",
+      "kind": "scene",
+      "text": [
+        "“左侧礁石下有暗流；右侧海湾相对平缓。你看出短暂的潮汐窗口。”"
+      ],
+      "choices": [
+        {
+          "label": "记下正确下海点",
+          "next": "lighthouse",
+          "minutes": 5,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "safe_sea_entry"
+            },
+            {
+              "type": "set_flag",
+              "key": "safe_sea_route_known",
+              "value": true
+            },
+            {
+              "type": "resolve_event",
+              "id": "lighthouse_tide",
+              "value": "completed"
+            }
+          ],
+          "id": "record_entry",
+          "max_uses": 1,
+          "available_from": 1063,
+          "available_until": 1183,
+          "visible_when": [
+            {
+              "type": "event_pending",
+              "id": "lighthouse_tide"
+            },
+            {
+              "type": "flag_false",
+              "key": "safe_sea_route_known"
+            }
+          ]
+        },
+        {
+          "id": "return",
+          "label": "回到灯塔",
+          "next": "lighthouse",
+          "minutes": 0
+        }
+      ],
+      "background": "lighthouse"
+    },
+    {
+      "id": "sea_prep",
+      "title": "准备出海",
+      "location": "旧灯塔外海",
+      "kind": "scene",
+      "text": [
+        "海风呼啸。你站在悬崖边缘，望向远处黑暗的海面。那里什么都没有。"
+      ],
+      "choices": [
+        {
+          "label": "下海",
+          "next": "sea_escape",
+          "minutes": 0,
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 1803
+            },
+            {
+              "type": "minute_lte",
+              "value": 1823
+            },
+            {
+              "type": "pathway",
+              "id": "red_priest",
+              "sequence": 9
+            },
+            {
+              "type": "flag_true",
+              "key": "ship_schedule_known"
+            },
+            {
+              "type": "flag_true",
+              "key": "safe_sea_route_known"
+            },
+            {
+              "type": "item_any",
+              "ids": [
+                "signal_cloth",
+                "brass_lantern"
+              ]
+            },
+            {
+              "type": "stat_gte",
+              "key": "stamina",
+              "value": 5
+            },
+            {
+              "type": "stat_lt",
+              "key": "loss_of_control",
+              "value": 100
+            }
+          ],
+          "id": "swim",
+          "effects": [
+            {
+              "type": "add_stat",
+              "key": "stamina",
+              "value": -5
+            },
+            {
+              "type": "resolve_event",
+              "id": "grey_gull_rescue",
+              "value": "completed"
+            }
+          ],
+          "available_from": 1803,
+          "available_until": 1823
+        },
+        {
+          "label": "下海",
+          "next": "death_sea",
+          "minutes": 0,
+          "id": "unsafe_swim",
+          "alternative_to": "swim"
+        },
+        {
+          "label": "继续在崖边等候",
+          "next": "day_street",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 1840
+            }
+          ],
+          "id": "let_ship_pass",
+          "visible_when": [
+            {
+              "type": "minute_lte",
+              "value": 1823
+            }
+          ]
+        },
+        {
+          "id": "return",
+          "label": "退回灯塔检查准备",
+          "next": "lighthouse",
+          "minutes": 0
+        },
+        {
+          "id": "wait_for_ship",
+          "label": "等到灰鸥号接近海岸",
+          "next": "sea_prep",
+          "minutes": 0,
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 1803
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 1803
+            },
+            {
+              "type": "flag_true",
+              "key": "ship_schedule_known"
+            }
+          ],
+          "feedback": [
+            "你留在崖边，直到远处亮起一点船灯。"
+          ]
+        }
+      ],
+      "background": "lighthouse",
+      "variants": [
+        {
+          "text": [
+            "海风呼啸。四点二十分左右，远方终于亮起一点灯火。",
+            "近岸的浪拍上礁石。你看不清那点灯火离岸还有多远。"
+          ],
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 1803
+            },
+            {
+              "type": "minute_lte",
+              "value": 1823
+            }
+          ]
+        },
+        {
+          "text": [
+            "外海已经看不到灰鸥号的灯火。你错过了它经过旧灯塔的时间。"
+          ],
+          "requires": [
+            {
+              "type": "minute_gt",
+              "value": 1823
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sea_escape",
+      "title": "猎人与海",
+      "location": "海上",
+      "kind": "scene",
+      "text": [
+        "四点二十分左右，远方终于亮起一点灯火。你深吸一口气，跃入海水。寒意几乎使你无法呼吸。脚下深处，似乎有一双眼睛正在仰望你。",
+        "一只粗糙的手猛地抓住你的手腕：“抓紧！”",
+        "你被拖上甲板。船员将厚毯盖在你身上。",
+        "船员：“你是从哪里游过来的？”",
+        "玩家：“班西……”",
+        "四周一片寂静。船长：“把他带到单独的舱室。不要让他接触其他人。”"
+      ],
+      "choices": [
+        {
+          "label": "接受隔离，结束第一幕",
+          "next": "ending_b",
+          "minutes": 0,
+          "id": "accept_isolation"
+        }
+      ],
+      "background": "sea_escape"
+    },
+    {
+      "id": "death_headless",
+      "title": "人头灯笼",
+      "location": "死亡",
+      "kind": "ending",
+      "text": [
+        "门轴发出刺耳声。你看见一件湿透的斗篷，肩膀上方空空荡荡。你还没来得及尖叫，背后便响起：“找到……了……”",
+        "画面瞬黑。有什么东西落在地上，缓缓滚动。",
+        "你已死亡。死因：与无头异变者近距离接触。"
+      ],
+      "choices": [],
+      "on_enter": [
+        {
+          "type": "unlock_achievement",
+          "id": "curiosity_price"
+        },
+        {
+          "type": "end",
+          "id": "D"
+        }
+      ],
+      "background": "bedroom",
+      "variants": [
+        {
+          "text": [
+            "湿透的斗篷转向你，肩膀上方空空荡荡。身后的脚步忽然停下。",
+            "你已死亡。死因：失去掩护，在街上与无头异变者近距离接触。"
+          ],
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "street_attack"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "death_telegraph",
+      "title": "门的另一边",
+      "location": "死亡",
+      "kind": "ending",
+      "text": [
+        "你的手推开门。屋内的两个人同时转头。你终于意识到他们的颈部似乎以某种不可能的方式扭曲。电报机忽然停了。下一瞬，所有光亮同时熄灭。",
+        "你已死亡。死因：强行进入两名高度异变者所在的房间。"
+      ],
+      "choices": [],
+      "on_enter": [
+        {
+          "type": "unlock_achievement",
+          "id": "wrong_door"
+        },
+        {
+          "type": "end",
+          "id": "E"
+        }
+      ],
+      "background": "telegraph_night"
+    },
+    {
+      "id": "death_sea",
+      "title": "海的深处",
+      "location": "死亡",
+      "kind": "ending",
+      "text": [
+        "你被海流拖离航线，远方灯火一点点消失。",
+        "没有船听见你的求救声。"
+      ],
+      "choices": [],
+      "on_enter": [
+        {
+          "type": "unlock_achievement",
+          "id": "lost_at_sea"
+        },
+        {
+          "type": "end",
+          "id": "SEA_FAIL"
+        }
+      ],
+      "background": "sea_escape",
+      "variants": [
+        {
+          "text": [
+            "灰鸥号早已驶远。你在冷水中等着，连最后一点船灯也看不见了。"
+          ],
+          "requires": [
+            {
+              "type": "minute_gt",
+              "value": 1823
+            }
+          ]
+        },
+        {
+          "text": [
+            "船还没到。等到航线方向出现灯光时，你早已无法继续踩水。"
+          ],
+          "requires": [
+            {
+              "type": "minute_lt",
+              "value": 1803
+            }
+          ]
+        },
+        {
+          "text": [
+            "海水很快夺走了你的体力。你没能游到补给船经过的航线上。"
+          ],
+          "requires": [
+            {
+              "type": "stat_lt",
+              "key": "stamina",
+              "value": 5
+            }
+          ]
+        },
+        {
+          "text": [
+            "没有航运记录，你朝错误的方向游去。船从另一边驶过，没有发现你。"
+          ],
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "ship_schedule_known"
+            }
+          ]
+        },
+        {
+          "text": [
+            "你选错了下海点。礁石下的暗流把你拖离了航线。"
+          ],
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "safe_sea_route_known"
+            }
+          ]
+        },
+        {
+          "text": [
+            "你游到了外海，却没有可以发出求救信号的东西。船员没能在黑暗中看到你。"
+          ],
+          "requires": [
+            {
+              "type": "item_missing_all",
+              "ids": [
+                "signal_cloth",
+                "brass_lantern"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ending_a",
+      "title": "黎明之前",
+      "location": "终幕",
+      "kind": "ending",
+      "text": [
+        "船缓缓驶离班西港。红雾仍罩着街巷。格尔曼站到你身旁：“你在看什么？”",
+        "玩家：“班西港。”",
+        "格尔曼望向远处：“不要再回去。”",
+        "达尼兹在背后抱怨：“终于离开那个鬼地方了……”",
+        "你重新看向港口。红雾深处，一座你从未见过的古老钟楼隐约显现。画面渐暗。"
+      ],
+      "choices": [],
+      "on_enter": [
+        {
+          "type": "unlock_achievement",
+          "id": "before_dawn"
+        },
+        {
+          "type": "end",
+          "id": "A"
+        }
+      ],
+      "background": "dock_ship"
+    },
+    {
+      "id": "ending_b",
+      "title": "猎人与海",
+      "location": "终幕",
+      "kind": "ending",
+      "text": [
+        "你低头，发现指尖正微微发红。非凡力量救了你，也可能让你成为下一个危险。"
+      ],
+      "choices": [],
+      "on_enter": [
+        {
+          "type": "unlock_achievement",
+          "id": "hunter_and_sea"
+        },
+        {
+          "type": "end",
+          "id": "B"
+        }
+      ],
+      "background": "sea_escape"
+    },
+    {
+      "id": "doom",
+      "title": "被历史吞没的人",
+      "location": "终幕",
+      "kind": "ending",
+      "text": [
+        "暴雨突然停止。街道两旁的房屋褪去颜色，古老的石头建筑在雾中出现。你所熟悉的班西港，仿佛正在被某个更古老的地方取代。",
+        "钟声响起，一下、两下、三下。地面震动，耀眼光芒吞没港口。",
+        "你曾经以为，这座城镇是你的家。\n>\n> 后来你发现，它隐藏着太多秘密。\n>\n> 你拼命寻找真相。\n>\n> 但你终究没能逃离。\n>\n> 历史不会为一个普通人的犹豫而停下。"
+      ],
+      "choices": [],
+      "on_enter": [
+        {
+          "type": "unlock_achievement",
+          "id": "history_swallows"
+        },
+        {
+          "type": "end",
+          "id": "C"
+        }
+      ],
+      "background": "doom",
+      "variants": [
+        {
+          "text": [
+            "你已经辨不清脚下的路，也记不起该往哪里走。",
+            "你没能活着离开班西港。死因：理智耗尽。"
+          ],
+          "requires": [
+            {
+              "type": "stat_lte",
+              "key": "sanity",
+              "value": 0
+            },
+            {
+              "type": "minute_lt",
+              "value": 4320
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ending_f",
+      "title": "最后一个猎人",
+      "location": "终幕",
+      "kind": "ending",
+      "text": [
+        "你的意识被战鼓和鲜血的气味吞没。",
+        "“你终于……回来了。”",
+        "你无法分辨那是记忆、幻听，还是某种古老烙印。"
+      ],
+      "choices": [],
+      "on_enter": [
+        {
+          "type": "unlock_achievement",
+          "id": "last_hunter"
+        },
+        {
+          "type": "end",
+          "id": "F"
+        }
+      ],
+      "background": "mural"
+    },
+    {
+      "id": "door_confirm",
+      "title": "冰冷的门闩",
+      "location": "玩家住所",
+      "kind": "scene",
+      "background": "bedroom",
+      "text": [
+        "门缝外只有一双血迹斑斑的靴子。斗篷上方没有任何影子，拖沓的脚步却停在你面前。"
+      ],
+      "choices": [
+        {
+          "id": "confirm_open",
+          "label": "仍然打开房门",
+          "next": "death_headless",
+          "minutes": 1
+        },
+        {
+          "id": "back_off",
+          "label": "放开门闩，等脚步离去",
+          "next": "home_exit",
+          "minutes": 8,
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "visitor_active",
+              "value": false
+            },
+            {
+              "type": "set_flag",
+              "key": "visitor_heard_noise",
+              "value": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "street_encounter",
+      "title": "雾中的灯火",
+      "location": "旧街区",
+      "kind": "scene",
+      "background": "red_street",
+      "text": [
+        "远方一团悬浮的灯火缓慢飘过，灯下看不清任何行人的身形。",
+        "外街无遮无拦。门檐下有一条贴着墙根的小巷。"
+      ],
+      "choices": [
+        {
+          "id": "light",
+          "label": "点亮黄铜手提灯",
+          "next": "street_encounter",
+          "minutes": 1,
+          "once": true,
+          "requires": [
+            {
+              "type": "item",
+              "id": "brass_lantern"
+            }
+          ],
+          "effects": [
+            {
+              "type": "light_for_minutes",
+              "value": 10,
+              "id": "night_street"
+            }
+          ],
+          "fallback": "需要携带黄铜手提灯。",
+          "feedback": [
+            "火焰微微颤动。雾中的灯火暂时没有靠近。安全时间：10 分钟。"
+          ],
+          "visible_when": [
+            {
+              "type": "light_alert_lt",
+              "id": "night_street",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "cross_with_light",
+          "label": "提着灯穿过街道",
+          "next": "street",
+          "minutes": 8,
+          "requires": [
+            {
+              "type": "light_active",
+              "value": 8
+            }
+          ],
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "street_crossed",
+              "value": true
+            }
+          ],
+          "fallback": "灯还没点亮，或剩余燃烧时间不足 8 分钟。"
+        },
+        {
+          "id": "watch",
+          "label": "留在门檐下观察 11 分钟",
+          "next": "street_encounter",
+          "minutes": 11,
+          "once": true,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "floating_light"
+            }
+          ],
+          "feedback": [
+            "漂浮的灯火来回徘徊，始终没有照出提灯人的脚。"
+          ]
+        },
+        {
+          "id": "detour",
+          "label": "沿墙从窄巷绕过",
+          "next": "street",
+          "minutes": 12,
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "street_crossed",
+              "value": true
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "light_alert_lt",
+              "id": "night_street",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "rush",
+          "label": "径直走向漂浮的灯火",
+          "next": "death_headless",
+          "minutes": 1,
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "street_attack",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "detour_alerted",
+          "label": "贴着墙绕到更远的小巷",
+          "next": "street",
+          "minutes": 17,
+          "visible_when": [
+            {
+              "type": "light_alert_gte",
+              "id": "night_street",
+              "value": 2
+            }
+          ],
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "street_crossed",
+              "value": true
+            }
+          ],
+          "feedback": [
+            "漂浮的灯火朝墙根转来。你绕过两处院墙才甩开它。"
+          ]
+        }
+      ],
+      "redirects": [
+        {
+          "next": "street",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "street_crossed"
+            }
+          ]
+        },
+        {
+          "next": "street",
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 463
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "requires": [
+            {
+              "type": "light_alert_gte",
+              "id": "night_street",
+              "value": 2
+            }
+          ],
+          "text": [
+            "远方一团悬浮的灯火缓慢飘过，灯下看不清任何行人的身形。",
+            "外街无遮无拦。门檐下有一条贴着墙根的小巷。",
+            "那团灯火在原地转了一圈，开始朝你藏身的街角漂来。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tavern_later",
+      "title": "白天的青柠檬餐厅",
+      "location": "餐厅",
+      "kind": "scene",
+      "background": "lemon_tavern",
+      "text": [
+        "旅客留下的座位空着。玛蕾娜忘了客人的姓名，却还记得自己丈夫的怀表。",
+        "“我……有一件事……想拜托你……”",
+        "“如果……明天……你再见到我……”",
+        "“请……不要……相信……我……”"
+      ],
+      "choices": [
+        {
+          "id": "return",
+          "label": "离开餐厅",
+          "next": "street",
+          "minutes": 10
+        }
+      ],
+      "variants": [
+        {
+          "text": [
+            "她将餐厅的门从里面反锁。"
+          ],
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 2983
+            },
+            {
+              "type": "flag_true",
+              "key": "helped_marena"
+            }
+          ]
+        },
+        {
+          "text": [
+            "她将餐厅的门从里面反锁。",
+            "“客人……请进……今天……有……新鲜的肉……”"
+          ],
+          "requires": [
+            {
+              "type": "minute_gte",
+              "value": 2983
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "endings": {
+    "A": "黎明之前",
+    "B": "猎人与海",
+    "C": "被历史吞没的人",
+    "D": "人头灯笼",
+    "E": "门的另一边",
+    "F": "最后一个猎人",
+    "SEA_FAIL": "海的深处"
+  }
+}

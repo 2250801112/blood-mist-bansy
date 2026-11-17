@@ -1,0 +1,122 @@
+{
+  "schema_version": "0.1",
+  "scope": "长线系统预留；第一幕仅实装红祭司序列9猎人",
+  "pathways": [
+    {
+      "id": "fool",
+      "name": "愚者",
+      "implemented_act1": false
+    },
+    {
+      "id": "error",
+      "name": "错误",
+      "implemented_act1": false
+    },
+    {
+      "id": "door",
+      "name": "门",
+      "implemented_act1": false
+    },
+    {
+      "id": "visionary",
+      "name": "空想家",
+      "implemented_act1": false
+    },
+    {
+      "id": "sun",
+      "name": "太阳",
+      "implemented_act1": false
+    },
+    {
+      "id": "tyrant",
+      "name": "暴君",
+      "implemented_act1": false
+    },
+    {
+      "id": "white_tower",
+      "name": "白塔",
+      "implemented_act1": false
+    },
+    {
+      "id": "hanged_man",
+      "name": "倒吊人",
+      "implemented_act1": false
+    },
+    {
+      "id": "darkness",
+      "name": "黑暗",
+      "implemented_act1": false
+    },
+    {
+      "id": "death",
+      "name": "死神",
+      "implemented_act1": false
+    },
+    {
+      "id": "twilight_giant",
+      "name": "黄昏巨人",
+      "implemented_act1": false
+    },
+    {
+      "id": "mother",
+      "name": "母亲",
+      "implemented_act1": false
+    },
+    {
+      "id": "moon",
+      "name": "月亮",
+      "implemented_act1": false
+    },
+    {
+      "id": "wheel_of_fortune",
+      "name": "命运之轮",
+      "implemented_act1": false
+    },
+    {
+      "id": "black_emperor",
+      "name": "黑皇帝",
+      "implemented_act1": false
+    },
+    {
+      "id": "justiciar",
+      "name": "审判者",
+      "implemented_act1": false
+    },
+    {
+      "id": "hermit",
+      "name": "隐者",
+      "implemented_act1": false
+    },
+    {
+      "id": "paragon",
+      "name": "完美者",
+      "implemented_act1": false
+    },
+    {
+      "id": "red_priest",
+      "name": "红祭司",
+      "implemented_act1": true,
+      "sequence_9": {
+        "name": "猎人",
+        "skill_id": "hunter_instinct",
+        "skill_name": "猎杀直觉",
+        "stamina_max_after_awaken": 7
+      }
+    },
+    {
+      "id": "demoness",
+      "name": "魔女",
+      "implemented_act1": false
+    },
+    {
+      "id": "chained",
+      "name": "被缚者",
+      "implemented_act1": false
+    },
+    {
+      "id": "abyss",
+      "name": "深渊",
+      "implemented_act1": false
+    }
+  ]
+}

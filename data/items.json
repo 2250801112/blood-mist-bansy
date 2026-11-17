@@ -1,0 +1,121 @@
+{
+  "schema_version": "0.1",
+  "inventory_limit": 2,
+  "items": [
+    {
+      "id": "brass_lantern",
+      "name": "黄铜手提灯",
+      "occupies_slots": 1,
+      "kind": "tool",
+      "description": "可点燃，首次遭遇时最多提供10分钟的临时安全窗口",
+      "limitation": "无法通过反复点燃刷新同一遭遇的安全；不保护强闯电报局"
+    },
+    {
+      "id": "rusty_knife",
+      "name": "生锈水果刀",
+      "occupies_slots": 1,
+      "kind": "tool",
+      "description": "可以割断绳索或处理小型障碍，不可正面攻击危险非凡怪物"
+    },
+    {
+      "id": "signal_cloth",
+      "name": "求救信号布",
+      "occupies_slots": 1,
+      "kind": "tool",
+      "description": "配合灯光或高处挥舞，让灰鸥号注意到玩家"
+    },
+    {
+      "id": "old_watch",
+      "name": "旧怀表",
+      "occupies_slots": 1,
+      "kind": "quest",
+      "description": "玛蕾娜的旧怀表；后续可发展成转交女儿的支线"
+    }
+  ],
+  "clues": [
+    {
+      "id": "unsent_letter",
+      "name": "未寄出的信",
+      "text": "不要让他们知道，我还记得。"
+    },
+    {
+      "id": "church_receipt",
+      "name": "教堂运输收据",
+      "text": "收货人：风暴教堂米勒主教；货物：密封木箱。"
+    },
+    {
+      "id": "bloody_meal",
+      "name": "铁锈味的晚餐"
+    },
+    {
+      "id": "floating_light",
+      "name": "反常的街灯"
+    },
+    {
+      "id": "last_night_job",
+      "name": "昨夜的委托"
+    },
+    {
+      "id": "mechanical_neighbor",
+      "name": "机械的邻居"
+    },
+    {
+      "id": "headless_shadow",
+      "name": "没有头颅的阴影"
+    },
+    {
+      "id": "returned_husband",
+      "name": "归来的丈夫"
+    },
+    {
+      "id": "donna_testimony",
+      "name": "堂娜的证词"
+    },
+    {
+      "id": "white_agate_lead",
+      "name": "白玛瑙号线索"
+    },
+    {
+      "id": "rescued_passenger",
+      "name": "被救下的旅客"
+    },
+    {
+      "id": "church_crate_tracks",
+      "name": "教堂侧门的箱车痕迹"
+    },
+    {
+      "id": "telegram_notes",
+      "name": "电报局的重复话语"
+    },
+    {
+      "id": "telegraph_silhouettes",
+      "name": "两个静止的人影"
+    },
+    {
+      "id": "missing_operators",
+      "name": "失踪的电报员"
+    },
+    {
+      "id": "mural_sketch",
+      "name": "被掩盖的壁画"
+    },
+    {
+      "id": "grey_gull_schedule",
+      "name": "灰鸥号的航线"
+    },
+    {
+      "id": "safe_sea_entry",
+      "name": "安全下海路线"
+    },
+    {
+      "id": "bloodied_telegram",
+      "name": "染血电报纸",
+      "text": "纸上有未干的血，边缘黏在门槛上。"
+    },
+    {
+      "id": "bedside_crate",
+      "name": "床下储物箱的擦痕",
+      "text": "箱下的积灰缺了一道长条，像是有人刚挪过它。"
+    }
+  ]
+}

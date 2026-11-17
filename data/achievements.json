@@ -1,0 +1,45 @@
+{
+  "schema_version": "0.1",
+  "achievements": [
+    {
+      "id": "before_dawn",
+      "name": "黎明之前",
+      "trigger": "结局A"
+    },
+    {
+      "id": "hunter_and_sea",
+      "name": "猎人与海",
+      "trigger": "结局B"
+    },
+    {
+      "id": "history_swallows",
+      "name": "被历史吞没的人",
+      "trigger": "结局C"
+    },
+    {
+      "id": "curiosity_price",
+      "name": "好奇心的代价",
+      "trigger": "结局D"
+    },
+    {
+      "id": "wrong_door",
+      "name": "门的另一边",
+      "trigger": "结局E"
+    },
+    {
+      "id": "last_hunter",
+      "name": "最后一个猎人",
+      "trigger": "结局F"
+    },
+    {
+      "id": "lost_at_sea",
+      "name": "沉入深海",
+      "trigger": "海上逃亡失败"
+    },
+    {
+      "id": "hunter_born",
+      "name": "猩红的馈赠",
+      "trigger": "首次晋升猎人"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#161114">
+  <title>诡秘之主：血雾班西</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./game/style.css">
+  <script type="module" src="./game/app.mjs"></script>
+</head>
+<body data-scene="main_menu">
+  <div class="atmosphere" aria-hidden="true">
+    <div id="art" class="scene-art"></div>
+    <div class="fog"></div>
+    <div class="harbor"></div>
+    <div class="gray-mist"></div>
+  </div>
+  <main id="app" class="cover">
+    <div class="loading" role="status"><span aria-hidden="true">◇</span><p>正在载入班西港……</p></div>
+  </main>
+  <dialog id="narration" aria-labelledby="narration-title">
+    <header class="narration-heading">
+      <h2 id="narration-title"></h2>
+      <span class="narration-progress"></span>
+    </header>
+    <div class="narration-body">
+      <img class="narration-portrait" alt="" hidden>
+      <button class="narration-passage" type="button" aria-live="polite"></button>
+    </div>
+    <footer class="narration-controls">
+      <button type="button" class="utility narration-previous">上一段</button>
+      <button type="button" class="utility narration-pause">暂停</button>
+      <button type="button" class="utility narration-skip" hidden>跳过序章</button>
+      <button type="button" class="action primary narration-next">下一段</button>
+    </footer>
+  </dialog>
+</body>
+</html>
