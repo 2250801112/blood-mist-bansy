@@ -13,7 +13,7 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 ART = json.loads((ROOT / 'data/assets.json').read_text(encoding='utf-8'))['assets']
 ROUTES = {'/', '/index.html', '/game/style.css'}
-ROUTES.update(f'/game/{name}.mjs' for name in ('app', 'engine', 'narration', 'sound'))
+ROUTES.update(f'/game/{name}.mjs' for name in ('app', 'engine', 'narration', 'sound', 'map-view'))
 ROUTES.update(f'/data/{name}.json' for name in ('scenes', 'items', 'achievements', 'pathways', 'assets'))
 ROUTES.update('/' + asset['path'] for asset in ART)
 

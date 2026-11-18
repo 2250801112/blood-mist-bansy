@@ -6,14 +6,23 @@ import { createGame, startNewRun, commitRun } from '../game/engine.mjs';
 const read = (name) => JSON.parse(readFileSync(new URL(`../data/${name}.json`, import.meta.url)));
 const game = createGame(read('scenes'), read('items'));
 const start = () => game.start({ name: '安', gender: '未指定' });
+const atAction = (state, id) => {
+  const choice = game.nodes[state.node].choices.find((entry) => entry.id === id);
+  if (!choice?.area || game.area(state) === choice.area) return state;
+  const moved = game.moveArea(state, choice.area);
+  assert.ok(moved, `${state.node}: 应能进入 ${choice.area}`);
+  return moved;
+};
+const chooseAt = (state, id) => game.choose(atAction(state, id), id);
 const walk = (state, ...ids) => ids.reduce((run, id) => {
   const choice = game.nodes[run.node].choices.find((entry) => entry.id === id);
   if (choice?.region && run.home_area !== choice.region) run = game.moveRoom(run, choice.region);
+  run = atAction(run, id);
   const result = game.choose(run, id);
   assert.ok(result, `${run.node} @ ${run.elapsed_minutes}: ${id} 应可执行`);
   return result;
 }, state);
-const includes = (state, id) => game.actions(state).some((choice) => choice.id === id);
+const includes = (state, id) => game.actions(atAction(state, id)).some((choice) => choice.id === id);
 const home = () => walk(start(), 'begin', 'search');
 const street = () => walk(home(), 'receipt', 'leave_early', 'leave', 'detour');
 const tavern = () => {
@@ -22,8 +31,8 @@ const tavern = () => {
   return walk(idea, 'pay_introduction', 'captain_terms', 'leave', 'tavern');
 };
 const opening = () => walk(tavern(), 'donna', 'comfort', 'wait_collision');
-const day = () => walk(street(), 'rest_to_day', 'find_other_way');
-const hunter = () => walk(day(), 'telegraph_day', 'inspect_wall', 'touch', 'get_up');
+const day = () => walk(street(), 'wait_for_dawn', 'find_other_way');
+const hunter = () => walk(day(), 'telegraph_exterior', 'read_hours', 'wait_open', 'inspect_wall', 'touch', 'get_up');
 const reload = (run) => game.restore(JSON.parse(JSON.stringify(run)));
 const at = (run, minute) => ({ ...run, elapsed_minutes: minute });
 
@@ -64,7 +73,7 @@ test('首次跌破 0 永久拒谈，即使救人后信任回正也不能申请�
   assert.equal(recovered.stats.gehrman_trust, 20);
   assert.ok(!includes(recovered, 'gehrman'));
   const dock = walk(recovered, 'return', 'dock', 'screen', 'wait_parley');
-  assert.equal(game.choose({ ...dock, stats: { ...dock.stats, gehrman_trust: 90 } }, 'request_boarding'), null);
+  assert.equal(chooseAt({ ...dock, stats: { ...dock.stats, gehrman_trust: 90 } }, 'request_boarding'), null);
 });
 
 test('00:25 餐厅事件竞争时间，先调查厨房会错过救援', () => {
@@ -108,8 +117,8 @@ test('两种信任组合都能登船，05:50 到 06:00 的同刻完成优先', (
     const approved = reload(permission(room));
     const ready = walk(approved, 'honest_check', 'wait_boarding');
     assert.equal(ready.elapsed_minutes, 453);
-    assert.equal(game.choose(at(ready, 462), 'board'), null);
-    assert.equal(game.choose(at(ready, 463), 'board'), null);
+    assert.equal(chooseAt(at(ready, 462), 'board'), null);
+    assert.equal(chooseAt(at(ready, 463), 'board'), null);
     const escaped = walk(ready, 'board');
     assert.equal(escaped.elapsed_minutes, 463);
     assert.equal(escaped.ending, 'A');
@@ -121,22 +130,22 @@ test('两种信任组合都能登船，05:50 到 06:00 的同刻完成优先', (
 test('码头交涉只限 05:00–05:30，隐瞒后无法重新筛查或申请', () => {
   const room = evidenceRoute();
   const screened = walk(room, 'return', 'dock', 'screen');
-  assert.equal(game.choose(screened, 'request_boarding'), null);
-  assert.equal(game.choose(at(screened, 434), 'request_boarding'), null);
+  assert.equal(chooseAt(screened, 'request_boarding'), null);
+  assert.equal(chooseAt(at(screened, 434), 'request_boarding'), null);
   const approved = walk(screened, 'wait_parley', 'request_boarding');
   const revoked = reload(walk(approved, 'conceal'));
   assert.equal(revoked.flags.contamination_screen_passed, false);
   for (const option of ['screen', 'request_boarding', 'resume_boarding']) {
-    assert.equal(game.choose(revoked, option), null);
+    assert.equal(chooseAt(revoked, option), null);
   }
 });
 
 test('优先调查厨房会错过救援，剩余谈话时间不足时白玛瑙号仍照常离港', () => {
   const room = walk(opening(), 'marena', 'record_husband', 'gehrman', 'truth', 'return');
   assert.equal(room.stats.gehrman_trust, 10);
-  assert.equal(game.choose(room, 'investigate_rescue'), null);
+  assert.equal(chooseAt(room, 'investigate_rescue'), null);
   const dock = walk(room, 'return', 'dock', 'screen', 'wait_parley');
-  assert.equal(game.choose(dock, 'request_boarding'), null);
+  assert.equal(chooseAt(dock, 'request_boarding'), null);
   const missed = walk(dock, 'wait_departure');
   assert.equal(missed.flags.ship_departed, true);
   assert.equal(missed.node, 'ship_missed');
@@ -155,16 +164,17 @@ test('09:39 强闯即死，跨过 09:40 后旧节点变为白天版', () => {
 
 test('港务和潮汐按完成时间关闭，过期无收益，猎人可走 B 线', () => {
   const records = walk(hunter(), 'harbor');
-  assert.equal(game.choose(at(records, 814), 'record_schedule'), null);
+  assert.equal(chooseAt(at(records, 814), 'record_schedule'), null);
   const ready = walk(records, 'record_schedule', 'lighthouse', 'pick_signal', 'wait_tide');
   assert.equal(ready.elapsed_minutes, 1063);
-  assert.equal(game.choose(at(ready, 1184), 'find_route'), null);
-  const shore = walk(ready, 'find_route');
-  assert.equal(game.choose(at(shore, 1180), 'record_entry'), null);
+  const patrol = walk(ready, 'inspect_tracks', 'watch_steps', 'analyze_patrol', 'verify_patrol', 'observe_cover', 'approach_cover');
+  assert.equal(chooseAt(at(patrol, 1184), 'find_route'), null);
+  const shore = walk(patrol, 'find_route');
+  assert.equal(chooseAt(at(shore, 1180), 'record_entry'), null);
   const sea = walk(shore, 'record_entry', 'wait_for_ship');
   assert.equal(sea.elapsed_minutes, 1803);
-  assert.equal(game.choose(at(sea, 1824), 'swim'), null);
-  assert.equal(game.choose({ ...sea, inventory: [] }, 'swim'), null);
+  assert.equal(chooseAt(at(sea, 1824), 'swim'), null);
+  assert.equal(chooseAt({ ...sea, inventory: [] }, 'swim'), null);
   assert.equal(walk(at(sea, 1823), 'swim', 'accept_isolation').ending, 'B');
 });
 
@@ -174,8 +184,8 @@ test('灯笼保护到期后提高同一区域警觉，改道和读档不会重�
   assert.equal(lit.light_safety_until - lit.elapsed_minutes, 10);
   const expired = reload(walk(lit, 'watch'));
   assert.equal(expired.light_alert_by_area.night_street.level, 2);
-  assert.equal(game.choose(expired, 'light'), null);
-  assert.equal(game.choose(expired, 'cross_with_light'), null);
+  assert.equal(chooseAt(expired, 'light'), null);
+  assert.equal(chooseAt(expired, 'cross_with_light'), null);
   const bypass = walk(expired, 'detour_alerted', 'home', 'leave_early', 'leave');
   assert.equal(bypass.light_alert_by_area.night_street.level, 2);
 });

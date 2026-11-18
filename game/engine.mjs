@@ -25,11 +25,24 @@ export function createGame(data, itemData) {
   const items = Object.fromEntries(itemData.items.map((item) => [item.id, item]));
   const clues = Object.fromEntries(itemData.clues.map((clue) => [clue.id, clue]));
   const recipes = itemData.recipes;
+  const exploration = data.exploration;
   const events = [...data.scheduled_events].sort((a, b) => a.at_minute - b.at_minute);
   const startTime = Date.parse(data.world_clock.start_local.replace(' ', 'T') + ':00Z');
   const bagUsed = (state) => state.inventory.reduce((slots, id) => slots + items[id].occupies_slots, 0);
   const hasFact = (state, id) => state.clues.some((card) => state.cards[card].facts.includes(id));
-  const place = (state) => nodes[state.node].location === '玩家住所' ? `home:${state.home_area}` : nodes[state.node].location;
+  const site = (state) => nodes[state.node].site;
+  const area = (state) => site(state) === 'home' ? state.home_area : state.area_by_site[site(state)];
+  const areas = (state) => exploration.sites[site(state)].areas.filter((entry) => matches(state, entry.requires));
+  const place = (state) => `${site(state)}:${area(state)}`;
+  const defaultAreas = () => Object.fromEntries(Object.entries(exploration.sites).map(([id, entry]) => [id, entry.default_area]));
+
+  function describePlace(location) {
+    const [siteId, areaId] = location.split(':');
+    if (siteId === 'legacy') return `${exploration.sites[areaId].name}（旧记录未记录分区）`;
+    const locationSite = exploration.sites[siteId];
+    if (!locationSite) return location;
+    return `${locationSite.name} · ${locationSite.areas.find((entry) => entry.id === areaId).name}`;
+  }
 
   function discover(state, id, source) {
     if (state.discoveries[id]) return;
@@ -105,6 +118,7 @@ export function createGame(data, itemData) {
       state.item_locations[effect.id] = 'inventory';
     },
     remove_item: (state, effect) => {
+      if (state.inventory.includes(effect.id) && effect.destination.includes(':')) addUnique(state.placed_items, effect.id);
       state.inventory = state.inventory.filter((id) => id !== effect.id);
       state.item_locations[effect.id] = effect.destination;
       if (effect.id === 'brass_lantern') state.lamp_lit = false;
@@ -151,6 +165,7 @@ export function createGame(data, itemData) {
     }
     const changed = state.node !== destination;
     state.node = destination;
+    if (nodes[destination].entry_area) state.area_by_site[site(state)] = nodes[destination].entry_area;
     if (['home_door', 'door_talk', 'door_peek', 'door_confirm', 'home_exit'].includes(destination)) state.home_area = 'hall';
     if (changed) {
       apply(state, nodes[destination].on_enter);
@@ -158,6 +173,10 @@ export function createGame(data, itemData) {
         state.pending_presentation = { kind: 'promotion', turn: state.turn };
       }
       if (destination === 'home_wake') state.pending_presentation = { kind: 'wake', turn: state.turn };
+    }
+    if (destination !== 'intro' && !state.ending) {
+      const observation = exploration.sites[site(state)].observations.find((entry) => matches(state, entry.requires));
+      state.site_observations[site(state)] = { text: observation.text, risk: observation.risk ?? '', minute: state.elapsed_minutes };
     }
   }
 
@@ -167,8 +186,8 @@ export function createGame(data, itemData) {
       identity, id: crypto.randomUUID(), node: null, turn: 0,
       action_use_counts: {}, chosen_exclusive_options: {}, resolved_events: {},
       light_alert_by_area: {}, achievements: [], feedback: [],
-      light_safety_until: -1, save_version: 2, home_area: 'bedroom', cards: {}, discoveries: {}, deductions: [],
-      money: 24, sold_facts: {}, transactions: [], tasks: {}, fire_sources: [], lamp_lit: false,
+      light_safety_until: -1, save_version: 3, home_area: 'bedroom', area_by_site: defaultAreas(), placed_items: [], cards: {}, discoveries: {}, deductions: [],
+      money: 24, sold_facts: {}, transactions: [], tasks: {}, fire_sources: [], lamp_lit: false, site_observations: {},
       item_locations: Object.fromEntries(itemData.items.map((item) => [item.id, item.initial_location])),
       notifications: [], settlement_log: [], pending_presentation: null, action_source: '序章', action_source_id: 'intro:start'
     };
@@ -177,8 +196,13 @@ export function createGame(data, itemData) {
   }
 
   function finishTime(state, choice) {
-    return Math.max(state.elapsed_minutes + choice.minutes,
+    const finish = Math.max(state.elapsed_minutes + choice.minutes,
       ...(choice.effects ?? []).filter((effect) => effect.type === 'advance_to_minute').map((effect) => effect.value));
+    if (choice.rest && site(state) === 'market') {
+      const window = exploration.sites.market.trade_windows.find(([from, to]) => state.elapsed_minutes >= from && state.elapsed_minutes < to);
+      if (window) return Math.min(finish, window[1]);
+    }
+    return finish;
   }
 
   function actions(state) {
@@ -192,6 +216,7 @@ export function createGame(data, itemData) {
       const limit = choice.max_uses ?? (choice.once ? 1 : Infinity);
       if (uses >= limit || state.chosen_exclusive_options[choice.exclusive_group] ||
           (choice.region && state.home_area !== choice.region) ||
+          (choice.area && area(state) !== choice.area) ||
           state.flags[choice.permanent_lock] === true || state.elapsed_minutes < (choice.available_from ?? 0) ||
           finish > (choice.available_until ?? Infinity) || !matches(state, choice.visible_when)) continue;
       visible.push({ ...choice, duration, available: matches(state, choice.requires) });
@@ -233,7 +258,7 @@ export function createGame(data, itemData) {
     return settle(state, choice);
   }
 
-  function settle(state, choice) {
+  function settle(state, choice, record = true) {
     const next = structuredClone(state);
     next.turn += 1;
     next.feedback = [];
@@ -242,6 +267,10 @@ export function createGame(data, itemData) {
     next.movement = null;
     const changes = choice.effects ?? [];
     const travelEnd = state.elapsed_minutes + choice.duration;
+    const finishRest = () => {
+      if (choice.rest) next.stats.stamina = Math.min(next.stats.stamina_max,
+        next.stats.stamina + Math.floor((next.elapsed_minutes - state.elapsed_minutes) / 60) * 2);
+    };
     // A boarding operation completed on the departure minute gets its berth first.
     for (const event of events) {
       if (event.at_minute > travelEnd || state.elapsed_minutes >= event.at_minute) continue;
@@ -250,11 +279,13 @@ export function createGame(data, itemData) {
       updateLight(next);
       const interruption = dispatch(next, event);
       if (interruption) {
+        finishRest();
         enter(next, interruption);
-        return rememberNarration(next, state);
+        return record ? rememberNarration(next, state) : next;
       }
     }
     next.elapsed_minutes = travelEnd;
+    finishRest();
     updateLight(next);
     const ref = `${state.node}:${choice.id}`;
     next.action_use_counts[ref] = (next.action_use_counts[ref] ?? 0) + 1;
@@ -269,11 +300,12 @@ export function createGame(data, itemData) {
         if (interruption) enter(next, interruption);
       }
     }
-    return rememberNarration(next, state);
+    return record ? rememberNarration(next, state) : next;
   }
 
   function restore(state) {
-    if (state.save_version === 2 && state.action_use_counts && state.cards) return state;
+    if (state.save_version === 3 && state.action_use_counts && state.cards) return state;
+    if (state.save_version === 2 && state.action_use_counts && state.cards) return migratePlaces(state);
     // Upgrade runs from before the world timetable without resetting earned rewards.
     const next = structuredClone(state);
     next.action_use_counts ??= {};
@@ -307,6 +339,10 @@ export function createGame(data, itemData) {
     }
     next.save_version = 2;
     next.home_area = 'bedroom';
+    next.area_by_site = defaultAreas();
+    next.placed_items = [];
+    next.site_observations = {};
+    if (nodes[next.node].entry_area) next.area_by_site[site(next)] = nodes[next.node].entry_area;
     next.cards = {};
     next.discoveries = {};
     next.deductions = [];
@@ -352,6 +388,33 @@ export function createGame(data, itemData) {
       apply(next, (nodes[next.node].on_enter ?? []).filter((effect) => effect.type === 'add_clue'));
     }
     updateTasks(next);
+    return migratePlaces(next);
+  }
+
+  function migratePlaces(state) {
+    const next = structuredClone(state);
+    next.save_version = 3;
+    next.area_by_site = defaultAreas();
+    next.placed_items = [];
+    next.site_observations = {};
+    if (nodes[next.node].entry_area) next.area_by_site[site(next)] = nodes[next.node].entry_area;
+    const legacySites = Object.fromEntries(data.nodes.map((node) => [node.location, node.site]));
+    for (const [id, location] of Object.entries(next.item_locations)) {
+      if (legacySites[location]) {
+        const acquired = Object.entries(next.action_use_counts).some(([ref, count]) => {
+          const [nodeId, choiceId] = ref.split(':');
+          return count > 0 && nodes[nodeId]?.choices.find((choice) => choice.id === choiceId)?.effects?.some((effect) => effect.type === 'add_item' && effect.id === id);
+        });
+        if (acquired || next.settlement_log.some((entry) => entry.dropped === id)) {
+          next.item_locations[id] = `legacy:${legacySites[location]}`;
+          next.placed_items.push(id);
+        } else next.item_locations[id] = items[id].initial_location;
+      } else if (location.startsWith('home:') && next.settlement_log.some((entry) => entry.dropped === id)) next.placed_items.push(id);
+    }
+    next.fire_sources = next.fire_sources.map((location) => {
+      const oldSite = legacySites[location];
+      return oldSite && exploration.sites[oldSite].fire_area ? `${oldSite}:${exploration.sites[oldSite].fire_area}` : location;
+    });
     return next;
   }
 
@@ -366,10 +429,11 @@ export function createGame(data, itemData) {
   }
 
   function retrieve(state, id) {
-    if (state.ending || !nodes[state.node].safe_inventory || state.item_locations[id] !== place(state) ||
+    if (state.ending || !items[id] || nodes[state.node].map_locked ||
+        ![place(state), `legacy:${site(state)}`].includes(state.item_locations[id]) ||
         bagUsed(state) + items[id].occupies_slots > state.inventory_limit) return null;
     // Initial pickups carry authored investigation text and costs.
-    if (!Object.values(state.action_use_counts).length || !state.settlement_log.some((entry) => entry.dropped === id)) return null;
+    if (!state.placed_items.includes(id)) return null;
     const next = structuredClone(state);
     next.turn += 1;
     effects.add_item(next, { id });
@@ -388,6 +452,74 @@ export function createGame(data, itemData) {
     next.action_source = `前往${data.home_regions[area].name}`;
     next.node = 'home_search';
     next.feedback = [];
+    return rememberNarration(next, state);
+  }
+
+  function moveArea(state, id) {
+    if (site(state) === 'home') return moveRoom(state, id);
+    if (state.ending || nodes[state.node].map_locked || id === area(state) || !areas(state).some((entry) => entry.id === id)) return null;
+    const next = structuredClone(state);
+    next.turn += 1;
+    next.area_by_site[site(state)] = id;
+    next.action_source = `前往${areas(state).find((entry) => entry.id === id).name}`;
+    next.feedback = [];
+    return rememberNarration(next, state);
+  }
+
+  function routeTo(state, destination) {
+    const frontier = [{ id: site(state), minutes: 0, legs: [] }];
+    const visited = new Set();
+    while (frontier.length) {
+      frontier.sort((a, b) => a.minutes - b.minutes);
+      const current = frontier.shift();
+      if (visited.has(current.id)) continue;
+      if (current.id === destination) return current;
+      visited.add(current.id);
+      for (const leg of exploration.routes.filter((entry) => entry.from === current.id)) {
+        if (!matches(state, leg.requires) || !matches(state, exploration.sites[leg.to].visible_when) ||
+            !matches(state, exploration.sites[leg.to].requires)) continue;
+        const duration = state.node === 'home_exit' && leg.from === 'home' ? actions(state).find((choice) => choice.id === 'leave').duration : leg.minutes;
+        frontier.push({ id: leg.to, minutes: current.minutes + duration, legs: [...current.legs, { ...leg, minutes: duration }] });
+      }
+    }
+    return null;
+  }
+
+  function mapRoutes(state) {
+    const firstExitPending = site(state) === 'home' && !state.action_use_counts['home_exit:leave'];
+    const locked = state.ending || (nodes[state.node].map_locked && state.node !== 'home_exit') ||
+      (firstExitPending && state.node !== 'home_exit');
+    return Object.entries(exploration.sites).filter(([, entry]) => matches(state, entry.visible_when)).map(([id, entry]) => {
+      const route = routeTo(state, id);
+      const available = !locked && id !== site(state) && Boolean(route) && matches(state, entry.requires);
+      return { id, name: entry.name, minutes: route?.minutes ?? 0, legs: route?.legs ?? [], available, observation: state.site_observations[id],
+        reason: state.ending ? '这一轮旅程已经结束' : locked ? '请先处理眼前的对话或危险' : id === site(state) ? '当前位置' : !route ? '尚未确认通行路线' : '' };
+    });
+  }
+
+  function travel(state, destination) {
+    const route = mapRoutes(state).find((entry) => entry.id === destination);
+    if (!route?.available) return null;
+    let next = state;
+    const feedback = [];
+    for (const leg of route.legs) {
+      if (!matches(next, leg.requires) || !matches(next, exploration.sites[leg.to].requires)) {
+        feedback.push('途中通行条件已经变化，你停在了当前地点。');
+        break;
+      }
+      const departure = { ...next, turn: state.turn };
+      const firstExit = next.node === 'home_exit' && leg.from === 'home';
+      const choice = firstExit ? actions(departure).find((entry) => entry.id === 'leave') : {
+        id: `travel_${leg.id}`, label: `前往${exploration.sites[leg.to].name}`, duration: leg.minutes,
+        next: exploration.sites[leg.to].entry
+      };
+      if (!choice || choice.available === false) return null;
+      next = settle(departure, choice, false);
+      feedback.push(...next.feedback);
+      if (next.ending || nodes[next.node].map_locked) break;
+    }
+    next.action_source = `前往${exploration.sites[destination].name}`;
+    next.feedback = feedback;
     return rememberNarration(next, state);
   }
 
@@ -411,7 +543,8 @@ export function createGame(data, itemData) {
   }
 
   function quote(state, kind, id) {
-    if (state.ending || state.node !== 'market' || state.elapsed_minutes + 2 > 453) return null;
+    if (state.ending || state.node !== 'market' || area(state) !== 'counter' ||
+        !exploration.sites.market.trade_windows.some(([from, to]) => state.elapsed_minutes >= from && state.elapsed_minutes + 2 <= to)) return null;
     if (kind === 'information') {
       if (!hasFact(state, 'buyer_information') || !state.clues.includes(id)) return null;
       const facts = state.cards[id].facts.filter((fact) => !state.sold_facts[fact] && clues[fact].sale_price > 0);
@@ -461,11 +594,72 @@ export function createGame(data, itemData) {
     }
     if (hasFact(state, 'harbor_whistle') || hasFact(state, 'captain_schedule') || hasFact(state, 'white_agate_lead') || hasFact(state, 'grey_gull_schedule')) {
       state.tasks.escape = { name: '离开班西港', status: ['A','B'].includes(state.ending) ? 'completed' : state.ending ? 'sealed' : 'active',
-        entries: [state.flags.ship_departed ? '白玛瑙号已离港，寻找其他航线。' : '弄清准入要求与船期，准备离港。'] };
+        entries: state.ending ? [['A','B'].includes(state.ending) ? '你已经离开班西港。' : '本轮角色的逃生调查已经封存。'] : [focus(state).name, focus(state).hint] };
     }
     if (hasFact(state, 'gehrman_whereabouts')) state.tasks.find_gehrman = {
       name: '寻找格尔曼·斯帕罗', status: state.flags.gehrman_intro_done ? 'completed' : state.ending ? 'sealed' : 'active',
       entries: [state.elapsed_minutes >= 173 ? '餐厅的行踪记录已过时。' : '船长说他在青柠檬餐厅。黑礼服，戴礼帽，带上能核对的证据。'] };
+  }
+
+  function focus(state) {
+    if (state.ending) return null;
+    const goal = (id, name, hint, ids) => ({ id, name, hint, clue_ids: ids.filter((key) => hasFact(state, key)) });
+    if (state.flags.ship_departed || hasFact(state, 'grey_gull_schedule')) {
+      if (!state.flags.ship_schedule_known && !hasFact(state, 'harbor_notice')) return goal('other_ship', '寻找其他离港方式',
+        hasFact(state, 'white_agate_departed') ? '调查空泊位附近的值班告示，寻找下一条消息。' : '清晨的汽笛已经远去，去码头核实船只和其他航务消息。',
+        ['harbor_whistle', 'captain_schedule', 'white_agate_departed', 'white_agate_lead']);
+      if (!state.flags.ship_schedule_known) return goal('harbor_records', '核对外海船只的消息',
+        state.resolved_events.harbor_records === 'missed' ? '告示上的查阅窗口已过，保留记录并继续调查求生条件。' : '按海堤告示，在港务交班窗口查阅原件。',
+        ['white_agate_departed', 'harbor_notice']);
+      if (!state.flags.is_hunter) return goal('survival', '寻找接近外海的办法',
+        hasFact(state, 'mural_sketch') ? '旧墙的异常仍待你决定如何处理。' : '普通人的体力不足以游向外海；继续调查电报局留下的异常。',
+        ['grey_gull_schedule', 'missing_operators', 'blood_pattern', 'mural_sketch']);
+      if (!state.flags.safe_sea_route_known) return goal('safe_route', '确认安全的下海路线',
+        state.resolved_events.lighthouse_tide === 'missed' ? '可核验的潮汐窗口已经结束，这次航线尚未得到确认。' :
+          hasFact(state, 'bay_approach') ? '已接近崖边；在观潮窗口核对漂浮物和浪线。' :
+            hasFact(state, 'patrol_verified') ? '寻找入口掩体，利用亲眼核验的巡逻空档。' : '到灯塔调查足迹与脚步，再用变化后的感官核验规律。',
+        ['grey_gull_schedule', 'patrol_tracks', 'patrol_steps', 'patrol_hypothesis', 'patrol_verified', 'tower_cover', 'tower_sound', 'bay_approach', 'water_observation']);
+      if (!conditions.signal_ready(state)) return goal('signal', '准备实际可用的求救物',
+        hasFact(state, 'signal_method') ? '检查随身的信号物；只有实际携带的物品能够使用。' : '在灯塔附近调查船员能够辨认的信号。',
+        ['grey_gull_schedule', 'safe_sea_entry', 'signal_method']);
+      if (state.stats.stamina < 5) return goal('recover', '恢复出海所需体力',
+        '先确认安全休整地点；每完整休息一小时恢复两点体力。', ['home_shelter', 'market_shelter_permission', 'safe_sea_entry']);
+      return goal('sea_ready', '按已核实的航线准备出海',
+        '带好求救物，在已确认的海湾核对时间与海况。', ['grey_gull_schedule', 'safe_sea_entry', 'signal_method', 'bay_approach']);
+    }
+    if (hasFact(state, 'gehrman_whereabouts') && !state.flags.gehrman_intro_done && state.elapsed_minutes < 173) {
+      return goal('find_gehrman', '寻找格尔曼·斯帕罗', '按船长提供的行踪寻找他，带上自己核实的记录。',
+        ['gehrman_whereabouts', 'captain_requirements', 'church_receipt', 'church_crate_tracks', 'headless_shadow', 'donna_testimony']);
+    }
+    if (hasFact(state, 'harbor_whistle')) return goal('leave_port', '调查离港的机会',
+      hasFact(state, 'captain_schedule') ? '核对船长的准入要求与最后登船时刻。' : '去码头观察船只和人物，弄清准入要求。',
+      ['harbor_whistle', 'white_agate_lead', 'captain_refusal', 'sailor_offer', 'captain_requirements', 'captain_schedule']);
+    return goal('amnesia', '调查你失忆的原因', '调查住所，寻找白天记忆的缺口；留意门外的声音。',
+      ['memory_gap', 'unsent_letter', 'church_receipt', 'bedside_crate', 'last_night_job', 'mechanical_neighbor', 'neighbor_repetition']);
+  }
+
+  function timeWarnings(state, minutes) {
+    const end = state.elapsed_minutes + minutes;
+    return data.known_windows.filter((window) => matches(state, window.requires)).flatMap((window) => [
+      ...(window.from !== window.to && state.elapsed_minutes < window.from && end >= window.from ? [{ name: window.name, at: window.from, change: '开始' }] : []),
+      ...(state.elapsed_minutes < window.to && end >= window.to ? [{ name: window.name, at: window.to, change: window.from === window.to ? '发生' : '结束' }] : [])
+    ]).sort((a, b) => a.at - b.at);
+  }
+
+  function seaReadiness(state) {
+    const hasSchedule = hasFact(state, 'grey_gull_schedule');
+    const knowsSignal = hasFact(state, 'signal_method');
+    return [
+      { name: '身体与体力', ready: state.flags.is_hunter && state.stats.stamina >= 5 && state.stats.loss_of_control < 100,
+        text: state.flags.is_hunter ? `猎人 · 体力 ${state.stats.stamina}/${state.stats.stamina_max} · 失控 ${state.stats.loss_of_control}%` : `普通人 · 体力 ${state.stats.stamina}/${state.stats.stamina_max}，尚无可靠的外海游泳能力` },
+      { name: '外海航线', ready: hasSchedule, text: hasSchedule ? clues.grey_gull_schedule.summary : '尚未确认' },
+      { name: '下海路线', ready: state.flags.safe_sea_route_known === true,
+        text: state.flags.safe_sea_route_known ? clues.safe_sea_entry.summary : '尚未确认' },
+      { name: '求救方式', ready: conditions.signal_ready(state), text: knowsSignal ?
+        state.inventory.includes('signal_cloth') ? '随身携带信号布' : state.inventory.includes('brass_lantern') && state.lamp_lit ? '随身手提灯已点燃' : '已知求救方法，但当前未携带可用信号物' : '尚未确认' },
+      { name: '当前时刻', ready: hasSchedule && state.elapsed_minutes >= data.world_clock.sea_window_from_minute && state.elapsed_minutes <= data.world_clock.sea_window_to_minute,
+        text: hasSchedule ? state.elapsed_minutes < data.world_clock.sea_window_from_minute ? '已核实的接近窗口尚未开始' : state.elapsed_minutes > data.world_clock.sea_window_to_minute ? '已核实的接近窗口已经结束' : '仍在已核实的接近窗口内' : '尚未确认船只何时经过' }
+    ];
   }
 
   const text = (state) => {
@@ -522,6 +716,7 @@ export function createGame(data, itemData) {
     }
     if (previous) record(previous.node, state.feedback);
     record(state.node, text(state));
+    if (previous) state.settlement_log.at(-1).story = [...pages];
     state.narration = pages;
     return state;
   }
@@ -529,6 +724,6 @@ export function createGame(data, itemData) {
   const clock = (state) => new Date(startTime + state.elapsed_minutes * 60000).toISOString()
     .slice(0, 16).replace('T', ' ');
 
-  return { start, restore, choose, drop, retrieve, moveRoom, combine, quote, trade, acknowledge,
+  return { start, restore, choose, drop, retrieve, moveRoom, moveArea, site, area, areas, mapRoutes, travel, describePlace, focus, timeWarnings, seaReadiness, exploration, combine, quote, trade, acknowledge,
     hasFact, place, actions, text, clock, dialogueMinutes, bagUsed, nodes, items, clues, recipes, homeRegions: data.home_regions };
 }

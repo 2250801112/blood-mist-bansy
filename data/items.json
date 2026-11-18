@@ -27,7 +27,7 @@
       "occupies_slots": 1,
       "kind": "tool",
       "description": "配合灯光或高处挥舞，让灰鸥号注意到玩家",
-      "initial_location": "旧灯塔",
+      "initial_location": "lighthouse:rear",
       "sale_price": 0
     },
     {
@@ -36,7 +36,7 @@
       "occupies_slots": 1,
       "kind": "quest",
       "description": "玛蕾娜的旧怀表；后续可发展成转交女儿的支线",
-      "initial_location": "餐厅",
+      "initial_location": "tavern:counter",
       "sale_price": 0
     },
     {
@@ -83,7 +83,12 @@
       "text": "不要让他们知道，我还记得。",
       "kind": "观察记录",
       "sale_price": 15,
-      "design_id": "A02"
+      "design_id": "A02",
+      "summary": "不要让他们知道，我还记得。",
+      "use": "追查写信时自己还记得什么",
+      "topics": [
+        "amnesia"
+      ]
     },
     {
       "id": "church_receipt",
@@ -91,14 +96,24 @@
       "text": "收货人：风暴教堂米勒主教；货物：密封木箱。",
       "kind": "观察记录",
       "sale_price": 25,
-      "design_id": "A03"
+      "design_id": "A03",
+      "summary": "收货人：风暴教堂米勒主教；货物：密封木箱。",
+      "use": "核实委托来源与送达地点",
+      "topics": [
+        "amnesia"
+      ]
     },
     {
       "id": "bloody_meal",
       "name": "铁锈味的晚餐",
       "kind": "观察记录",
       "sale_price": 5,
-      "text": "碗碟里凝固的深色酱汁散着刺鼻的铁锈味。"
+      "text": "碗碟里凝固的深色酱汁散着刺鼻的铁锈味。",
+      "summary": "碗碟里凝固的深色酱汁散着刺鼻的铁锈味。",
+      "use": "记录住所的异常，不能据此判断来源",
+      "topics": [
+        "anomaly"
+      ]
     },
     {
       "id": "floating_light",
@@ -106,7 +121,13 @@
       "kind": "观察记录",
       "sale_price": 10,
       "text": "窗外的灯火漂浮着，灯下看不见正常行人的身体。只知道这次在夜里看见了它。",
-      "design_id": "A06"
+      "design_id": "A06",
+      "summary": "窗外的灯火漂浮着，灯下看不见正常行人的身体。",
+      "use": "保留窗外目击，评估夜路危险",
+      "topics": [
+        "escape",
+        "anomaly"
+      ]
     },
     {
       "id": "last_night_job",
@@ -114,7 +135,12 @@
       "kind": "观察记录",
       "sale_price": 10,
       "text": "想起暴雨、教堂、被布裹住的木箱，以及有人把钱塞进手中。箱内是什么仍不知道。",
-      "design_id": "A04"
+      "design_id": "A04",
+      "summary": "想起暴雨、教堂、被布裹住的木箱，以及有人把钱塞进手中。",
+      "use": "核实这段零碎记忆的真实性",
+      "topics": [
+        "amnesia"
+      ]
     },
     {
       "id": "mechanical_neighbor",
@@ -122,21 +148,38 @@
       "kind": "观察记录",
       "sale_price": 10,
       "text": "对方被问姓名，只反复声称自己是邻居。",
-      "design_id": "A10"
+      "design_id": "A10",
+      "summary": "对方被问姓名，只反复声称自己是邻居。",
+      "use": "留意门外人的回答是否正常",
+      "topics": [
+        "people",
+        "anomaly"
+      ]
     },
     {
       "id": "headless_shadow",
       "name": "没有头颅的阴影",
       "kind": "观察记录",
       "sale_price": 5,
-      "text": "隔着门缝亲眼看见，湿斗篷上方没有正常的头颈。"
+      "text": "隔着门缝亲眼看见，湿斗篷上方没有正常的头颈。",
+      "summary": "隔着门缝亲眼看见，湿斗篷上方没有正常的头颈。",
+      "use": "向调查者提供亲眼目击，避免正面接触",
+      "topics": [
+        "anomaly"
+      ]
     },
     {
       "id": "returned_husband",
       "name": "归来的丈夫",
       "kind": "观察记录",
       "sale_price": 5,
-      "text": "玛蕾娜谈到归来的丈夫，表现与窗边的动静都很反常。"
+      "text": "玛蕾娜谈到归来的丈夫，表现与窗边的动静都很反常。",
+      "summary": "玛蕾娜谈到归来的丈夫，表现与窗边的动静都很反常。",
+      "use": "调查厨房和窗边动静，身份仍待核实",
+      "topics": [
+        "people",
+        "anomaly"
+      ]
     },
     {
       "id": "donna_testimony",
@@ -144,14 +187,25 @@
       "kind": "观察记录",
       "sale_price": 5,
       "text": "堂娜说她刚在餐厅窗外看见没有脑袋的人。她指出窗边与湿街面，时间就在刚才。",
-      "design_id": "A12"
+      "design_id": "A12",
+      "summary": "堂娜说她刚在餐厅窗外看见没有脑袋的人。",
+      "use": "与亲眼目击分别说明来源并核对",
+      "topics": [
+        "people",
+        "anomaly"
+      ]
     },
     {
       "id": "white_agate_lead",
       "name": "白玛瑙号线索",
       "kind": "观察记录",
       "sale_price": 5,
-      "text": "堂娜所在的白玛瑙号会在清晨离开。"
+      "text": "堂娜所在的白玛瑙号会在清晨离开。",
+      "summary": "堂娜所在的白玛瑙号会在清晨离开。",
+      "use": "前往码头确认登船规则和船期",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "rescued_passenger",
@@ -159,7 +213,12 @@
       "kind": "观察记录",
       "sale_price": 5,
       "text": "你依据先前发现的异常拦住走向后门的堂娜，实际阻止了她遇险。",
-      "design_id": "A25"
+      "design_id": "A25",
+      "summary": "你依据先前发现的异常拦住走向后门的堂娜，实际阻止了她遇险。",
+      "use": "向格尔曼提供实际援救的证据",
+      "topics": [
+        "people"
+      ]
     },
     {
       "id": "church_crate_tracks",
@@ -167,7 +226,12 @@
       "kind": "观察记录",
       "sale_price": 5,
       "text": "教堂侧门有箱车车辙和搬运脚印。它们不能单独证明箱中内容。",
-      "design_id": "A05"
+      "design_id": "A05",
+      "summary": "教堂侧门有箱车车辙和搬运脚印。",
+      "use": "追查箱车经过的路线",
+      "topics": [
+        "amnesia"
+      ]
     },
     {
       "id": "telegram_notes",
@@ -175,7 +239,12 @@
       "kind": "观察记录",
       "sale_price": 5,
       "text": "门内重复回答“有人……但……关门……”，应答和问话无法正常衔接。",
-      "design_id": "A13"
+      "design_id": "A13",
+      "summary": "门内重复回答“有人……但……关门……”，应答和问话无法正常衔接。",
+      "use": "保留应答原话，继续隔门观察",
+      "topics": [
+        "anomaly"
+      ]
     },
     {
       "id": "telegraph_silhouettes",
@@ -183,7 +252,12 @@
       "kind": "观察记录",
       "sale_price": 5,
       "text": "第一夜，门内有两个静止的人影；两人仍然在场。",
-      "design_id": "A15"
+      "design_id": "A15",
+      "summary": "第一夜，门内有两个静止的人影；两人仍然在场。",
+      "use": "记录门内仍有人在场，不贸然进入",
+      "topics": [
+        "anomaly"
+      ]
     },
     {
       "id": "missing_operators",
@@ -191,7 +265,12 @@
       "kind": "观察记录",
       "sale_price": 5,
       "text": "次日上午进入电报局，原先两个人都不见了，只留下两滩血迹。",
-      "design_id": "A16"
+      "design_id": "A16",
+      "summary": "次日上午进入电报局，原先两个人都不见了，只留下两滩血迹。",
+      "use": "追查工作间血迹和旧墙",
+      "topics": [
+        "anomaly"
+      ]
     },
     {
       "id": "mural_sketch",
@@ -199,7 +278,12 @@
       "kind": "观察记录",
       "sale_price": 5,
       "text": "沿血迹查看，剥落墙皮下露出旧图案。异常力量的来源尚未查明。",
-      "design_id": "A17"
+      "design_id": "A17",
+      "summary": "沿血迹查看，剥落墙皮下露出旧图案。",
+      "use": "核实异常来源，接触仍有危险",
+      "topics": [
+        "anomaly"
+      ]
     },
     {
       "id": "grey_gull_schedule",
@@ -207,7 +291,12 @@
       "kind": "观察记录",
       "sale_price": 5,
       "text": "1月11日04:20–04:40，灰鸥号会经过旧灯塔外海，需提前准备接近地点。",
-      "design_id": "A18"
+      "design_id": "A18",
+      "summary": "1月11日04:20–04:40，灰鸥号会经过旧灯塔外海，需提前准备接近地点。",
+      "use": "在正确时刻从已核实下海点接近航线",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "safe_sea_entry",
@@ -215,7 +304,12 @@
       "kind": "观察记录",
       "sale_price": 5,
       "text": "猎人观潮后确认右侧海湾可以接近航线。仍需能力、体力、时刻和信号。",
-      "design_id": "A19"
+      "design_id": "A19",
+      "summary": "猎人观潮后确认右侧海湾可以接近航线。",
+      "use": "还需猎人能力、体力、正确时刻与实际信号物",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "bloodied_telegram",
@@ -223,14 +317,24 @@
       "text": "纸上有未干的血，边缘黏在门槛上。",
       "kind": "观察记录",
       "sale_price": 5,
-      "design_id": "A14"
+      "design_id": "A14",
+      "summary": "纸上有未干的血，边缘黏在门槛上。",
+      "use": "记录血纸的位置与状态",
+      "topics": [
+        "anomaly"
+      ]
     },
     {
       "id": "bedside_crate",
       "name": "床下储物箱的擦痕",
       "text": "箱下的积灰缺了一道长条，像是有人刚挪过它。",
       "kind": "观察记录",
-      "sale_price": 5
+      "sale_price": 5,
+      "summary": "箱下的积灰缺了一道长条，像是有人刚挪过它。",
+      "use": "记录失忆前可能的活动痕迹",
+      "topics": [
+        "amnesia"
+      ]
     },
     {
       "id": "memory_gap",
@@ -238,7 +342,12 @@
       "text": "我记得名字、码头的工作和这间屋子，却完全想不起今天发生了什么。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "A01"
+      "design_id": "A01",
+      "summary": "我记得名字、码头的工作和这间屋子，却完全想不起今天发生了什么。",
+      "use": "寻找当日活动留下的痕迹",
+      "topics": [
+        "amnesia"
+      ]
     },
     {
       "id": "lamp_illumination",
@@ -246,7 +355,12 @@
       "text": "灯燃起后，近处的轮廓重新清晰。这只证明照明作用。",
       "kind": "观察记录",
       "sale_price": 5,
-      "design_id": "A07"
+      "design_id": "A07",
+      "summary": "灯燃起后，近处的轮廓重新清晰。",
+      "use": "观察光照下的近处情况",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "lamp_hesitation",
@@ -254,7 +368,12 @@
       "text": "在街口举起手提灯，这一次雾中的身影暂时没有扑近。",
       "kind": "观察记录",
       "sale_price": 5,
-      "design_id": "A08"
+      "design_id": "A08",
+      "summary": "在街口举起手提灯，这一次雾中的身影暂时没有扑近。",
+      "use": "核验灯光只能争取短暂时间",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "lamp_expiry",
@@ -262,7 +381,12 @@
       "text": "这一路段的身影重新接近。灯没有灭，原先的掩护却已失效。",
       "kind": "观察记录",
       "sale_price": 5,
-      "design_id": "A09"
+      "design_id": "A09",
+      "summary": "这一路段的身影重新接近。",
+      "use": "记录本路段保护失效，重燃不能刷新",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "neighbor_repetition",
@@ -270,7 +394,13 @@
       "text": "问话改变后，门外仍机械地重复邻居两个字，停顿和湿润咀嚼声始终没变。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "A11"
+      "design_id": "A11",
+      "summary": "问话改变后，门外仍机械地重复邻居两个字，停顿和湿润咀嚼声始终没变。",
+      "use": "警惕无法正常应答的来者",
+      "topics": [
+        "people",
+        "anomaly"
+      ]
     },
     {
       "id": "rescue_warning",
@@ -278,7 +408,12 @@
       "text": "堂娜正往后门走去，门外有不自然的灯影。可以跟过去看清情况。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": null
+      "design_id": null,
+      "summary": "堂娜正往后门走去，门外有不自然的灯影。",
+      "use": "在救援窗口内查看后门危险",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "signal_method",
@@ -286,7 +421,12 @@
       "text": "在高处挥动信号布，或用实际持有且点燃的灯发信号，可以引起船员注意。",
       "kind": "观察记录",
       "sale_price": 5,
-      "design_id": "A20"
+      "design_id": "A20",
+      "summary": "在高处挥动信号布，或用实际持有且点燃的灯发信号，可以引起船员注意。",
+      "use": "检查实际持有的信号布或点燃的灯",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "fire_source",
@@ -294,7 +434,12 @@
       "text": "在实际地点发现可以安全接近的火源。详情中的发现地点与火源记录可供查阅。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "A21"
+      "design_id": "A21",
+      "summary": "在实际地点发现可以安全接近的火源。",
+      "use": "在发现地点寻找实际火源",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "fire_service",
@@ -302,7 +447,12 @@
       "text": "看火的人说可以替你挡风、点灯，一次收费2，需两分钟。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "A22"
+      "design_id": "A22",
+      "summary": "看火的人说可以替你挡风、点灯，一次收费2，需两分钟。",
+      "use": "保留借火报价，核对实际火源",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "buyer_goods",
@@ -310,7 +460,12 @@
       "text": "港边收货人检查了一件旧物，称好还能用，按件给钱。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "A23"
+      "design_id": "A23",
+      "summary": "港边收货人检查了一件旧物，称好还能用，按件给钱。",
+      "use": "在收货人营业时出售实际持有旧物",
+      "topics": [
+        "people"
+      ]
     },
     {
       "id": "buyer_information",
@@ -318,7 +473,12 @@
       "text": "你看见收货人为一条说得出来源的港口消息付了钱。只买同一事实一次。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "A24"
+      "design_id": "A24",
+      "summary": "你看见收货人为一条说得出来源的港口消息付了钱。",
+      "use": "出售有来源的消息副本，同一事实不重复付款",
+      "topics": [
+        "people"
+      ]
     },
     {
       "id": "captain_refusal",
@@ -326,7 +486,12 @@
       "text": "艾尔兰表示不能让来历不明的班西居民上船，担心船员和乘客的安全。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "D01"
+      "design_id": "D01",
+      "summary": "艾尔兰表示不能让来历不明的班西居民上船，担心船员和乘客的安全。",
+      "use": "弄清船长接纳本地人的顾虑",
+      "topics": [
+        "people"
+      ]
     },
     {
       "id": "sailor_offer",
@@ -334,7 +499,12 @@
       "text": "值班船员说替人递话得多跑一趟，手指敲了敲旧钱袋，随后等在一旁。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "D02"
+      "design_id": "D02",
+      "summary": "值班船员说替人递话得多跑一趟，手指敲了敲旧钱袋，随后等在一旁。",
+      "use": "判断船员的暗示是否值得进一步接触",
+      "topics": [
+        "people"
+      ]
     },
     {
       "id": "sailor_introduced",
@@ -342,7 +512,12 @@
       "text": "你付了8，请这位船员把自己带到船长面前。引荐已经实际完成。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "D03"
+      "design_id": "D03",
+      "summary": "你付了8，请这位船员把自己带到船长面前。",
+      "use": "向船长询问接纳要求",
+      "topics": [
+        "people"
+      ]
     },
     {
       "id": "captain_requirements",
@@ -350,7 +525,12 @@
       "text": "艾尔兰要求可核实的担保与污染筛查；不能以陌生人的保证替代乘客安全。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "D04"
+      "design_id": "D04",
+      "summary": "艾尔兰要求可核实的担保与污染筛查；不能以陌生人的保证替代乘客安全。",
+      "use": "准备真实担保、可验证情报和污染筛查",
+      "topics": [
+        "people"
+      ]
     },
     {
       "id": "berth_cost",
@@ -358,7 +538,12 @@
       "text": "你听见船员说隔离舱、看守与安置需要额外开销，船长仍坚持筛查。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "D05"
+      "design_id": "D05",
+      "summary": "你听见船员说隔离舱、看守与安置需要额外开销，船长仍坚持筛查。",
+      "use": "弄清临时安置需要承担的责任",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "captain_quote",
@@ -366,7 +551,12 @@
       "text": "额外安置和看守费用120，必须通过污染检查，且按05:00–05:30申请、06:00前完成登船。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "D06"
+      "design_id": "D06",
+      "summary": "额外安置和看守费用120，必须通过污染检查，且按05:00–05:30申请、06:00前完成登船。",
+      "use": "准备120费用并在申请窗口通过筛查",
+      "topics": [
+        "people"
+      ]
     },
     {
       "id": "gehrman_whereabouts",
@@ -374,7 +564,12 @@
       "text": "船长告知格尔曼·斯帕罗正在青柠檬餐厅调查，黑礼服、戴礼帽；00:20–01:10可接触。行踪会过时。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "D07"
+      "design_id": "D07",
+      "summary": "船长告知格尔曼·斯帕罗正在青柠檬餐厅调查，黑礼服、戴礼帽；00:20–01:10可接触。",
+      "use": "在人物仍在时到餐厅确认其人",
+      "topics": [
+        "people"
+      ]
     },
     {
       "id": "captain_schedule",
@@ -382,153 +577,625 @@
       "text": "船长告知最后申请05:00–05:30，登船手续需要10分钟，06:00离港。",
       "kind": "观察记录",
       "sale_price": 0,
-      "design_id": "D08"
+      "design_id": "D08",
+      "summary": "船长告知最后申请05:00–05:30，登船手续需要10分钟，06:00离港。",
+      "use": "在05:00–05:30申请，06:00前完成登船",
+      "topics": [
+        "people",
+        "escape"
+      ]
     },
     {
       "id": "R01",
       "name": "教堂运输委托",
       "text": "收据与暴雨中的记忆能联系起来。我可能就是运那只密封箱子的人，具体路线还要核实。",
       "kind": "待核验推测",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "收据与暴雨中的记忆能联系起来。",
+      "use": "核实运输终点与箱车留下的痕迹",
+      "topics": [
+        "amnesia"
+      ]
     },
     {
       "id": "R02",
       "name": "教堂运输路线的疑点",
       "text": "收据、搬运记忆和教堂侧门车辙指向同一趟运输。箱内是什么，仍没有证据。",
       "kind": "待核验推测",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "收据、搬运记忆和教堂侧门车辙指向同一趟运输。",
+      "use": "向调查者出示可核对的运输记录",
+      "topics": [
+        "amnesia"
+      ]
     },
     {
       "id": "R03",
       "name": "可以相互核对的无头目击",
       "text": "我的目击与堂娜说的时间和窗外街面能对上。向调查者出示时，要分别说明来源。",
       "kind": "待核验推测",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "我的目击与堂娜说的时间和窗外街面能对上。",
+      "use": "向调查者分别说明两次目击的来源",
+      "topics": [
+        "people",
+        "anomaly"
+      ]
     },
     {
       "id": "R04",
       "name": "电报局正在维持异常的工作",
       "text": "门内应答与门下的血都很异常。现在不能据此断言里面的人已经死了。",
       "kind": "待核验推测",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "门内应答与门下的血都很异常。",
+      "use": "保留电报局异常记录，避免强闯",
+      "topics": [
+        "anomaly"
+      ]
     },
     {
       "id": "R05",
       "name": "门外来者可能在模仿邻居",
       "text": "那个人反复叫自己邻居，却答不出姓名。他可能在模仿熟人。",
       "kind": "待核验推测",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "那个人反复叫自己邻居，却答不出姓名。",
+      "use": "警惕门外的模仿，避免贸然开门",
+      "topics": [
+        "people",
+        "anomaly"
+      ]
     },
     {
       "id": "R06",
       "name": "我曾记得一件需要隐瞒的事",
       "text": "信是我写的。写信时我还记得某件事，如今却想不起。可以继续核实当天的委托。",
       "kind": "待核验推测",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "信是我写的。",
+      "use": "继续追查当天为何需要隐瞒",
+      "topics": [
+        "amnesia"
+      ]
     },
     {
       "id": "R07",
       "name": "用灯试探夜路",
       "text": "如果那东西借黑暗靠近，带着灯也许能让我多看清一点，争取些时间。需要现场验证。",
       "kind": "待核验推测",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "如果那东西借黑暗靠近，带着灯也许能让我多看清一点，争取些时间。",
+      "use": "在现场验证灯光是否能争取时间",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "R08",
       "name": "灯火带来的短暂掩护",
       "text": "这次街口举灯后身影停下了。它确实争取了时间，不能当作永久保护。",
       "kind": "已核验结论",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "这次街口举灯后身影停下了。",
+      "use": "利用短暂掩护撤离，保持警惕",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "R09",
       "name": "灯火保护有时间上限",
       "text": "灯仍亮着，身影却重新接近。这一路段的掩护已经失效，重燃不能重置原截止点。最长十分钟。",
       "kind": "已核验结论",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "灯仍亮着，身影却重新接近。",
+      "use": "该路段不可再依赖原有灯光掩护",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "R10",
       "name": "电报员在一夜间消失",
       "text": "第一夜还在的两个人如今消失，留下两滩血。原因未知，可以追查血迹。",
       "kind": "调查结论",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "第一夜还在的两个人如今消失，留下两滩血。",
+      "use": "追查留下的血迹，去向仍未知",
+      "topics": [
+        "anomaly"
+      ]
     },
     {
       "id": "R11",
       "name": "电报局旧墙值得继续调查",
       "text": "血迹和剥落墙皮把调查指向旧墙。图案与人员消失是否相关，仍待核实。",
       "kind": "待核验推测",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "血迹和剥落墙皮把调查指向旧墙。",
+      "use": "进一步查看剥落的墙皮",
+      "topics": [
+        "anomaly"
+      ]
     },
     {
       "id": "R12",
       "name": "外海接近计划",
       "text": "按灰鸥号的时刻，在右侧海湾接近航线。身体能力、体力与求救信号仍要准备。",
       "kind": "路线计划",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "按灰鸥号的时刻，在右侧海湾接近航线。",
+      "use": "按航线核对实际出海准备",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "R13",
       "name": "向灰鸥号求救的准备方案",
       "text": "航线、潮汐与发信号的方式已经整理好。下海时仍须检查实际携带的信号、能力和时间。",
       "kind": "路线计划",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "航线、潮汐与发信号的方式已经整理好。",
+      "use": "出发前检查实际物品与身体状态",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "R14",
       "name": "可以花钱请船员引荐",
       "text": "他愿意递话，却在等一笔辛苦钱。可以付8请他引荐，船长是否接纳仍要另谈。",
       "kind": "交涉方案",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "他愿意递话，却在等一笔辛苦钱。",
+      "use": "付8请船员实际引荐，接纳仍由船长决定",
+      "topics": [
+        "people",
+        "escape"
+      ]
     },
     {
       "id": "R15",
       "name": "以额外安置费用试探接纳",
       "text": "安置与看守的开销也许可以由我承担。先向船长问清金额和限制，污染筛查不能省。",
       "kind": "交涉方案",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "安置与看守的开销也许可以由我承担。",
+      "use": "向船长询问金额与筛查限制",
+      "topics": [
+        "people",
+        "escape"
+      ]
     },
     {
       "id": "R16",
       "name": "可以付费借火",
       "text": "需要在发现过的实际火源处请人帮忙，一次2、两分钟。重新点灯不会重置路段警觉。",
       "kind": "交涉方案",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "需要在发现过的实际火源处请人帮忙，一次2、两分钟。",
+      "use": "在已发现的火源处付费借火",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "R17",
       "name": "旧物与消息都能换钱",
       "text": "收货人既收旧物也买消息。消息副本可以保留，同一事实只付一次。",
       "kind": "交易记录",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "收货人既收旧物也买消息。",
+      "use": "在营业时提交实际物品或消息副本",
+      "topics": [
+        "people",
+        "escape"
+      ]
     },
     {
       "id": "donna_presence",
       "name": "窗边不安的女孩",
       "kind": "观察记录",
       "text": "一个年幼的女孩正向大人描述自己看见的东西，可以先听她说。",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "一个年幼的女孩正向大人描述自己看见的东西，可以先听她说。",
+      "use": "先听女孩的现场目击，不能直接跳过取证",
+      "topics": [
+        "people"
+      ]
     },
     {
       "id": "harbor_whistle",
       "name": "港口的汽笛",
       "kind": "观察记录",
       "text": "旧街能听见港口汽笛，或许有船可以离开。先去码头了解要求。",
-      "sale_price": 0
+      "sale_price": 0,
+      "summary": "旧街能听见港口汽笛，或许有船可以离开。",
+      "use": "前往码头了解是否还有离港机会",
+      "topics": [
+        "escape"
+      ]
     },
     {
       "id": "cellar_recollection",
       "name": "追问中恢复的送达地点",
       "kind": "记忆记录",
       "text": "格尔曼追问收据的送达地点时，你又想起教堂地下储藏室。这是本次追问才恢复的细节，箱内内容依然未知。",
-      "sale_price": 5
+      "sale_price": 5,
+      "summary": "格尔曼追问收据的送达地点时，你又想起教堂地下储藏室。",
+      "use": "保留追问才恢复的记忆，箱内内容仍未知",
+      "topics": [
+        "amnesia",
+        "people"
+      ]
     },
     {
       "id": "kitchen_argument",
       "name": "厨房传来的争执",
       "kind": "观察记录",
       "text": "餐厅厨房突然传来争执，玛蕾娜似乎正对着窗外说话。可以走近调查。",
+      "sale_price": 0,
+      "summary": "餐厅厨房突然传来争执，玛蕾娜似乎正对着窗外说话。",
+      "use": "在事件窗口内调查厨房与窗外动静",
+      "topics": [
+        "people",
+        "anomaly"
+      ]
+    },
+    {
+      "id": "white_agate_departed",
+      "name": "已经离港的白玛瑙号",
+      "text": "清晨06:00白玛瑙号已经离港，原来的登船机会结束。",
+      "summary": "清晨06:00白玛瑙号已经离港，原来的登船机会结束。",
+      "use": "寻找其他离港方式",
+      "topics": [
+        "escape"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "harbor_notice",
+      "name": "海堤值班告示",
+      "text": "外海补给船登记见港务室，航运原件在10:00–12:00交班期间可查。",
+      "summary": "外海补给船登记见港务室，航运原件在10:00–12:00交班期间可查。",
+      "use": "去港务值班室查原件，不代表已知船期",
+      "topics": [
+        "escape"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "R18",
+      "name": "港务调查方向",
+      "text": "白玛瑙号已离港，值班告示指向10:00–12:00可查的港务航运原件。",
+      "summary": "白玛瑙号已离港，值班告示指向10:00–12:00可查的港务航运原件。",
+      "use": "前往港务室核实外海航线",
+      "topics": [
+        "escape"
+      ],
+      "kind": "deduction",
+      "sale_price": 0
+    },
+    {
+      "id": "home_shelter",
+      "name": "可以关门休整的住所",
+      "text": "访客已经离开，门闩扣紧，屋内没有发现其他动静。",
+      "summary": "访客已经离开，门闩扣紧，屋内没有发现其他动静。",
+      "use": "回家关门休整，每完整小时恢复2点体力",
+      "topics": [
+        "escape"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "market_shelter_offer",
+      "name": "收货人的歇脚条件",
+      "text": "收货人10:00–18:00在柜台，可询问是否同意在柜台内侧歇脚。",
+      "summary": "收货人10:00–18:00在柜台，可询问是否同意在柜台内侧歇脚。",
+      "use": "先取得本人同意，再使用看顾服务",
+      "topics": [
+        "escape",
+        "people"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "market_shelter_permission",
+      "name": "收货人实际同意看顾",
+      "text": "收货人已经点头同意在柜台内歇脚，只看顾到18:00。",
+      "summary": "收货人已经点头同意在柜台内歇脚，只看顾到18:00。",
+      "use": "在看顾窗口内休整，离场时中断",
+      "topics": [
+        "escape",
+        "people"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "blood_pattern",
+      "name": "两滩血与拖擦",
+      "text": "工作间两滩血之间有细长拖擦，末端指向旧墙。",
+      "summary": "工作间两滩血之间有细长拖擦，末端指向旧墙。",
+      "use": "保留血迹位置，继续查看拖擦末端",
+      "topics": [
+        "anomaly"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "blood_movement",
+      "name": "血迹覆盖的不一致",
+      "text": "猎人比较喷射方向、拖擦覆盖与站位后发现不一致，此处发生过不止一次移动。",
+      "summary": "猎人比较喷射方向、拖擦覆盖与站位后发现不一致，此处发生过不止一次移动。",
+      "use": "调查擦痕为何覆盖了不同方向的血迹",
+      "topics": [
+        "anomaly"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "R19",
+      "name": "血迹中的移动矛盾",
+      "text": "同一处血迹的外观与猎人复查记录表明发生过不止一次移动，失踪原因仍然未知。",
+      "summary": "同一处血迹的外观与猎人复查记录表明发生过不止一次移动，失踪原因仍然未知。",
+      "use": "追查擦痕，不能据此断定失踪者的最终去向",
+      "topics": [
+        "anomaly"
+      ],
+      "kind": "deduction",
+      "sale_price": 0
+    },
+    {
+      "id": "lane_footprints",
+      "name": "卸货道湿脚印",
+      "text": "箱车擦痕旁有深浅不一的潮湿脚印。",
+      "summary": "箱车擦痕旁有深浅不一的潮湿脚印。",
+      "use": "记录足迹后观察转角",
+      "topics": [
+        "anomaly",
+        "escape"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "lane_sounds",
+      "name": "转角往返的脚步声",
+      "text": "亲耳听见转角脚步停下又折返，来者身份不明。",
+      "summary": "亲耳听见转角脚步停下又折返，来者身份不明。",
+      "use": "判断转角是否适合继续接近",
+      "topics": [
+        "anomaly",
+        "escape"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "lane_repeated_tracks",
+      "name": "卸货道重复落脚",
+      "text": "猎人比较干湿和深浅，发现同一转角有反复落脚的位置。",
+      "summary": "猎人比较干湿和深浅，发现同一转角有反复落脚的位置。",
+      "use": "留意反复经过的转角，避免盲目前进",
+      "topics": [
+        "anomaly",
+        "escape"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "lane_safe_approach",
+      "name": "卸货道的遮蔽路线",
+      "text": "沿遮蔽物可以绕过反复响起脚步的转角，退到教堂侧门外。",
+      "summary": "沿遮蔽物可以绕过反复响起脚步的转角，退到教堂侧门外。",
+      "use": "仅供局部规避，不揭示木箱内容",
+      "topics": [
+        "anomaly",
+        "escape"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "R20",
+      "name": "卸货道有人往返",
+      "text": "足迹反复落在同一转角，现场也确实听见往返脚步；可以沿遮蔽物绕行。",
+      "summary": "足迹反复落在同一转角，现场也确实听见往返脚步；可以沿遮蔽物绕行。",
+      "use": "开放卸货道的规避行动",
+      "topics": [
+        "anomaly",
+        "escape"
+      ],
+      "kind": "deduction",
+      "sale_price": 0
+    },
+    {
+      "id": "patrol_tracks",
+      "name": "入口泥地足迹",
+      "text": "入口泥地的深脚印反复延伸至塔后。",
+      "summary": "入口泥地的深脚印反复延伸至塔后。",
+      "use": "继续观察足迹指向的方向",
+      "topics": [
+        "escape",
+        "anomaly"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "patrol_steps",
+      "name": "两次巡逻观察",
+      "text": "亲眼看见入口经过的身影，两次脚步都在稍后转到塔后。",
+      "summary": "亲眼看见入口经过的身影，两次脚步都在稍后转到塔后。",
+      "use": "判断两次经过是否遵循同一路径",
+      "topics": [
+        "escape",
+        "anomaly"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "patrol_hypothesis",
+      "name": "绕塔巡逻的推测",
+      "text": "足迹与两次脚步观察一致，推测守灯人会绕到塔后，仍须现场核验。",
+      "summary": "足迹与两次脚步观察一致，推测守灯人会绕到塔后，仍须现场核验。",
+      "use": "守候一次实际绕行",
+      "topics": [
+        "escape",
+        "anomaly"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "patrol_verified",
+      "name": "已核验的巡逻空档",
+      "text": "亲眼看见守灯人绕到塔后，入口曾在这次绕行中短暂空出。",
+      "summary": "亲眼看见守灯人绕到塔后，入口曾在这次绕行中短暂空出。",
+      "use": "寻找能够遮住接近动作的位置",
+      "topics": [
+        "escape",
+        "anomaly"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "tower_cover",
+      "name": "入口通往崖边的石墙",
+      "text": "入口至崖边有连续的低矮石墙，可以遮住接近时的身形。",
+      "summary": "入口至崖边有连续的低矮石墙，可以遮住接近时的身形。",
+      "use": "评估沿石墙接近的时机",
+      "topics": [
+        "escape",
+        "anomaly"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "bay_approach",
+      "name": "沿掩体的安全接近",
+      "text": "趁已核验空档沿石墙间隙到达崖边，这只是局部接近方式。",
+      "summary": "趁已核验空档沿石墙间隙到达崖边，这只是局部接近方式。",
+      "use": "在崖边观察潮汐，不代替下海资格",
+      "topics": [
+        "escape",
+        "anomaly"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "R21",
+      "name": "守灯人的巡逻空档",
+      "text": "足迹与两次巡逻观察相符，又有一次实际绕行核验；可在入口空出时沿掩体接近。",
+      "summary": "足迹与两次巡逻观察相符，又有一次实际绕行核验；可在入口空出时沿掩体接近。",
+      "use": "需现场遮蔽物配合，不赋予免死",
+      "topics": [
+        "escape",
+        "anomaly"
+      ],
+      "kind": "deduction",
+      "sale_price": 0
+    },
+    {
+      "id": "R23",
+      "name": "安全接近海湾的局部计划",
+      "text": "入口空档与现场石墙提供一条遮蔽接近方式，海况仍需在崖边核实。",
+      "summary": "入口空档与现场石墙提供一条遮蔽接近方式，海况仍需在崖边核实。",
+      "use": "支持携带信号物接近，不能代替潮汐和游泳门槛",
+      "topics": [
+        "escape"
+      ],
+      "kind": "deduction",
+      "sale_price": 0
+    },
+    {
+      "id": "R22",
+      "name": "塔后声响诱导方案",
+      "text": "塔后石壁传播声响，守灯人的巡逻会绕到那里。可用吊环或实际携带的铜杯争取一次绕行。",
+      "summary": "塔后石壁传播声响，守灯人的巡逻会绕到那里。",
+      "use": "布置一次声响，之后相同手段会引起警觉",
+      "topics": [
+        "escape",
+        "anomaly"
+      ],
+      "kind": "deduction",
+      "sale_price": 0
+    },
+    {
+      "id": "tower_sound",
+      "name": "塔后吊环与绳头",
+      "text": "松动吊环能敲出声响，旁边绳头能挂杯，石壁将声音传向塔后。",
+      "summary": "松动吊环能敲出声响，旁边绳头能挂杯，石壁将声音传向塔后。",
+      "use": "评估声响会把注意力引向哪里",
+      "topics": [
+        "escape"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "water_observation",
+      "name": "崖边漂浮物与浪线",
+      "text": "左侧礁石外的漂浮物被卷回，右侧海湾的浪线较平；这是现场现象记录。",
+      "summary": "左侧礁石外的漂浮物被卷回，右侧海湾的浪线较平；这是现场现象记录。",
+      "use": "核对两侧水流，谨慎判断下海风险",
+      "topics": [
+        "escape",
+        "anomaly"
+      ],
+      "kind": "observation",
+      "sale_price": 0
+    },
+    {
+      "id": "telegraph_hours",
+      "name": "电报局门廊值班牌",
+      "kind": "observation",
+      "text": "门廊值班牌标出09:40，但不能保证门内会正常营业。",
+      "summary": "门廊值班牌标出09:40。",
+      "use": "在离港后等到标记时刻，亲自观察门内变化",
+      "topics": [
+        "anomaly",
+        "escape"
+      ],
+      "sale_price": 0
+    },
+    {
+      "id": "distant_wave",
+      "name": "塔前远望的浪线",
+      "kind": "observation",
+      "text": "从塔前远望，浪线反复折回，看不清两侧水流细节。",
+      "summary": "塔前只能看见反复折回的浪线。",
+      "use": "先解决安全接近崖边的问题，不能据此下海",
+      "topics": [
+        "escape"
+      ],
+      "sale_price": 0
+    },
+    {
+      "id": "R24",
+      "name": "巡逻的现场记录",
+      "kind": "deduction",
+      "text": "泥地足迹伸向塔后，两次现场脚步观察也经过相同方向；这些是比较巡逻的现场记录，仍需核验空档。",
+      "summary": "泥地足迹与两次实际脚步观察指向同一路径。",
+      "use": "继续核验巡逻是否存在可用空档",
+      "topics": [
+        "escape",
+        "anomaly"
+      ],
       "sale_price": 0
     }
   ],
@@ -701,6 +1368,72 @@
       ],
       "after": [],
       "reasoning": "收货人既收旧物也买消息。消息副本可以保留，同一事实只付一次。"
+    },
+    {
+      "id": "R18",
+      "facts": [
+        "white_agate_departed",
+        "harbor_notice"
+      ],
+      "after": [],
+      "reasoning": "白玛瑙号已离港，值班告示指向10:00–12:00可查的港务航运原件。"
+    },
+    {
+      "id": "R19",
+      "facts": [
+        "blood_pattern",
+        "blood_movement"
+      ],
+      "after": [],
+      "reasoning": "同一处血迹的外观与猎人复查记录表明发生过不止一次移动，失踪原因仍然未知。"
+    },
+    {
+      "id": "R20",
+      "facts": [
+        "lane_repeated_tracks",
+        "lane_sounds"
+      ],
+      "after": [],
+      "reasoning": "足迹反复落在同一转角，现场也确实听见往返脚步；可以沿遮蔽物绕行。"
+    },
+    {
+      "id": "R21",
+      "facts": [
+        "patrol_tracks",
+        "patrol_steps",
+        "patrol_verified"
+      ],
+      "after": [
+        "R24"
+      ],
+      "reasoning": "足迹与两次巡逻观察相符，又有一次实际绕行核验；可在入口空出时沿掩体接近。"
+    },
+    {
+      "id": "R23",
+      "facts": [
+        "patrol_verified",
+        "tower_cover"
+      ],
+      "after": [],
+      "reasoning": "入口空档与现场石墙提供一条遮蔽接近方式，海况仍需在崖边核实。"
+    },
+    {
+      "id": "R22",
+      "facts": [
+        "patrol_verified",
+        "tower_sound"
+      ],
+      "after": [],
+      "reasoning": "塔后石壁传播声响，守灯人的巡逻会绕到那里。可用吊环或实际携带的铜杯争取一次绕行。"
+    },
+    {
+      "id": "R24",
+      "facts": [
+        "patrol_tracks",
+        "patrol_steps"
+      ],
+      "after": [],
+      "reasoning": "泥地足迹伸向塔后，两次现场脚步观察也经过相同方向；这些是比较巡逻的现场记录，仍需核验空档。"
     }
   ]
 }

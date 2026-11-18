@@ -6,17 +6,26 @@ import { createGame, startNewRun, commitRun } from '../game/engine.mjs';
 const read = (name) => JSON.parse(readFileSync(new URL(`../data/${name}.json`, import.meta.url)));
 const game = createGame(read('scenes'), read('items'));
 const start = () => game.start({ name: '安', gender: '未指定' });
+const atAction = (state, id) => {
+  const choice = game.nodes[state.node].choices.find((entry) => entry.id === id);
+  if (!choice?.area || game.area(state) === choice.area) return state;
+  const moved = game.moveArea(state, choice.area);
+  assert.ok(moved, `${state.node}: 应能进入 ${choice.area}`);
+  return moved;
+};
+const chooseAt = (state, id) => game.choose(atAction(state, id), id);
 const walk = (state, ...actions) => actions.reduce((run, action) => {
   const choice = game.nodes[run.node].choices.find((entry) => entry.id === action);
   if (choice?.region && run.home_area !== choice.region) run = game.moveRoom(run, choice.region);
+  run = atAction(run, action);
   const result = game.choose(run, action);
   assert.ok(result, `${run.node}: ${action} 应可执行`);
   return result;
 }, state);
 const bedroom = () => walk(start(), 'begin', 'search');
 const street = () => walk(bedroom(), 'window', 'record_light', 'check_door', 'quiet', 'leave', 'detour');
-const secondDay = () => walk(street(), 'rest_to_day', 'find_other_way');
-const hunter = () => walk(secondDay(), 'telegraph_day', 'inspect_wall', 'touch', 'get_up');
+const secondDay = () => walk(street(), 'wait_for_dawn', 'find_other_way');
+const hunter = () => walk(secondDay(), 'telegraph_exterior', 'read_hours', 'wait_open', 'inspect_wall', 'touch', 'get_up');
 const introduce = (run) => {
   const dock = walk(run, 'dock', 'observe_sailor');
   const idea = game.combine(dock, ['captain_refusal', 'sailor_offer']);
@@ -39,10 +48,10 @@ test('回应堂娜后回到餐厅，存档往返不会重播餐厅开场', () =>
 
 test('堂娜和玛蕾娜的回应各只能选一次，互斥答复随后消失', () => {
   const comforted = walk(restaurant(), 'donna', 'comfort');
-  assert.equal(game.choose(comforted, 'donna'), null);
+  assert.equal(chooseAt(comforted, 'donna'), null);
   assert.ok(comforted.clues.includes('donna_testimony'));
   const helped = walk(comforted, 'wait_collision', 'marena', 'help_marena');
-  assert.equal(game.choose(helped, 'marena'), null);
+  assert.equal(chooseAt(helped, 'marena'), null);
   assert.equal(helped.stats.marena_favor, 10);
 });
 
@@ -102,7 +111,7 @@ test('开门前有预警，确认后永久封存且新角色保留成就', () =>
   const saved = commitRun(atDoor, dead);
   assert.equal(saved.active, null);
   assert.equal(saved.archive[0].ending, 'D');
-  assert.equal(game.choose(dead, 'confirm_open'), null);
+  assert.equal(chooseAt(dead, 'confirm_open'), null);
   assert.equal(commitRun(saved, warning), null);
   const fresh = startNewRun(saved, start());
   assert.notEqual(fresh.active.id, dead.id);
@@ -113,10 +122,10 @@ test('灯最多保护十分钟，同一遭遇无法重燃，过时贸闯即死',
   const encounter = walk(bedroom(), 'lantern', 'observe_fire', 'relight_home', 'check_door', 'quiet', 'leave');
   const lit = walk(encounter, 'light');
   assert.equal(lit.light_safety_until - lit.elapsed_minutes, 10);
-  assert.equal(game.choose(lit, 'light'), null);
+  assert.equal(chooseAt(lit, 'light'), null);
   assert.equal(walk(lit, 'cross_with_light').node, 'street');
   const expired = walk(lit, 'watch');
-  assert.equal(game.choose(expired, 'cross_with_light'), null);
+  assert.equal(chooseAt(expired, 'cross_with_light'), null);
   assert.equal(walk(expired, 'rush').ending, 'D');
 });
 
@@ -125,7 +134,7 @@ test('第一夜电报局可隔门取证但强闯必死，09:40 起换成空电�
   assert.ok(night.clues.includes('telegram_notes'));
   assert.ok(night.clues.includes('bloodied_telegram'));
   assert.equal(walk(night, 'force_entry').ending, 'E');
-  assert.equal(game.choose({ ...night, elapsed_minutes: 682 }, 'peek'), null);
+  assert.equal(chooseAt({ ...night, elapsed_minutes: 682 }, 'peek'), null);
   assert.equal(walk({ ...night, elapsed_minutes: 682 }, 'return', 'telegraph_day').node, 'telegraph_day');
 });
 
@@ -138,23 +147,23 @@ test('可信情报只记一次，担保仍要求核验、筛查和至少 60 信�
     'verify', 'submit_evidence', 'risk'
   );
   assert.equal(run.stats.gehrman_trust, 60);
-  assert.equal(game.choose(run, 'receipt'), null);
-  assert.equal(game.choose(run, 'verify'), null);
+  assert.equal(chooseAt(run, 'receipt'), null);
+  assert.equal(chooseAt(run, 'verify'), null);
   const unscreened = walk(run, 'return', 'return', 'dock', 'wait_parley');
-  assert.equal(game.choose(unscreened, 'request_boarding'), null);
+  assert.equal(chooseAt(unscreened, 'request_boarding'), null);
   const screened = walk(unscreened, 'screen');
-  assert.equal(game.choose({ ...screened, stats: { ...screened.stats, gehrman_trust: 59 } }, 'request_boarding'), null);
-  assert.equal(game.choose({ ...screened, flags: { ...screened.flags, has_verified_evidence: false } }, 'request_boarding'), null);
+  assert.equal(chooseAt({ ...screened, stats: { ...screened.stats, gehrman_trust: 59 } }, 'request_boarding'), null);
+  assert.equal(chooseAt({ ...screened, flags: { ...screened.flags, has_verified_evidence: false } }, 'request_boarding'), null);
   assert.equal(walk(screened, 'request_boarding').node, 'dock_board');
-  assert.equal(game.choose({ ...unscreened, elapsed_minutes: 462 }, 'screen'), null);
+  assert.equal(chooseAt({ ...unscreened, elapsed_minutes: 462 }, 'screen'), null);
 });
 
 test('带满两件实体物品须腾出格子，危险场景禁止整理', () => {
   const run = walk(bedroom(), 'lantern', 'knife', 'check_door', 'quiet', 'leave', 'detour');
   assert.equal(game.drop(run, 'rusty_knife'), null);
-  const day = walk(run, 'rest_to_day', 'find_other_way');
+  const day = walk(run, 'wait_for_dawn', 'find_other_way');
   const tower = walk(day, 'lighthouse');
-  assert.equal(game.choose(tower, 'pick_signal'), null);
+  assert.equal(chooseAt(tower, 'pick_signal'), null);
   const lightened = game.drop(day, 'rusty_knife');
   assert.ok(lightened);
   assert.deepEqual(walk(lightened, 'lighthouse', 'pick_signal').inventory, ['brass_lantern', 'signal_cloth']);
@@ -167,7 +176,7 @@ test('异常吸收后猎人体力为7，备齐四项才能在窗口末分钟脱�
   assert.equal(run.stats.loss_of_control, 50);
   assert.equal(run.stats.stamina, 7);
   assert.deepEqual(run.skills, ['hunter_instinct']);
-  const prepared = walk(run, 'harbor', 'record_schedule', 'lighthouse', 'wait_tide', 'find_route', 'record_entry', 'pick_signal', 'wait_for_ship');
+  const prepared = walk(run, 'harbor', 'record_schedule', 'lighthouse', 'wait_tide', 'inspect_tracks', 'watch_steps', 'analyze_patrol', 'verify_patrol', 'observe_cover', 'approach_cover', 'find_route', 'record_entry', 'pick_signal', 'wait_for_ship');
   assert.equal(prepared.elapsed_minutes, 1803);
   const swimActions = (state) => game.actions(state).filter(({ id }) => id === 'swim' || id === 'unsafe_swim');
   for (const state of [prepared, { ...prepared, inventory: [] }]) {
@@ -176,15 +185,15 @@ test('异常吸收后猎人体力为7，备齐四项才能在窗口末分钟脱�
     assert.equal(options[0].label, '下海');
     assert.equal(options[0].available, true);
   }
-  assert.equal(game.choose({ ...prepared, elapsed_minutes: 1802 }, 'swim'), null);
-  assert.equal(game.choose({ ...prepared, elapsed_minutes: 1824 }, 'swim'), null);
-  assert.equal(game.choose({ ...prepared, inventory: [] }, 'swim'), null);
+  assert.equal(chooseAt({ ...prepared, elapsed_minutes: 1802 }, 'swim'), null);
+  assert.equal(chooseAt({ ...prepared, elapsed_minutes: 1824 }, 'swim'), null);
+  assert.equal(chooseAt({ ...prepared, inventory: [] }, 'swim'), null);
   assert.equal(walk({ ...prepared, elapsed_minutes: 1823 }, 'swim', 'accept_isolation').ending, 'B');
 });
 
 test('普通人贸然下海会遇难，海上失败解释缺失条件', () => {
   const sea = walk(secondDay(), 'harbor', 'wait_records', 'record_schedule', 'lighthouse', 'wait_for_ship');
-  assert.equal(game.choose(sea, 'swim'), null);
+  assert.equal(chooseAt(sea, 'swim'), null);
   const end = walk(sea, 'unsafe_swim');
   assert.equal(end.ending, 'SEA_FAIL');
   assert.match(game.text(end).join(''), /体力/);
@@ -200,5 +209,5 @@ test('时钟不回退，72小时终局与猎人失控优先结算', () => {
   const failed = walk(previous, 'listen_risk');
   assert.equal(failed.stats.loss_of_control, 100);
   assert.equal(failed.ending, 'F');
-  assert.equal(game.choose(failed, 'swim'), null);
+  assert.equal(chooseAt(failed, 'swim'), null);
 });

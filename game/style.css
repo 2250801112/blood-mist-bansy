@@ -442,3 +442,61 @@ body[data-scene='doom'], body[data-scene='mural'] { --wash: #662632; }
   body:has(#narration.prologue[open]) .gray-mist,
   #narration.prologue.intro-finale::backdrop { animation: none; }
 }
+
+/* 港口探索以空间与当前目标为主，记录在工具面板中展开。 */
+.game-shell { max-width: 66rem; }
+.game-grid { display: block; }
+.game-bar { flex-wrap: wrap; }
+.hud-stats { font-size: .78rem; color: #dac7a7; }
+.focus-goal { display: grid; width: 100%; gap: .35rem; margin: .7rem 0; padding: .8rem 1rem; text-align: left; color: #f2d5a6; background: #282125ed; border: 1px solid #887052; font: 1rem var(--serif); }
+.focus-goal small { font: .78rem/1.5 sans-serif; color: var(--quiet); }
+.bottom-tools { position: sticky; bottom: .4rem; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; padding: .6rem; margin-top: .75rem; border: 1px solid var(--border); background: #171215f5; }
+.backpack-slots { display: flex; flex: 1; gap: .4rem; margin: 0; list-style: none; }
+.backpack-slots .slot { flex: 1; font-size: .75rem; min-width: 4rem; }
+.port-map, .local-map { position: relative; isolation: isolate; overflow: hidden; width: 100%; margin: 1rem 0; border: 1px solid #927956; background: #272329; }
+.port-map { height: clamp(22rem, 48dvh, 33rem); }
+.local-map { height: 21rem; background: radial-gradient(ellipse at center, #645a4644, transparent), #24272a; }
+.port-map svg, .local-map svg { position: absolute; width: 100%; height: 100%; z-index: -1; }
+.site-pin, .area-pin { position: absolute; transform: translate(-50%, -50%); color: #efddb6; background: #201c23ed; border: 1px solid #8c765a; padding: .4rem .5rem; min-height: 44px; max-width: 29%; font-size: .8rem; }
+.site-pin::before { content: '◆ '; color: #b29c77; }
+.site-pin[aria-current=location], .area-pin[aria-current=location] { border: 2px solid #e7ca84; color: #fff5d5; opacity: 1; }
+.site-pin[aria-pressed=true] { outline: 2px solid #e7ca84; outline-offset: 3px; }
+.map-caption { position: absolute; bottom: .6rem; left: .7rem; font-size: .7rem; color: #d6c6a9; }
+.route-preview { border-left: 2px solid var(--gold); padding: .7rem 1rem; line-height: 1.8; }
+.route-preview .action { margin-top: .6rem; }
+.map-observation { color: #dfc899; font-size: .82rem; }
+.map-risk { color: #ff9c89; font-size: .85rem; }
+.sea-checklist { margin: 1rem 0; padding: .9rem; border: 1px solid #8b7555; background: #262326; }
+.sea-checklist h2 { margin-bottom: .7rem; color: var(--gold); font: 1.1rem var(--serif); }
+.sea-checklist p { margin: .5rem 0; font-size: .85rem; line-height: 1.7; }
+.sea-checklist .ready { color: #c6d7b3; }
+.sea-checklist .unconfirmed { color: #e7bbaa; }
+.local-exploration h2 { font: 1.1rem var(--serif); color: var(--gold); }
+.object-hotspots { position: relative; display: block; min-height: 10rem; background: linear-gradient(125deg, #5b4b3933, transparent), #221e24; border: 1px dashed #77624e; }
+.object-hotspot { position: relative; display: inline-grid; margin: .8rem 1.1rem; vertical-align: top; min-width: 6rem; }
+.object-hotspot:nth-child(even) { margin-top: 3rem; }
+.clue-card { display: flex; flex-direction: column; align-items: start; }
+.clue-card .clue-status { display: inline-block; padding: .12rem .4rem; border: 1px solid #6f6158; color: #c6b8a6; }
+.clue-deduced { border-top: 3px solid #bfa06c; background: #322a28; }
+.clue-deduced .clue-status { color: #edd099; border-color: #a68b5e; }
+.clue-card .clue-summary { font-size: .9rem; line-height: 1.6; color: #f0dfc6; }
+.clue-card .clue-use { font-size: .77rem; line-height: 1.6; color: #bcab8c; }
+.clue-detail details { margin: .9rem 0; padding: .6rem; border: 1px solid #594344; }
+.clue-detail summary { cursor: pointer; color: #dfc899; }
+.notebook-filters { display: flex; gap: .4rem; flex-wrap: wrap; margin: .8rem 0; }
+.notebook-filters button[aria-pressed=true] { color: #fff0c8; border-color: #dfbd73; }
+.combine-tools { position: sticky; bottom: 0; background: #211923f5; padding: .7rem; border-top: 1px solid var(--gold); }
+.trade-panel { padding: .7rem; border: 1px solid var(--border); }
+.trade-panel summary { cursor: pointer; color: var(--gold); }
+@media (max-width: 600px) {
+  .port-map { height: clamp(23rem, 46dvh, 31rem); }
+  .site-pin { max-width: 29%; font-size: .69rem; padding: .3rem; }
+  .local-map { height: 19rem; }
+  .bottom-tools .backpack-slots { flex-basis: 100%; }
+  .hud-stats { flex-basis: 100%; }
+  .clue-cards { grid-template-columns: minmax(0,1fr); }
+  .object-hotspot { margin: .55rem; min-width: 5.5rem; }
+}
+
+.site-market { transform: translate(-50%, -5%); }
+.site-dock { transform: translate(-50%, -100%); }

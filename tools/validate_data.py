@@ -117,6 +117,8 @@ def main():
     for clue in inv.get('clues', []):
         if not clue.get('text') or not clue.get('kind') or type(clue.get('sale_price')) is not int or clue['sale_price'] < 0:
             ERRORS.append(f'{clue["id"]}: 线索需要正文、类型与非负收购价')
+        if not clue.get('summary') or not clue.get('use') or not clue.get('topics') or not set(clue['topics']).issubset({'escape', 'amnesia', 'people', 'anomaly'}):
+            ERRORS.append(f'{clue["id"]}: 线索需要摘要、用途和有效分类')
     ach_ids = check_unique(achieves.get('achievements', []), '成就')
     asset_ids = check_unique(art.get('assets', []), '图片资源')
     backgrounds = {asset['id'] for asset in art.get('assets', []) if asset.get('image_type') == 'background'}
@@ -192,9 +194,58 @@ def main():
             if effect.get('type') == 'add_clue' and effect.get('id') in recipe_ids:
                 ERRORS.append(f'{context}: 结果卡应由组合生成')
 
+    sites = sc.get('exploration', {}).get('sites', {})
+    routes = sc.get('exploration', {}).get('routes', [])
+    check_unique(routes, '地图道路')
+    nodes_by_id = {node['id']: node for node in nodes}
+    for site_id, site in sites.items():
+        context = f'地图地点 {site_id}'
+        zone_ids = check_unique(site.get('areas', []), context)
+        if not site.get('name') or site.get('default_area') not in zone_ids:
+            ERRORS.append(f'{context}: 需要名称和有效默认区域')
+        if site.get('entry') not in node_ids or nodes_by_id.get(site.get('entry'), {}).get('site') != site_id:
+            ERRORS.append(f'{context}: 入口必须属于该地点')
+        if site.get('fire_area') and site['fire_area'] not in zone_ids:
+            ERRORS.append(f'{context}: 火源分区无效')
+        for point in [site, *site.get('areas', [])]:
+            if any(type(point.get(axis)) not in (int, float) or not 0 <= point[axis] <= 100 for axis in ('x', 'y')):
+                ERRORS.append(f'{context}: 坐标必须在0到100之间')
+            check_conditions(point.get('requires', []), context)
+        check_conditions(site.get('visible_when', []), context)
+        if not site.get('observations') or 'requires' in site['observations'][-1]:
+            ERRORS.append(f'{context}: 亲见状态需要明确的基础描述')
+        for observation in site.get('observations', []):
+            if not observation.get('text'):
+                ERRORS.append(f'{context}: 亲见状态缺少文本')
+            check_conditions(observation.get('requires', []), context)
+        for window in site.get('trade_windows', []):
+            if len(window) != 2 or any(type(value) is not int for value in window) or not 0 <= window[0] < window[1]:
+                ERRORS.append(f'{context}: 营业时段无效')
+    for route in routes:
+        if route.get('from') not in sites or route.get('to') not in sites or route.get('from') == route.get('to'):
+            ERRORS.append(f'{route.get("id")}: 道路端点无效')
+        if type(route.get('minutes')) is not int or route['minutes'] < 0:
+            ERRORS.append(f'{route.get("id")}: 路程必须为非负分钟')
+        check_conditions(route.get('requires', []), f'地图道路 {route.get("id")}')
+    for item in inv.get('items', []):
+        site_id, _, zone_id = item.get('initial_location', '').partition(':')
+        if site_id not in sites or zone_id not in {zone['id'] for zone in sites[site_id]['areas']}:
+            ERRORS.append(f'{item["id"]}: 初始物品位置必须是有效地点分区')
+    check_unique(sc.get('known_windows', []), '已知机会')
+    for window in sc.get('known_windows', []):
+        if type(window.get('from')) is not int or type(window.get('to')) is not int or not 0 <= window['from'] <= window['to'] <= sc['world_clock']['doom_minute']:
+            ERRORS.append(f'{window.get("id")}: 已知机会时间无效')
+        check_conditions(window.get('requires', []), f'已知机会 {window.get("id")}')
+
     edges = {node['id']:set() for node in nodes if 'id' in node}
     for n in nodes:
         nid = n.get('id')
+        site = sites.get(n.get('site'), {})
+        if not site:
+            ERRORS.append(f'{nid}: 未知地图地点')
+        zone_ids = {zone['id'] for zone in site.get('areas', [])}
+        if n.get('entry_area') and n['entry_area'] not in zone_ids:
+            ERRORS.append(f'{nid}: 进入区域不存在')
         if n.get('background') not in backgrounds:
             ERRORS.append(f'{nid}: 未知背景资源 {n.get("background")}')
         if 'dialogue_window' in n and n['dialogue_window'] not in dialogue_windows:
@@ -212,6 +263,10 @@ def main():
             context = f'{nid} / 选项{i}'
             if 'region' in ch and ch['region'] not in regions:
                 ERRORS.append(f'{context}: 未知房内区域')
+            if 'area' in ch and ch['area'] not in zone_ids:
+                ERRORS.append(f'{context}: 未知地点分区')
+            if ch.get('travel') and nodes_by_id.get(target, {}).get('site') == n.get('site'):
+                ERRORS.append(f'{context}: 普通出行必须连接两个地点')
             minutes = ch.get('minutes')
             opens = ch.get('available_from', 0)
             closes = ch.get('available_until', sc['world_clock']['doom_minute'])

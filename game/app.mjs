@@ -1,6 +1,7 @@
 import { createGame, SAVE_KEY, startNewRun, commitRun } from './engine.mjs';
 import { createNarrator } from './narration.mjs';
 import { createSound } from './sound.mjs';
+import { portMap, areaMap } from './map-view.mjs';
 
 const app = document.querySelector('#app');
 const art = document.querySelector('#art');
@@ -199,7 +200,7 @@ async function save(update) {
       const previous = view === 'story' ? activeRun : null;
       const scroll = previous?.node === result.run.node ? window.scrollY : 0;
       activeRun = result.run;
-      selectedObject = null;
+      if (previous && game.site(previous) !== game.site(result.run)) selectedObject = null;
       show('story', scroll);
       walkTransition(activeRun, () => present(activeRun));
     } else {
@@ -349,28 +350,33 @@ function openClues(focusId) {
   const run = activeRun;
   journalHeader('线索与推理');
   const selected = new Set();
+  let combining = false, scope = 'current', topic = 'all';
   const result = el('p', { className: 'journal-result', role: 'status' });
   const cards = el('div', { className: 'clue-cards' });
   const details = el('section', { className: 'clue-detail', ariaLabel: '线索详情' });
+  const status = (id) => id === 'gehrman_whereabouts' && run.elapsed_minutes >= 173 ? '已过时' :
+    ({ observation: '观察记录', deduction: '已整理结论' }[game.clues[id].kind] ?? game.clues[id].kind);
   function detail(id) {
     const card = run.cards[id];
     const definition = game.clues[id];
     details.replaceChildren(el('h3', { textContent: definition.name }),
-      el('p', { className: 'location', textContent: definition.kind }),
-      el('p', { textContent: definition.text }),
+      el('p', { className: 'location', textContent: status(id) }),
+      el('p', { className: 'clue-summary', textContent: definition.summary }),
+      el('p', { textContent: `用途：${definition.use}` }),
+      el('details', {}, el('summary', { textContent: '完整原文' }), el('p', { textContent: definition.text })),
       ...(card.deductions.length ? [el('h4', { textContent: '推理过程' }), ...card.deductions.map((recipe) =>
         el('p', { textContent: game.clues[recipe].text }))] : []),
-      el('h4', { textContent: '原始事实与来源' }),
+      el('details', { className: 'clue-origins' }, el('summary', { textContent: '原始事实与来源' }),
       ...card.facts.map((fact) => {
         const found = run.discoveries[fact];
-        const place = found.location.startsWith('home:') ? game.homeRegions[found.location.slice(5)].name : found.location;
+        const place = game.describePlace(found.location);
         return el('article', { className: 'fact-record' },
           el('strong', { textContent: game.clues[fact].name }),
           el('p', { textContent: game.clues[fact].text }),
           el('small', { textContent: `${place} · ${found.minute === null ? '旧版未记录时间' : game.clock({ ...run, elapsed_minutes: found.minute })} · ${found.source}` }),
           ...(run.sold_facts[fact] ? [el('small', { textContent: '情报副本已出售 · 知识继续保留' })] : []));
-      }),
-      ...(id === 'fire_source' || card.facts.includes('fire_source') ? [el('p', { textContent: `已发现火源 ${run.fire_sources.map((source) => source.startsWith('home:') ? game.homeRegions[source.slice(5)].name : source).join('、')}` })] : []),
+      })),
+      ...(id === 'fire_source' || card.facts.includes('fire_source') ? [el('p', { textContent: `已发现火源 ${run.fire_sources.map((source) => game.describePlace(source)).join('、')}` })] : []),
       ...(id === 'gehrman_whereabouts' && run.elapsed_minutes >= 173 ? [el('p', { textContent: '这条行踪记录已经过时。' })] : []),
       ...(!run.ending ? [button('在这张卡中继续推演', () => attempt([id]), { className: 'action' })] : []));
   }
@@ -378,25 +384,54 @@ function openClues(focusId) {
     if (run.ending || !ids.length) return;
     const combined = game.combine(run, ids);
     if (!combined) {
+      combineTools.hidden = false;
       result.textContent = '这些记录还不足以形成新的判断。事实的来源、时间或独立核验仍有缺口，原卡片保持不变。';
       return;
     }
     journalDialog.close();
     act((state) => game.combine(state, ids));
   }
-  for (const id of run.clues) {
-    const check = el('input', { type: 'checkbox', ariaLabel: `选择${game.clues[id].name}`, disabled: Boolean(run.ending) });
-    check.onchange = () => {
-      if (check.checked && selected.size === 2) { check.checked = false; result.textContent = '每次选两张卡。卡内已有的事实也可以继续推演。'; return; }
-      if (check.checked) selected.add(id); else selected.delete(id);
-      result.textContent = `已选择 ${selected.size} 张卡`;
-    };
-    cards.append(el('article', { className: 'clue-card' }, check,
-      button(game.clues[id].name, () => detail(id), { className: 'clue-title' }),
-      el('small', { textContent: `${game.clues[id].kind} · ${run.cards[id].facts.length} 条事实` })));
+  const filters = el('nav', { className: 'notebook-filters', ariaLabel: '线索筛选' });
+  const combineTools = el('div', { className: 'combine-tools', hidden: true },
+    button('尝试关联', () => attempt([...selected]), { className: 'action', disabled: Boolean(run.ending) }), result);
+  const toggle = button('关联线索', () => {
+    combining = !combining;
+    selected.clear(); result.textContent = '';
+    toggle.textContent = combining ? '退出关联' : '关联线索';
+    combineTools.hidden = !combining;
+    renderCards();
+  }, { className: 'utility', disabled: Boolean(run.ending) });
+  function renderCards() {
+    filters.replaceChildren(...[['current','当前调查'],['all','全部线索']].map(([id,label]) =>
+      button(label, () => { scope = id; renderCards(); }, { className: 'utility', ariaPressed: scope === id })),
+      ...[['all','全部分类'],['escape','求生'],['amnesia','失忆'],['people','人物'],['anomaly','异常']].map(([id,label]) =>
+        button(label, () => { topic = id; renderCards(); }, { className: 'utility', ariaPressed: topic === id })));
+    const focus = game.focus(run);
+    const ids = run.clues.filter((id) => {
+      const card = run.cards[id];
+      if (topic !== 'all' && !game.clues[id].topics.includes(topic)) return false;
+      return scope === 'all' || !focus || focus.clue_ids.includes(id) || card.facts.some((fact) => focus.clue_ids.includes(fact));
+    });
+    cards.replaceChildren(...ids.slice().reverse().map((id) => {
+      const definition = game.clues[id], card = run.cards[id];
+      const found = run.discoveries[card.facts[0]];
+      const check = el('input', { type: 'checkbox', ariaLabel: `选择${definition.name}`, checked: selected.has(id) });
+      check.onchange = () => {
+        if (check.checked && selected.size === 2) { check.checked = false; result.textContent = '每次选两张卡。卡内已有的事实也可以继续推演。'; return; }
+        if (check.checked) selected.add(id); else selected.delete(id);
+        result.textContent = `已选择 ${selected.size} 张卡：${[...selected].map((key) => game.clues[key].name).join('、')}`;
+      };
+      return el('article', { className: `clue-card${card.deductions.length ? ' clue-deduced' : ''}` },
+        ...(combining ? [check] : []), button(definition.name, () => detail(id), { className: 'clue-title' }),
+        el('small', { className: 'clue-status', textContent: status(id) }),
+        el('p', { className: 'clue-summary', textContent: definition.summary }),
+        el('p', { className: 'clue-use', textContent: `用途：${definition.use}` }),
+        el('small', { textContent: `${game.describePlace(found.location)} · ${found.minute === null ? '旧版未记录时间' : game.clock({ ...run, elapsed_minutes: found.minute })} · ${card.facts.length} 条事实` }));
+    }));
+    if (!ids.length) cards.append(el('p', { className: 'muted', textContent: '当前筛选暂无记录，可切换全部线索。' }));
   }
-  journalDialog.append(el('p', { className: 'muted', textContent: '点开卡片查看详情。选两张尝试关联，成功后原卡片归入结果。阅读与组合不消耗游戏时间。' }),
-    cards, button('尝试关联', () => attempt([...selected]), { className: 'action', disabled: Boolean(run.ending) }), result, details);
+  journalDialog.append(filters, toggle, cards, combineTools, details);
+  renderCards();
   const actual = run.clues.find((id) => id === focusId || run.cards[id].facts.includes(focusId));
   if (actual) detail(actual);
 }
@@ -416,88 +451,102 @@ function openLog() {
     narrator.open({ label: game.nodes[activeRun.node].title, pages: [...activeRun.feedback, ...game.text(activeRun)] });
   }, { className: 'action' }),
   ...(activeRun.stats.pathway ? [button('查阅猎人晋升', () => { journalDialog.close(); promotion(activeRun); }, { className: 'utility' })] : []),
-  ...activeRun.settlement_log.filter((entry) => entry.entries.length).slice().reverse().map((entry) =>
+  ...activeRun.settlement_log.filter((entry) => entry.entries.length || entry.story?.length).slice().reverse().map((entry) =>
     el('section', { className: 'task-record' }, el('small', { textContent: `${game.clock({ ...activeRun, elapsed_minutes: entry.minute })} · ${entry.action}` }),
-      ...entry.entries.map((notice) => el('p', { className: `change-${notice.kind}`, textContent: notice.text })))));
+      ...entry.entries.map((notice) => el('p', { className: `change-${notice.kind}`, textContent: notice.text })),
+      ...(entry.story?.length ? [el('details', {}, el('summary', { textContent: '当时的剧情与行动反馈' }),
+        ...entry.story.map((line) => el('p', { textContent: line })))] : []))));
 }
 
 function confirmAction(choice) {
   const spending = (choice.effects ?? []).filter((effect) => effect.type === 'add_money' && effect.value < 0).reduce((sum, effect) => sum - effect.value, 0);
-  if (!choice.map && !spending) { play(choice.id); return; }
-  journalHeader(choice.map ? '确认出发' : '确认交涉');
+  const unsafe = choice.id === 'unsafe_swim';
+  const waiting = choice.rest || choice.duration >= 60;
+  if (!choice.map && !spending && !waiting && !unsafe) { play(choice.id); return; }
+  journalHeader(unsafe ? '确认冒险下海' : choice.rest ? '确认休整' : choice.map ? '确认出发' : waiting ? '确认等待' : '确认交涉');
   journalDialog.append(el('h3', { textContent: choice.label }),
     el('p', { textContent: `本次需要 ${choice.duration} 分钟，预计完成于 ${game.clock({ ...activeRun, elapsed_minutes: activeRun.elapsed_minutes + choice.duration })}。` }),
+    ...(choice.rest ? [el('p', { textContent: `预计恢复体力 ${Math.min(activeRun.stats.stamina_max - activeRun.stats.stamina, Math.floor(choice.duration / 60) * 2)}；危险事件仍可能打断休整。` })] : []),
+    ...game.timeWarnings(activeRun, choice.duration).map((warning) => el('p', { className: 'map-risk', textContent:
+      `已知机会：${warning.name}将在${game.clock({ ...activeRun, elapsed_minutes: warning.at })}${warning.change}。` })),
+    ...(unsafe ? [el('p', { className: 'map-risk', textContent: '目前的准备不足以支持这次外海逃生。贸然下海会永久结束本轮角色。' }), seaChecklist(activeRun)] : []),
     ...(spending ? [el('p', { textContent: `支付 ${spending}，当前金钱 ${activeRun.money}。` })] : []),
     ...(choice.id === 'pay_berth' ? [el('p', { textContent: '通过筛查后方可成交。登船另需十分钟，最迟须在06:00完成。' })] : []),
-    button(choice.map ? '出发' : '确认支付', () => { journalDialog.close(); play(choice.id); }, { className: 'action' }),
+    button(unsafe ? '确认冒险下海' : choice.rest ? '开始休整' : choice.map ? '出发' : waiting ? '开始等待' : '确认支付', () => { journalDialog.close(); play(choice.id); }, { className: 'action' }),
     button('取消', () => journalDialog.close(), { className: 'utility' }));
 }
 
 function tradePanel(run) {
-  if (run.node !== 'market' || run.ending) return [];
+  if (run.node !== 'market' || run.ending || game.area(run) !== game.exploration.sites.market.default_area) return [];
   const offers = [
     ...run.clues.map((id) => game.quote(run, 'information', id)),
     ...run.inventory.map((id) => game.quote(run, 'item', id)),
     ...Object.keys(game.items).map((id) => game.quote(run, 'buyback', id))
   ].filter(Boolean);
   if (!offers.length) return [];
-  return [el('section', { className: 'trade-panel' }, el('h2', { textContent: '收货人的报价' }),
+  return [el('details', { className: 'trade-panel' }, el('summary', { textContent: '查看收货人的报价' }),
     el('p', { className: 'muted', textContent: '情报只交付副本。按尚未出售的独立事实计价，每次交易两分钟。' }),
-    ...offers.map((offer) => button(`${offer.kind === 'buyback' ? '买回' : '出售'}《${offer.name}》 · ${offer.price}`, () => {
+    ...['information','item','buyback'].map((kind) => el('details', {}, el('summary', { textContent: { information: '情报副本', item: '随身物品', buyback: '买回物品' }[kind] }), ...offers.filter((offer) => offer.kind === kind).map((offer) => button(`${offer.kind === 'buyback' ? '买回' : '出售'}《${offer.name}》 · ${offer.price}`, () => {
       journalHeader('确认交易');
       journalDialog.append(el('h3', { textContent: offer.name }),
         el('p', { textContent: `${offer.buyer} · ${offer.price} · ${offer.minutes} 分钟` }),
         el('p', { textContent: offer.kind === 'information' ? `交付情报副本 ${offer.facts.map((id) => game.clues[id].name).join('、')}。卡片保留。` : `${offer.kind === 'buyback' ? '收回' : '交出'}实际物品，背包与所有权同时改变。` }),
         button('确认交易', () => { journalDialog.close(); act((state) => game.trade(state, offer.kind, offer.id)); }, { className: 'action' }),
         button('取消', () => journalDialog.close(), { className: 'utility' }));
-    }, { className: 'action', disabled: offer.kind === 'buyback' && (run.money < offer.price || game.bagUsed(run) + game.items[offer.id].occupies_slots > run.inventory_limit) })))];
+    }, { className: 'action', disabled: offer.kind === 'buyback' && (run.money < offer.price || game.bagUsed(run) + game.items[offer.id].occupies_slots > run.inventory_limit) })))))];
 }
 
-function status(run, node) {
-  const { stats } = run;
-  const statRows = [
-    ['理智', stats.sanity], ['失控度', `${stats.loss_of_control}%`],
-    ['体力', `${stats.stamina}／${stats.stamina_max}`],
-    [game.hasFact(run, 'gehrman_whereabouts') ? '格尔曼信任' : '旅客关系', game.hasFact(run, 'gehrman_whereabouts') ? stats.gehrman_trust : '尚未结识']
-  ];
-  const slots = Array.from({ length: run.inventory_limit }, (_, index) => {
-    const occupied = run.inventory.flatMap((id) => Array(game.items[id].occupies_slots).fill(id));
+function backpackSlots(run, manage = false) {
+  const occupied = run.inventory.flatMap((id) => Array(game.items[id].occupies_slots).fill(id));
+  return el('ul', { className: 'slots backpack-slots' }, ...Array.from({ length: run.inventory_limit }, (_, index) => {
     const id = occupied[index];
     if (!id) return el('li', { className: 'slot empty', textContent: '空位' });
     const item = game.items[id];
-    if (index > 0 && occupied[index - 1] === id) return el('li', { className: 'slot', textContent: `${item.name} · 占用第二格` });
-    return el('li', { className: 'slot' },
-      el('span', { textContent: item.name, title: [item.description, item.limitation].filter(Boolean).join('。') }),
-      ...(node.safe_inventory && !run.ending
-        ? [button('放下', () => play(null, id), { className: 'inline-button', ariaLabel: `放下${item.name}` })] : []));
-  });
-  const evidence = run.clues.map((id) => {
-    const clue = game.clues[id];
-    return el('li', {}, button(clue.name, () => openClues(id), { className: 'clue-link' }));
-  });
-  return el('aside', { className: 'sidebar', ariaLabel: '角色状态' },
-    el('section', { className: 'journal' },
-      el('h2', { textContent: run.identity.name }),
-      el('p', { className: 'identity', textContent: stats.pathway ? `序列 ${stats.sequence} · ${hunter.name}` : '普通人 · 班西港杂工' }),
-      el('dl', { className: 'stats' }, ...statRows.map(([label, value]) => el('div', {},
-        el('dt', { textContent: label }), el('dd', { textContent: value })))),
-      ...(run.skills.includes(hunter.skill_id) ? [el('p', { className: 'skill', textContent: hunter.skill_name })] : []),
-      el('p', { className: 'wallet', textContent: `金钱 ${run.money}` }),
-      ...(run.inventory.includes('brass_lantern') ? [el('p', { className: 'skill', textContent: run.lamp_lit ? '手提灯 · 已点燃' : '手提灯 · 已熄灭' })] : []),
-      ...(run.light_safety_until > run.elapsed_minutes
-        ? [el('p', { className: 'skill', textContent: `灯火掩护 · 剩余 ${run.light_safety_until - run.elapsed_minutes} 分钟` })] : [])),
-    el('section', { className: 'journal' },
-      el('h2', { textContent: `行囊 ${game.bagUsed(run)}／${run.inventory_limit}` }),
-      el('ul', { className: 'slots' }, ...slots),
-      ...(!run.ending && node.safe_inventory ? Object.keys(game.items).filter((id) => run.item_locations[id] === game.place(run) && run.settlement_log.some((entry) => entry.dropped === id)).map((id) =>
-        button(`重新拿起${game.items[id].name}`, () => act((state) => game.retrieve(state, id)), { className: 'utility', disabled: game.bagUsed(run) + game.items[id].occupies_slots > run.inventory_limit })) : [])),
-    el('section', { className: 'journal' }, button('打开任务簿', openTasks, { className: 'clue-link' }),
-      ...Object.values(run.tasks).map((task) => el('p', { className: 'muted', textContent: task.name }))),
-    el('section', { className: 'journal' },
-      el('h2', { textContent: `线索簿 ${run.clues.length}` }),
-      button('整理与组合', () => openClues(), { className: 'utility' }),
-      evidence.length ? el('ul', { className: 'clues' }, ...evidence) :
-        el('p', { className: 'muted', textContent: '还没有记录。' })));
+    return el('li', { className: 'slot' }, el('span', { textContent: item.name, title: item.description }),
+      ...(manage && !run.ending && game.nodes[run.node].safe_inventory && occupied.indexOf(id) === index
+        ? [button('放下', () => { journalDialog.close(); play(null, id); }, { className: 'inline-button', ariaLabel: `放下${item.name}` })] : []));
+  }));
+}
+
+function openBackpack() {
+  const run = activeRun;
+  journalHeader('背包 · 两格实体物品');
+  journalDialog.append(backpackSlots(run, true),
+    ...run.inventory.map((id) => el('p', { textContent: `${game.items[id].name}：${game.items[id].description}` })),
+    el('p', { className: 'muted', textContent: `当前位置：${game.describePlace(game.place(run))}。线索不占背包。` }),
+    ...(!run.ending && !game.nodes[run.node].map_locked ? run.placed_items.filter((id) =>
+      [game.place(run), `legacy:${game.site(run)}`].includes(run.item_locations[id])).map((id) =>
+      button(`${run.item_locations[id].startsWith('legacy:') ? '认领遗留物：' : '重新拿起'}${game.items[id].name}`, () => { journalDialog.close(); act((state) => game.retrieve(state, id)); },
+        { className: 'action', disabled: game.bagUsed(run) + game.items[id].occupies_slots > run.inventory_limit })) : []));
+}
+
+function openMap() {
+  journalHeader('班西港地图');
+  const routes = game.mapRoutes(activeRun);
+  const preview = el('section', { className: 'route-preview', ariaLive: 'polite' },
+    el('p', { textContent: '选择图上地点，查看实际道路和耗时。' }));
+  journalDialog.append(portMap(game.exploration, game.site(activeRun), routes, (id) => {
+    const route = routes.find((entry) => entry.id === id);
+    preview.replaceChildren(el('h3', { textContent: game.exploration.sites[id].name }));
+    if (route?.observation) preview.append(el('p', { className: 'map-observation', textContent:
+      `上次亲见：${route.observation.text}（${game.clock({ ...activeRun, elapsed_minutes: route.observation.minute })}）` }),
+      ...(route.observation.risk ? [el('p', { className: 'map-risk', textContent: route.observation.risk })] : []));
+    else preview.append(el('p', { className: 'muted', textContent: '熟悉的公共地点；本轮尚未亲访。' }));
+    if (id === game.site(activeRun)) { preview.append(el('p', { textContent: '你在这里。' })); return; }
+    if (!route) { preview.append(el('p', { textContent: '当前行动中无法出行，请先处理眼前的事件。' })); return; }
+    preview.append(el('p', { textContent: `预计 ${route.minutes} 分钟 · 途经 ${route.legs.map((leg) => game.exploration.sites[leg.to].name).join(' → ')}` }),
+      el('p', { textContent: route.reason || '沿已知道路前往；途中发生的事件会中止行程。' }),
+      button('前往', () => { journalDialog.close(); act((state) => game.travel(state, id)); }, { className: 'action', disabled: !route.available }));
+  }), preview);
+}
+
+function localMap(run) {
+  if (game.site(run) === 'home') return houseMap(run);
+  if (run.ending || game.nodes[run.node].map_locked || !game.areas(run).length) return [];
+  return [el('section', { className: 'local-exploration' },
+    el('h2', { textContent: `${game.exploration.sites[game.site(run)].name} · 区域示意图` }),
+    areaMap(game.areas(run), game.area(run), (id) => act((state) => game.moveArea(state, id)), game.site(run)),
+    el('small', { className: 'muted', textContent: '选择区域不计时 · 仅展示眼前可调查对象' }))];
 }
 
 function actionButton(choice) {
@@ -531,7 +580,13 @@ function objectActions(run, choices) {
   const names = [...new Set((run.node === 'home_search'
     ? game.nodes[run.node].choices.filter((choice) => choice.region === run.home_area && choice.object)
     : grouped).map((choice) => choice.object))];
-  if (!names.includes(selectedObject)) selectedObject = null;
+  if (!names.includes(selectedObject) && !game.nodes[run.node].map_locked) {
+    const stillPresent = game.nodes[run.node].choices.some((choice) => choice.object === selectedObject &&
+      (!choice.area || choice.area === game.area(run)) && (!choice.region || choice.region === run.home_area) &&
+      run.elapsed_minutes >= (choice.available_from ?? 0) && run.elapsed_minutes <= (choice.available_until ?? Infinity));
+    if (stillPresent) names.push(selectedObject);
+    else selectedObject = null;
+  }
   const panel = el('section', { className: 'object-panel' });
   function select(name) {
     selectedObject = name;
@@ -545,23 +600,30 @@ function objectActions(run, choices) {
       return button(name, () => select(name), { className: 'object-hotspot', ariaPressed: selectedObject === name },
         el('small', { textContent: seen ? '已调查' : '查看' }));
     })),
-    ...(selectedObject ? [el('div', { className: 'object-operations' },
+    ...(selectedObject ? [el('div', { className: 'object-operations object-actions' },
       el('h3', { textContent: selectedObject }), ...grouped.filter((choice) => choice.object === selectedObject).map(actionButton),
-      ...(grouped.some((choice) => choice.object === selectedObject) ? [] : [el('p', { className: 'muted', textContent: '物件已经取走，或调查记录已存入线索簿。' })]),
+      ...(grouped.some((choice) => choice.object === selectedObject) ? [] : [el('p', { className: 'muted', textContent: '相关回应已记录，眼前暂时没有新的行动。' })]),
       button('收起', () => select(null), { className: 'utility' }))] : [el('p', { className: 'muted', textContent: '点选眼前的人或物，查看当前可以采取的行动。' })]));
   panel.onclick = (event) => { if (event.target === panel) select(null); };
   if (plain.length) panel.append(el('div', { className: 'actions' }, ...plain.map(actionButton)));
   return panel;
 }
 
+function seaChecklist(run) {
+  return el('section', { className: 'sea-checklist', ariaLabel: '下海前准备核对' },
+    el('h2', { textContent: '下海前，核对已经知道的准备' }),
+    ...game.seaReadiness(run).map((row) => el('p', { className: row.ready ? 'ready' : 'unconfirmed' },
+      el('strong', { textContent: `${row.ready ? '✓' : '○'} ${row.name}：` }), row.text)));
+}
+
 function story(run) {
   const node = game.nodes[run.node];
   const dialogueMinutes = game.dialogueMinutes(run);
   const choices = game.actions(run);
-  const map = choices.filter((choice) => choice.map);
+  const focus = game.focus(run);
   const text = el('div', { className: 'narrative' },
     ...game.text(run).map((line) => el('p', { textContent: line })));
-  const actions = choices.filter((choice) => !choice.map);
+  const actions = choices.filter((choice) => !choice.travel);
   const chapter = run.ending ? `结局 ${run.ending === 'SEA_FAIL' ? '· 海上遇难' : run.ending}` : node.location;
   const roomView = ['home_search','home_exit','home_door','door_talk','door_peek','door_confirm'].includes(run.node);
   const image = roomView ? artwork.house_plan : artwork[node.background];
@@ -586,9 +648,10 @@ function story(run) {
       el('span', { className: 'brand', textContent: '血雾班西' }),
       el('time', { className: 'world-time', textContent: game.clock(run), ariaLabel: `游戏时间 ${game.clock(run)}` }),
       soundButton(),
-      button('任务', openTasks, { className: 'utility' }),
-      button('日志', openLog, { className: 'utility' }),
+      el('span', { className: 'hud-stats', textContent: `体力 ${run.stats.stamina}/${run.stats.stamina_max} · 理智 ${run.stats.sanity} · 失控 ${run.stats.loss_of_control}% · 金钱 ${run.money}${game.hasFact(run, 'gehrman_whereabouts') ? ` · 信任 ${run.stats.gehrman_trust}` : ''}` }),
+      ...(run.inventory.includes('brass_lantern') ? [el('small', { className: 'lamp-status', textContent: `手提灯${run.lamp_lit ? '已点燃' : '已熄灭'}${run.light_safety_until > run.elapsed_minutes ? ` · 掩护剩余 ${run.light_safety_until - run.elapsed_minutes} 分钟` : ''}` })] : []),
       button('主菜单', () => show('menu'), { className: 'utility' })),
+    ...(focus ? [button(focus.name, openTasks, { className: 'focus-goal' }, el('small', { textContent: focus.hint }))] : []),
     el('div', { className: 'game-grid' },
       el('article', { className: 'story' },
         sceneHeading,
@@ -597,15 +660,17 @@ function story(run) {
         ]),
         el('details', { className: 'recap', open: Boolean(run.ending) },
           el('summary', { textContent: '回看剧情' }), ...feedback, text),
-        ...houseMap(run),
+        ...localMap(run),
+        ...(run.node === 'sea_prep' ? [seaChecklist(run)] : []),
         ...(actions.length ? [objectActions(run, actions)] : []),
         ...tradePanel(run),
-        ...(map.length ? [el('nav', { className: 'map', ariaLabel: '班西地区地图' },
-          el('h2', { textContent: '班西地区地图' }),
-          el('p', { className: 'current-location', textContent: `● 当前位置 ${node.location}` }),
-          el('div', { className: 'map-links route-map' }, ...map.map(actionButton)))] : []),
-        ...ending),
-      status(run, node)));
+        ...ending)),
+    el('footer', { className: 'bottom-tools' },
+      button('全港地图', openMap, { className: 'utility' }),
+      button('线索簿', () => openClues(), { className: 'utility' }),
+      button('背包', openBackpack, { className: 'utility' }),
+      button('日志', openLog, { className: 'utility' }), backpackSlots(run)));
+
 }
 
 const exitScreen = () => el('section', { className: 'sheet' }, heading('已退出游戏'),

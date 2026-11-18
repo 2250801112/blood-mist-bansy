@@ -274,10 +274,13 @@
           "label": "开始第一幕：今夜，请不要开门",
           "next": "home_wake",
           "minutes": 0,
-          "id": "begin"
+          "id": "begin",
+          "area": "road"
         }
       ],
-      "background": "main_menu"
+      "background": "main_menu",
+      "site": "street",
+      "map_locked": true
     },
     {
       "id": "home_wake",
@@ -343,7 +346,9 @@
           "type": "add_clue",
           "id": "memory_gap"
         }
-      ]
+      ],
+      "site": "home",
+      "map_locked": true
     },
     {
       "id": "home_search",
@@ -826,6 +831,63 @@
           "feedback": [
             "余火引燃灯芯，近处的轮廓重新清晰。"
           ]
+        },
+        {
+          "id": "confirm_shelter",
+          "label": "检查门闩与屋内动静",
+          "minutes": 1,
+          "next": "home_search",
+          "requires": [
+            {
+              "type": "flag_false",
+              "key": "visitor_active"
+            },
+            {
+              "type": "minute_gte",
+              "value": 18
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "home_shelter"
+            }
+          ],
+          "max_uses": 1,
+          "region": "hall",
+          "feedback": [
+            "门闩扣紧，屋内没有别的动静。可以在这里休整，但时间仍会继续。"
+          ],
+          "object": "门窗与门闩"
+        },
+        {
+          "id": "safe_rest",
+          "label": "关好门休整一小时",
+          "minutes": 60,
+          "next": "home_search",
+          "requires": [
+            {
+              "type": "clue",
+              "id": "home_shelter"
+            },
+            {
+              "type": "flag_false",
+              "key": "visitor_active"
+            }
+          ],
+          "effects": [],
+          "rest": true,
+          "region": "bedroom",
+          "feedback": [
+            "你在已确认安全的住所休整。每完整一小时恢复2点体力，不降低失控。"
+          ],
+          "object": "床铺",
+          "visible_when": [
+            {
+              "type": "clue",
+              "id": "home_shelter"
+            }
+          ]
         }
       ],
       "background": "bedroom_waking",
@@ -840,7 +902,8 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "home"
     },
     {
       "id": "home_window",
@@ -879,7 +942,9 @@
         }
       ],
       "background": "bedroom_waking",
-      "safe_inventory": true
+      "safe_inventory": true,
+      "site": "home",
+      "map_locked": true
     },
     {
       "id": "home_remember",
@@ -904,7 +969,9 @@
           "id": "record_memory"
         }
       ],
-      "background": "bedroom_waking"
+      "background": "bedroom_waking",
+      "site": "home",
+      "map_locked": true
     },
     {
       "id": "home_door",
@@ -1024,7 +1091,9 @@
             "木头发出一声干响。门外突然没了动静，接着有人慢慢压下了门把。"
           ]
         }
-      ]
+      ],
+      "site": "home",
+      "map_locked": true
     },
     {
       "id": "door_talk",
@@ -1085,7 +1154,9 @@
           "type": "add_clue",
           "id": "neighbor_repetition"
         }
-      ]
+      ],
+      "site": "home",
+      "map_locked": true
     },
     {
       "id": "door_peek",
@@ -1132,7 +1203,9 @@
           "key": "sanity",
           "value": -8
         }
-      ]
+      ],
+      "site": "home",
+      "map_locked": true
     },
     {
       "id": "home_exit",
@@ -1182,7 +1255,9 @@
             "门外没有脚步声。你收好行囊，握住门把。"
           ]
         }
-      ]
+      ],
+      "site": "home",
+      "map_locked": true
     },
     {
       "id": "street",
@@ -1206,7 +1281,9 @@
               "type": "minute_lt",
               "value": 463
             }
-          ]
+          ],
+          "area": "road",
+          "travel": true
         },
         {
           "label": "走向电报局（夜）",
@@ -1219,7 +1296,9 @@
               "type": "minute_lt",
               "value": 683
             }
-          ]
+          ],
+          "area": "road",
+          "travel": true
         },
         {
           "label": "前往码头",
@@ -1232,7 +1311,9 @@
               "type": "minute_lt",
               "value": 463
             }
-          ]
+          ],
+          "area": "road",
+          "travel": true
         },
         {
           "label": "去风暴教堂外围看看",
@@ -1245,7 +1326,9 @@
               "type": "minute_lt",
               "value": 463
             }
-          ]
+          ],
+          "area": "road",
+          "travel": true
         },
         {
           "label": "回到家",
@@ -1258,7 +1341,9 @@
               "type": "minute_lt",
               "value": 463
             }
-          ]
+          ],
+          "area": "road",
+          "travel": true
         },
         {
           "label": "在屋檐下等到次日上午 09:40",
@@ -1271,7 +1356,9 @@
             }
           ],
           "id": "rest_to_day",
-          "map": true
+          "map": true,
+          "area": "road",
+          "object": "屋檐下"
         },
         {
           "id": "wait_for_dawn",
@@ -1290,7 +1377,9 @@
               "value": 463
             }
           ],
-          "map": true
+          "map": true,
+          "area": "road",
+          "object": "屋檐下"
         },
         {
           "id": "see_departure",
@@ -1307,7 +1396,9 @@
               "key": "saw_ship_missed"
             }
           ],
-          "map": true
+          "map": true,
+          "area": "road",
+          "object": "港口方向"
         },
         {
           "id": "market",
@@ -1321,7 +1412,9 @@
               "type": "minute_lt",
               "value": 453
             }
-          ]
+          ],
+          "area": "road",
+          "travel": true
         }
       ],
       "notes": "执行节点进入时，全局时间事件应先判断船是否离港/电报职员是否消失。",
@@ -1332,7 +1425,7 @@
           "requires": [
             {
               "type": "minute_gte",
-              "value": 683
+              "value": 463
             }
           ]
         }
@@ -1356,7 +1449,8 @@
           "type": "add_clue",
           "id": "harbor_whistle"
         }
-      ]
+      ],
+      "site": "street"
     },
     {
       "id": "tavern",
@@ -1390,7 +1484,8 @@
           ],
           "available_from": 128,
           "available_until": 168,
-          "object": "玛蕾娜"
+          "object": "玛蕾娜",
+          "area": "kitchen"
         },
         {
           "label": "询问年幼的堂娜",
@@ -1408,7 +1503,8 @@
             }
           ],
           "available_until": 165,
-          "object": "堂娜"
+          "object": "堂娜",
+          "area": "tables"
         },
         {
           "label": "辨认船长提过的格尔曼·斯帕罗",
@@ -1429,7 +1525,8 @@
           "permanent_lock": "gehrman_refused",
           "available_from": 123,
           "available_until": 170,
-          "object": "格尔曼·斯帕罗"
+          "object": "格尔曼·斯帕罗",
+          "area": "tables"
         },
         {
           "label": "跟上走向后门的堂娜",
@@ -1458,14 +1555,17 @@
           ],
           "available_from": 128,
           "available_until": 160,
-          "object": "后门"
+          "object": "后门",
+          "area": "rear"
         },
         {
           "label": "返回旧街",
           "next": "street",
           "minutes": 10,
           "id": "return",
-          "map": true
+          "map": true,
+          "area": "foyer",
+          "travel": true
         },
         {
           "id": "wait_gehrman",
@@ -1485,7 +1585,8 @@
             }
           ],
           "max_uses": 1,
-          "object": "餐桌"
+          "object": "餐桌",
+          "area": "tables"
         },
         {
           "id": "wait_collision",
@@ -1505,7 +1606,8 @@
             }
           ],
           "max_uses": 1,
-          "object": "餐桌"
+          "object": "餐桌",
+          "area": "tables"
         },
         {
           "id": "observe_fire",
@@ -1525,7 +1627,8 @@
           ],
           "feedback": [
             "火还稳定地燃着。要用它点灯，得先把手提灯带到这里。"
-          ]
+          ],
+          "area": "counter"
         },
         {
           "id": "extinguish",
@@ -1551,7 +1654,8 @@
           ],
           "feedback": [
             "你熄灭了手提灯。"
-          ]
+          ],
+          "area": "counter"
         },
         {
           "id": "ask_fire",
@@ -1577,7 +1681,8 @@
           ],
           "feedback": [
             "值夜人：“借火？我替你挡着风。两块钱，等我两分钟。”"
-          ]
+          ],
+          "area": "counter"
         },
         {
           "id": "relight_paid",
@@ -1628,7 +1733,8 @@
           ],
           "feedback": [
             "值夜人护着灯罩替你点燃灯芯。旧街的身影不会因此忘记你。"
-          ]
+          ],
+          "area": "counter"
         }
       ],
       "background": "lemon_tavern",
@@ -1755,7 +1861,8 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "tavern"
     },
     {
       "id": "marena_talk",
@@ -1816,7 +1923,8 @@
           ],
           "available_from": 128,
           "available_until": 168,
-          "exclusive_group": "marena_reply"
+          "exclusive_group": "marena_reply",
+          "area": "kitchen"
         },
         {
           "label": "劝她别再靠近窗户",
@@ -1856,7 +1964,8 @@
           ],
           "available_from": 128,
           "available_until": 168,
-          "exclusive_group": "marena_reply"
+          "exclusive_group": "marena_reply",
+          "area": "kitchen"
         },
         {
           "id": "return",
@@ -1878,7 +1987,8 @@
               "value": "missed"
             }
           ],
-          "exclusive_group": "marena_reply"
+          "exclusive_group": "marena_reply",
+          "area": "kitchen"
         }
       ],
       "background": "lemon_tavern",
@@ -1910,7 +2020,10 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "tavern",
+      "map_locked": true,
+      "entry_area": "kitchen"
     },
     {
       "id": "donna_talk",
@@ -1953,7 +2066,8 @@
                 "headless_shadow"
               ]
             }
-          ]
+          ],
+          "area": "tables"
         },
         {
           "label": "询问她所在的船何时离开",
@@ -1982,7 +2096,8 @@
               "type": "clue",
               "id": "donna_testimony"
             }
-          ]
+          ],
+          "area": "tables"
         },
         {
           "label": "安慰她可能是看错了",
@@ -2001,7 +2116,8 @@
             "堂娜低下头，没有再说下去。"
           ],
           "exclusive_group": "donna_reply",
-          "available_until": 168
+          "available_until": 168,
+          "area": "tables"
         },
         {
           "id": "ask_travelers",
@@ -2019,13 +2135,15 @@
               "type": "clue",
               "id": "donna_testimony"
             }
-          ]
+          ],
+          "area": "tables"
         },
         {
           "id": "return",
           "label": "结束谈话",
           "next": "tavern",
-          "minutes": 0
+          "minutes": 0,
+          "area": "tables"
         }
       ],
       "background": "lemon_tavern",
@@ -2054,7 +2172,10 @@
           "type": "add_clue",
           "id": "donna_testimony"
         }
-      ]
+      ],
+      "site": "tavern",
+      "map_locked": true,
+      "entry_area": "tables"
     },
     {
       "id": "gehrman",
@@ -2122,7 +2243,8 @@
           "exclusive_group": "gehrman_intro",
           "permanent_lock": "gehrman_refused",
           "max_uses": 1,
-          "object": "冷淡的冒险家"
+          "object": "冷淡的冒险家",
+          "area": "tables"
         },
         {
           "label": "出示教堂运输收据",
@@ -2166,7 +2288,8 @@
           "available_from": 123,
           "available_until": 171,
           "permanent_lock": "gehrman_refused",
-          "object": "冷淡的冒险家"
+          "object": "冷淡的冒险家",
+          "area": "tables"
         },
         {
           "label": "展示可核验的异常线索",
@@ -2224,7 +2347,8 @@
           "available_from": 123,
           "available_until": 170,
           "permanent_lock": "gehrman_refused",
-          "object": "冷淡的冒险家"
+          "object": "冷淡的冒险家",
+          "area": "tables"
         },
         {
           "label": "坦白自己记忆断片且担心受到污染",
@@ -2283,7 +2407,8 @@
           "available_from": 123,
           "available_until": 173,
           "permanent_lock": "gehrman_refused",
-          "object": "冷淡的冒险家"
+          "object": "冷淡的冒险家",
+          "area": "tables"
         },
         {
           "label": "直接询问能否登船",
@@ -2320,7 +2445,8 @@
           "feedback": [
             "格尔曼说，登船要由船长决定。你得给出能核验的理由。"
           ],
-          "object": "冷淡的冒险家"
+          "object": "冷淡的冒险家",
+          "area": "tables"
         },
         {
           "label": "空口宣称知道全部真相",
@@ -2378,7 +2504,8 @@
           "exclusive_group": "gehrman_intro",
           "permanent_lock": "gehrman_refused",
           "max_uses": 1,
-          "object": "冷淡的冒险家"
+          "object": "冷淡的冒险家",
+          "area": "tables"
         },
         {
           "label": "告别格尔曼，回到餐厅",
@@ -2387,7 +2514,8 @@
           "id": "return",
           "max_uses": 1,
           "effects": [],
-          "object": "离开"
+          "object": "离开",
+          "area": "tables"
         }
       ],
       "background": "lemon_tavern",
@@ -2439,7 +2567,10 @@
           ]
         }
       ],
-      "dialogue_window": "gehrman"
+      "dialogue_window": "gehrman",
+      "site": "tavern",
+      "map_locked": true,
+      "entry_area": "tables"
     },
     {
       "id": "gehrman_receipt",
@@ -2489,13 +2620,15 @@
           ],
           "permanent_lock": "gehrman_refused",
           "available_from": 123,
-          "available_until": 173
+          "available_until": 173,
+          "area": "tables"
         },
         {
           "id": "return",
           "label": "结束这段问答",
           "next": "gehrman",
-          "minutes": 0
+          "minutes": 0,
+          "area": "tables"
         }
       ],
       "background": "lemon_tavern",
@@ -2581,7 +2714,10 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "tavern",
+      "map_locked": true,
+      "entry_area": "tables"
     },
     {
       "id": "gehrman_verify",
@@ -2629,13 +2765,15 @@
           ],
           "permanent_lock": "gehrman_refused",
           "available_from": 123,
-          "available_until": 173
+          "available_until": 173,
+          "area": "tables"
         },
         {
           "id": "return",
           "label": "结束这段问答",
           "next": "gehrman",
-          "minutes": 0
+          "minutes": 0,
+          "area": "tables"
         }
       ],
       "background": "lemon_tavern",
@@ -2687,7 +2825,10 @@
           ]
         }
       ],
-      "dialogue_window": "gehrman"
+      "dialogue_window": "gehrman",
+      "site": "tavern",
+      "map_locked": true,
+      "entry_area": "tables"
     },
     {
       "id": "gehrman_closed",
@@ -2716,16 +2857,21 @@
           "id": "return",
           "label": "回到餐厅",
           "next": "tavern",
-          "minutes": 0
+          "minutes": 0,
+          "area": "tables"
         },
         {
           "id": "dock",
           "label": "前往码头",
           "next": "dock",
           "minutes": 8,
-          "map": true
+          "map": true,
+          "area": "tables"
         }
-      ]
+      ],
+      "site": "tavern",
+      "map_locked": true,
+      "entry_area": "tables"
     },
     {
       "id": "rescue",
@@ -2789,11 +2935,22 @@
             {
               "type": "event_pending",
               "id": "donna_rescue"
+            },
+            {
+              "type": "clue_any",
+              "ids": [
+                "headless_shadow",
+                "donna_testimony",
+                "returned_husband",
+                "floating_light",
+                "telegram_notes"
+              ]
             }
           ],
           "exclusive_group": "donna_rescue_response",
           "available_from": 128,
-          "available_until": 168
+          "available_until": 168,
+          "area": "rear"
         },
         {
           "label": "装作没看见",
@@ -2820,7 +2977,8 @@
           ],
           "exclusive_group": "donna_rescue_response",
           "available_from": 128,
-          "available_until": 168
+          "available_until": 168,
+          "area": "rear"
         }
       ],
       "background": "lemon_tavern",
@@ -2852,7 +3010,10 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "tavern",
+      "map_locked": true,
+      "entry_area": "rear"
     },
     {
       "id": "church_outside",
@@ -2875,17 +3036,133 @@
             }
           ],
           "id": "record_tracks",
-          "map": true
+          "map": true,
+          "area": "side",
+          "object": "侧门箱车痕迹"
         },
         {
           "label": "直接回旧街",
           "next": "street",
           "minutes": 5,
           "id": "return",
-          "map": true
+          "map": true,
+          "area": "front",
+          "travel": true
+        },
+        {
+          "id": "observe_lane",
+          "label": "查看潮湿脚印与箱车擦痕",
+          "area": "lane",
+          "minutes": 2,
+          "next": "church_outside",
+          "requires": [],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "lane_footprints"
+            }
+          ],
+          "max_uses": 1,
+          "object": "卸货道脚印"
+        },
+        {
+          "id": "listen_corner",
+          "label": "在遮蔽物后听转角响动",
+          "area": "lane",
+          "minutes": 2,
+          "next": "church_outside",
+          "requires": [
+            {
+              "type": "clue",
+              "id": "lane_footprints"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "lane_sounds"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "转角的脚步声停下，又朝相反方向远去。你仍看不清来者。"
+          ],
+          "object": "转角响动",
+          "visible_when": [
+            {
+              "type": "clue",
+              "id": "lane_footprints"
+            }
+          ]
+        },
+        {
+          "id": "analyze_tracks",
+          "label": "比较脚印的干湿与落脚深浅",
+          "area": "lane",
+          "minutes": 2,
+          "next": "church_outside",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "clue",
+              "id": "lane_footprints"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "lane_repeated_tracks"
+            }
+          ],
+          "max_uses": 1,
+          "visible_when": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "clue",
+              "id": "lane_footprints"
+            }
+          ],
+          "object": "卸货道脚印"
+        },
+        {
+          "id": "avoid_corner",
+          "label": "沿卸货道遮蔽物绕行",
+          "area": "lane",
+          "minutes": 3,
+          "next": "church_outside",
+          "requires": [
+            {
+              "type": "deduction",
+              "id": "R20"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "lane_safe_approach"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "你沿箱车留下的遮蔽绕过反复出现脚步的转角，退到侧门外。箱内内容仍无从确认。"
+          ],
+          "visible_when": [
+            {
+              "type": "deduction",
+              "id": "R20"
+            }
+          ],
+          "object": "转角响动"
         }
       ],
-      "background": "red_street"
+      "background": "red_street",
+      "site": "church"
     },
     {
       "id": "telegraph_night",
@@ -2933,7 +3210,9 @@
             "玩家：“为什么？”",
             "两人同时沉默。片刻后，梅兰妮低声说：“因为……我们……已经……在……里面……”"
           ],
-          "available_until": 682
+          "available_until": 682,
+          "area": "porch",
+          "object": "门内的声音"
         },
         {
           "label": "从门缝观察",
@@ -2956,7 +3235,9 @@
           "feedback": [
             "两道静止的人影映在玻璃上。电报机仍在敲响，没有一个人影抬手。"
           ],
-          "available_until": 682
+          "available_until": 682,
+          "area": "window",
+          "object": "窗口人影"
         },
         {
           "id": "bloodied_paper",
@@ -2978,7 +3259,9 @@
           "feedback": [
             "纸上有未干的血，边缘黏在门槛上。理智 −5。"
           ],
-          "available_until": 682
+          "available_until": 682,
+          "area": "porch",
+          "object": "染血电报纸"
         },
         {
           "label": "强行进入电报局",
@@ -2995,14 +3278,73 @@
               "value": 683
             }
           ],
-          "available_until": 682
+          "available_until": 682,
+          "area": "porch",
+          "object": "紧闭的局门"
         },
         {
           "label": "离开电报局",
           "next": "street",
           "minutes": 10,
           "id": "return",
-          "map": true
+          "map": true,
+          "area": "porch",
+          "travel": true
+        },
+        {
+          "id": "read_hours",
+          "label": "看门廊的值班牌",
+          "area": "porch",
+          "minutes": 1,
+          "next": "telegraph_night",
+          "max_uses": 1,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "telegraph_hours"
+            }
+          ],
+          "feedback": [
+            "值班牌写着09:40。此刻门仍关着；是否真会开门，要等到那时亲自看。"
+          ],
+          "object": "门廊值班牌"
+        },
+        {
+          "id": "wait_open",
+          "label": "在门外保持距离，等到09:40再看",
+          "area": "porch",
+          "minutes": 0,
+          "next": "telegraph_day",
+          "requires": [
+            {
+              "type": "clue",
+              "id": "telegraph_hours"
+            }
+          ],
+          "visible_when": [
+            {
+              "type": "minute_gte",
+              "value": 463
+            },
+            {
+              "type": "minute_lt",
+              "value": 683
+            },
+            {
+              "type": "clue",
+              "id": "telegraph_hours"
+            }
+          ],
+          "effects": [
+            {
+              "type": "advance_to_minute",
+              "value": 683
+            }
+          ],
+          "feedback": [
+            "你与门保持距离，留在能撤回旧街的门廊外。时针到09:40时，门开了。"
+          ],
+          "object": "门廊值班牌"
         }
       ],
       "background": "telegraph_night",
@@ -3016,7 +3358,8 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "telegraph"
     },
     {
       "id": "dock",
@@ -3075,7 +3418,8 @@
               "id": "captain_schedule"
             }
           ],
-          "object": "白玛瑙号"
+          "object": "白玛瑙号",
+          "area": "entrance"
         },
         {
           "label": "请格尔曼担保并请求登船",
@@ -3149,7 +3493,8 @@
               "value": "completed"
             }
           ],
-          "object": "白玛瑙号"
+          "object": "白玛瑙号",
+          "area": "gangway"
         },
         {
           "label": "再去调查",
@@ -3162,7 +3507,9 @@
             }
           ],
           "id": "leave",
-          "map": true
+          "map": true,
+          "area": "entrance",
+          "travel": true
         },
         {
           "id": "wait_parley",
@@ -3190,7 +3537,8 @@
             }
           ],
           "max_uses": 1,
-          "object": "白玛瑙号"
+          "object": "白玛瑙号",
+          "area": "gangway"
         },
         {
           "id": "wait_departure",
@@ -3210,7 +3558,8 @@
             }
           ],
           "max_uses": 1,
-          "object": "白玛瑙号"
+          "object": "白玛瑙号",
+          "area": "berth"
         },
         {
           "id": "resume_boarding",
@@ -3244,7 +3593,8 @@
               "type": "boarding_valid"
             }
           ],
-          "object": "白玛瑙号"
+          "object": "白玛瑙号",
+          "area": "gangway"
         },
         {
           "id": "observe_fire",
@@ -3264,7 +3614,8 @@
           ],
           "feedback": [
             "火还稳定地燃着。要用它点灯，得先把手提灯带到这里。"
-          ]
+          ],
+          "area": "shed"
         },
         {
           "id": "extinguish",
@@ -3290,7 +3641,8 @@
           ],
           "feedback": [
             "你熄灭了手提灯。"
-          ]
+          ],
+          "area": "shed"
         },
         {
           "id": "ask_fire",
@@ -3316,7 +3668,8 @@
           ],
           "feedback": [
             "值夜人：“借火？我替你挡着风。两块钱，等我两分钟。”"
-          ]
+          ],
+          "area": "shed"
         },
         {
           "id": "relight_paid",
@@ -3367,7 +3720,8 @@
           ],
           "feedback": [
             "值夜人护着灯罩替你点燃灯芯。旧街的身影不会因此忘记你。"
-          ]
+          ],
+          "area": "shed"
         },
         {
           "id": "observe_sailor",
@@ -3391,7 +3745,8 @@
           "feedback": [
             "船员：“船长忙着清点人。谁替你递话，谁就得多跑一趟。”",
             "他说完没走，手指在旧钱袋上敲了敲。"
-          ]
+          ],
+          "area": "entrance"
         },
         {
           "id": "pay_introduction",
@@ -3425,7 +3780,8 @@
           ],
           "feedback": [
             "船员收好辛苦钱，实际带你穿过栈桥，向船长说明来意。引荐只换来了这次交谈机会。"
-          ]
+          ],
+          "area": "entrance"
         },
         {
           "id": "captain_terms",
@@ -3459,7 +3815,8 @@
             "艾尔兰：“我要能核对的证明，也要检查你有没有污染。船上还有其他乘客。”",
             "艾尔兰：“格尔曼·斯帕罗在青柠檬餐厅查这座镇子的事。黑礼服，戴礼帽。你若确实知道什么，就带着能核对的东西找他。”",
             "艾尔兰：“最后申请是清晨五点到五点半。手续要十分钟，六点开船。”"
-          ]
+          ],
+          "area": "gangway"
         },
         {
           "id": "observe_cost",
@@ -3482,7 +3839,8 @@
           ],
           "feedback": [
             "船员低声说起临时隔离舱、额外看守与安置的费用。船长抬手：“检查不能省，船期也不能改。”"
-          ]
+          ],
+          "area": "gangway"
         },
         {
           "id": "ask_price",
@@ -3506,7 +3864,8 @@
           ],
           "feedback": [
             "艾尔兰：“你自己承担额外安置和看守，费用一百二十。先通过检查，再按申请时段来。检查有问题，多少钱都不能上船。”"
-          ]
+          ],
+          "area": "gangway"
         },
         {
           "id": "pay_berth",
@@ -3581,7 +3940,8 @@
           ],
           "feedback": [
             "艾尔兰确认筛查、资金和船期后批准你的额外安置。上船后须接受看守与隔离。"
-          ]
+          ],
+          "area": "gangway"
         },
         {
           "id": "market",
@@ -3595,7 +3955,9 @@
               "type": "minute_lt",
               "value": 453
             }
-          ]
+          ],
+          "area": "entrance",
+          "travel": true
         }
       ],
       "background": "dock_ship",
@@ -3630,7 +3992,8 @@
             "艾尔兰：“班西人？今晚的情况你也看见了。我不能让一个来历不明的人上船。”"
           ]
         }
-      ]
+      ],
+      "site": "dock"
     },
     {
       "id": "dock_board",
@@ -3674,7 +4037,8 @@
           "feedback": [
             "你把已知情况告诉艾尔兰。船员请玛蕾娜留在岸上等待检查。"
           ],
-          "exclusive_group": "marena_boarding"
+          "exclusive_group": "marena_boarding",
+          "area": "gangway"
         },
         {
           "label": "告诉她无法带她走",
@@ -3706,7 +4070,8 @@
           "feedback": [
             "玛蕾娜攥紧掌心的旧怀表，没有跟上来。"
           ],
-          "exclusive_group": "marena_boarding"
+          "exclusive_group": "marena_boarding",
+          "area": "gangway"
         },
         {
           "label": "替她向船员交涉，不提她的情况",
@@ -3748,7 +4113,8 @@
           "feedback": [
             "格尔曼察觉你隐瞒了她的状况。船员收回登船许可。信任 −50。"
           ],
-          "exclusive_group": "marena_boarding"
+          "exclusive_group": "marena_boarding",
+          "area": "gangway"
         },
         {
           "id": "board",
@@ -3792,7 +4158,8 @@
               "id": "white_agate_boarding",
               "value": "completed"
             }
-          ]
+          ],
+          "area": "gangway"
         },
         {
           "id": "wait_boarding",
@@ -3811,7 +4178,8 @@
               "value": 453
             }
           ],
-          "max_uses": 1
+          "max_uses": 1,
+          "area": "gangway"
         },
         {
           "id": "wait_departure",
@@ -3830,14 +4198,16 @@
               "value": 463
             }
           ],
-          "max_uses": 1
+          "max_uses": 1,
+          "area": "gangway"
         },
         {
           "id": "leave",
           "label": "返回街区",
           "next": "street",
           "minutes": 10,
-          "map": true
+          "map": true,
+          "area": "gangway"
         }
       ],
       "background": "dock_ship",
@@ -3865,7 +4235,10 @@
             "玛蕾娜披着带血外套，握住旧怀表：“你们……要……走……了？可以……带我……一起……走吗？”"
           ]
         }
-      ]
+      ],
+      "site": "dock",
+      "map_locked": true,
+      "entry_area": "gangway"
     },
     {
       "id": "ship_missed",
@@ -3878,25 +4251,74 @@
       ],
       "choices": [
         {
-          "label": "等到上午，寻找其他离港方式",
+          "label": "离开海堤，寻找其他离港方式",
           "next": "day_street",
-          "minutes": 0,
+          "minutes": 10,
           "effects": [
-            {
-              "type": "advance_to_minute",
-              "value": 683
-            },
             {
               "type": "set_flag",
               "key": "ship_departed",
               "value": true
+            },
+            {
+              "type": "add_clue",
+              "id": "white_agate_departed"
             }
           ],
           "id": "find_other_way",
           "feedback": [
             "不远处反复传来昨晚熟悉的声音：“天气……不好……”“今天……已经……关门……”“大家……都在……家里……”仿佛小镇正在重复某段被扭曲的生活。"
           ],
-          "map": true
+          "area": "berth",
+          "object": "空泊位"
+        },
+        {
+          "id": "read_notice",
+          "label": "阅读海堤值班告示",
+          "area": "berth",
+          "minutes": 2,
+          "next": "ship_missed",
+          "requires": [],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "harbor_notice"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "外海补给船登记见港务室。航运原件只在10:00–12:00交班期间可查；这里没有船名与船期。"
+          ],
+          "object": "海堤值班告示"
+        },
+        {
+          "id": "inspect_berth",
+          "label": "查看空泊位",
+          "area": "berth",
+          "minutes": 2,
+          "next": "ship_missed",
+          "requires": [],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "white_agate_departed"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "系缆桩空了，舷梯已经撤走。白玛瑙号不会再接你登船。"
+          ],
+          "object": "空泊位"
+        },
+        {
+          "id": "return",
+          "label": "离开海堤",
+          "area": "entrance",
+          "minutes": 10,
+          "next": "day_street",
+          "requires": [],
+          "effects": [],
+          "travel": true
         }
       ],
       "background": "dock_ship",
@@ -3905,8 +4327,14 @@
           "type": "set_flag",
           "key": "saw_ship_missed",
           "value": true
+        },
+        {
+          "type": "add_clue",
+          "id": "white_agate_departed"
         }
-      ]
+      ],
+      "site": "dock",
+      "safe_inventory": true
     },
     {
       "id": "day_street",
@@ -3914,7 +4342,7 @@
       "location": "旧街区",
       "kind": "scene",
       "text": [
-        "街上的声音像昨天一样重复，电报局的门却已敞开。",
+        "街上的声音像昨天一样重复。电报局的门是否开着，还要亲自过去看。",
         "白玛瑙号不会再回来，你需要新的离港方式。"
       ],
       "choices": [
@@ -3929,7 +4357,9 @@
               "type": "minute_gte",
               "value": 683
             }
-          ]
+          ],
+          "area": "road",
+          "travel": true
         },
         {
           "label": "去港务值班室查航运记录",
@@ -3943,21 +4373,27 @@
               "id": "harbor_records"
             }
           ],
-          "available_until": 813
+          "available_until": 813,
+          "area": "road",
+          "travel": true
         },
         {
           "label": "前往旧灯塔",
           "next": "lighthouse",
           "minutes": 20,
           "id": "lighthouse",
-          "map": true
+          "map": true,
+          "area": "road",
+          "travel": true
         },
         {
           "id": "tavern_later",
           "label": "去青柠檬餐厅",
           "next": "tavern_later",
           "minutes": 12,
-          "map": true
+          "map": true,
+          "area": "road",
+          "travel": true
         },
         {
           "id": "rest",
@@ -3966,7 +4402,9 @@
           "minutes": 60,
           "feedback": [
             "你在屋檐下歇了一小时。风吹过街角，雨声一直没有停。"
-          ]
+          ],
+          "area": "road",
+          "object": "屋檐下"
         },
         {
           "id": "wait_for_tomorrow",
@@ -3987,7 +4425,9 @@
           ],
           "feedback": [
             "你等到午夜。街上关着的窗户没有一扇亮起。"
-          ]
+          ],
+          "area": "road",
+          "object": "屋檐下"
         },
         {
           "label": "留在街区，等到 1月12日 22:17",
@@ -3999,7 +4439,65 @@
               "value": 4320
             }
           ],
-          "id": "wait_for_doom"
+          "id": "wait_for_doom",
+          "area": "road",
+          "object": "屋檐下"
+        },
+        {
+          "id": "telegraph_exterior",
+          "label": "查看电报局外部",
+          "area": "road",
+          "minutes": 12,
+          "next": "telegraph_night",
+          "requires": [],
+          "effects": [],
+          "travel": true,
+          "visible_when": [
+            {
+              "type": "minute_lt",
+              "value": 683
+            }
+          ]
+        },
+        {
+          "id": "home",
+          "label": "前往玩家住所",
+          "area": "road",
+          "minutes": 10,
+          "next": "home_search",
+          "requires": [],
+          "effects": [],
+          "travel": true
+        },
+        {
+          "id": "market",
+          "label": "前往港边货棚",
+          "area": "road",
+          "minutes": 5,
+          "next": "market",
+          "requires": [],
+          "effects": [],
+          "travel": true
+        },
+        {
+          "id": "dock",
+          "label": "前往白玛瑙号码头",
+          "area": "road",
+          "minutes": 15,
+          "next": "ship_missed",
+          "requires": [],
+          "effects": [],
+          "travel": true
+        },
+        {
+          "id": "church",
+          "label": "前往风暴教堂外围",
+          "area": "road",
+          "minutes": 15,
+          "next": "church_outside",
+          "requires": [],
+          "effects": [],
+          "travel": true
         }
       ],
       "background": "red_street",
@@ -4029,7 +4527,8 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "street"
     },
     {
       "id": "telegraph_day",
@@ -4045,14 +4544,75 @@
           "label": "仔细记录血迹并观察旧墙",
           "next": "mural",
           "minutes": 10,
-          "id": "inspect_wall"
+          "id": "inspect_wall",
+          "area": "wall",
+          "object": "剥落的旧墙"
         },
         {
           "label": "转身离开",
           "next": "day_street",
           "minutes": 10,
           "id": "return",
-          "map": true
+          "map": true,
+          "area": "porch",
+          "travel": true
+        },
+        {
+          "id": "observe_blood",
+          "label": "记录血迹、拖擦与站位",
+          "area": "workroom",
+          "minutes": 3,
+          "next": "telegraph_day",
+          "requires": [],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "blood_pattern"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "两滩血之间有细长拖擦，末端通向旧墙。你暂时只能记录这些外观。"
+          ],
+          "object": "地上的血迹"
+        },
+        {
+          "id": "analyze_blood",
+          "label": "用猎杀直觉复查血迹",
+          "area": "workroom",
+          "minutes": 3,
+          "next": "telegraph_day",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "clue",
+              "id": "blood_pattern"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "blood_movement"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "刚才我只看见血。现在，连血落下的方向都像是在说话。喷射与覆盖方向不一致，只能说明发生过不止一次移动，不能断定人员去向。"
+          ],
+          "visible_when": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "clue",
+              "id": "blood_pattern"
+            }
+          ],
+          "object": "地上的血迹"
         }
       ],
       "background": "telegraph_day",
@@ -4061,7 +4621,8 @@
           "type": "add_clue",
           "id": "missing_operators"
         }
-      ]
+      ],
+      "site": "telegraph"
     },
     {
       "id": "mural",
@@ -4077,7 +4638,8 @@
           "next": "day_street",
           "minutes": 5,
           "id": "return",
-          "map": true
+          "map": true,
+          "area": "wall"
         },
         {
           "label": "只观察并记录",
@@ -4109,7 +4671,8 @@
           "id": "sketch",
           "feedback": [
             "你将三叉戟和浪纹描进线索簿。理智 −10。"
-          ]
+          ],
+          "area": "wall"
         },
         {
           "label": "伸手触碰旧墙",
@@ -4128,7 +4691,8 @@
               "type": "flag_false",
               "key": "is_hunter"
             }
-          ]
+          ],
+          "area": "wall"
         },
         {
           "id": "listen_risk",
@@ -4150,7 +4714,8 @@
           ],
           "feedback": [
             "墙后的战鼓愈发清晰，血腥味却像从你自己身上传来。失控度 +25。"
-          ]
+          ],
+          "area": "wall"
         }
       ],
       "background": "mural",
@@ -4174,7 +4739,10 @@
           "type": "add_clue",
           "id": "mural_sketch"
         }
-      ]
+      ],
+      "site": "telegraph",
+      "map_locked": true,
+      "entry_area": "wall"
     },
     {
       "id": "hunter_awaken",
@@ -4196,7 +4764,8 @@
           "next": "day_street",
           "minutes": 15,
           "id": "get_up",
-          "map": true
+          "map": true,
+          "area": "wall"
         }
       ],
       "on_enter": [
@@ -4239,7 +4808,10 @@
           "id": "hunter_born"
         }
       ],
-      "background": "hunter_awakening"
+      "background": "hunter_awakening",
+      "site": "telegraph",
+      "map_locked": true,
+      "entry_area": "wall"
     },
     {
       "id": "harbor_log",
@@ -4247,10 +4819,7 @@
       "location": "港务值班室",
       "kind": "scene",
       "text": [
-        "临时航运记录",
-        "白玛瑙号：1月10日清晨，已离港。",
-        "灰鸥号：1月11日04:30左右经过旧灯塔外海，不入港。",
-        "下一班定期客轮：预计1月15日，不可靠。"
+        "港务值班室外廊贴着交班告示。航运原件只在10:00–12:00开放，须到登记桌实际抄录。"
       ],
       "choices": [
         {
@@ -4287,14 +4856,24 @@
               "key": "ship_schedule_known"
             }
           ],
-          "map": true
+          "map": true,
+          "area": "desk",
+          "feedback": [
+            "临时航运记录",
+            "白玛瑙号：1月10日清晨，已离港。",
+            "灰鸥号：1月11日04:30左右经过旧灯塔外海，不入港。",
+            "下一班定期客轮：预计1月15日，不可靠。"
+          ],
+          "object": "航运登记桌"
         },
         {
           "label": "离开",
           "next": "day_street",
           "minutes": 5,
           "id": "return",
-          "map": true
+          "map": true,
+          "area": "porch",
+          "travel": true
         },
         {
           "id": "wait_records",
@@ -4313,7 +4892,9 @@
               "value": 703
             }
           ],
-          "max_uses": 1
+          "max_uses": 1,
+          "area": "porch",
+          "object": "外廊交班告示"
         }
       ],
       "background": "dock_ship",
@@ -4341,7 +4922,8 @@
             "值班桌上的航运登记已经被收走了。"
           ]
         }
-      ]
+      ],
+      "site": "harbor"
     },
     {
       "id": "lighthouse",
@@ -4354,16 +4936,15 @@
       ],
       "choices": [
         {
-          "label": "观察潮汐并避开守灯人",
+          "label": "在崖边观察漂浮物、浪线与回流",
           "next": "lighthouse_route",
-          "minutes": 12,
+          "minutes": 3,
           "requires": [
             {
               "type": "flag_true",
-              "key": "is_hunter"
+              "key": "cliff_access"
             }
           ],
-          "fallback": "你还辨不清两侧水流的差别。",
           "id": "find_route",
           "available_from": 1063,
           "available_until": 1178,
@@ -4377,7 +4958,14 @@
               "key": "safe_sea_route_known"
             }
           ],
-          "object": "旧灯塔"
+          "object": "旧灯塔",
+          "area": "cliff",
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "water_observation"
+            }
+          ]
         },
         {
           "label": "取一面求救信号布",
@@ -4415,14 +5003,17 @@
           "feedback": [
             "你折好信号布，放进行囊。"
           ],
-          "object": "旧灯塔"
+          "object": "旧灯塔",
+          "area": "rear"
         },
         {
           "label": "退回街区",
           "next": "day_street",
           "minutes": 15,
           "id": "return",
-          "map": true
+          "map": true,
+          "area": "entrance",
+          "travel": true
         },
         {
           "id": "wait_for_ship",
@@ -4445,14 +5036,18 @@
               "key": "ship_schedule_known"
             }
           ],
-          "map": true
+          "map": true,
+          "area": "bay",
+          "object": "外海船影"
         },
         {
           "id": "survey_water",
           "label": "前往崖边，查看海面",
           "next": "sea_prep",
           "minutes": 0,
-          "map": true
+          "map": true,
+          "area": "bay",
+          "object": "右侧海湾"
         },
         {
           "id": "wait_tide",
@@ -4472,10 +5067,422 @@
             }
           ],
           "max_uses": 1,
-          "object": "旧灯塔"
+          "object": "旧灯塔",
+          "area": "entrance"
+        },
+        {
+          "id": "inspect_tracks",
+          "label": "查看入口泥地足迹",
+          "area": "entrance",
+          "minutes": 2,
+          "next": "lighthouse",
+          "requires": [],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "patrol_tracks"
+            }
+          ],
+          "max_uses": 1,
+          "object": "入口泥地"
+        },
+        {
+          "id": "watch_steps",
+          "label": "观察两次远近脚步",
+          "area": "entrance",
+          "minutes": 2,
+          "next": "lighthouse",
+          "requires": [
+            {
+              "type": "clue",
+              "id": "patrol_tracks"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "patrol_steps"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "你看见守灯人经过入口，过一会儿脚步从塔后传来。第二次也如此。"
+          ],
+          "object": "绕塔脚步",
+          "visible_when": [
+            {
+              "type": "clue",
+              "id": "patrol_tracks"
+            }
+          ]
+        },
+        {
+          "id": "analyze_patrol",
+          "label": "用猎杀直觉比较巡逻",
+          "area": "entrance",
+          "minutes": 2,
+          "next": "lighthouse",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "clue",
+              "id": "patrol_tracks"
+            },
+            {
+              "type": "clue",
+              "id": "patrol_steps"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "patrol_hypothesis"
+            }
+          ],
+          "max_uses": 1,
+          "visible_when": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "clue",
+              "id": "patrol_tracks"
+            },
+            {
+              "type": "clue",
+              "id": "patrol_steps"
+            }
+          ],
+          "object": "绕塔脚步"
+        },
+        {
+          "id": "verify_patrol",
+          "label": "守候一次实际绕行",
+          "area": "entrance",
+          "minutes": 3,
+          "next": "lighthouse",
+          "requires": [
+            {
+              "type": "clue",
+              "id": "patrol_hypothesis"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "patrol_verified"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "你亲眼看见他绕到塔后。入口短暂空出，先前推测获得这一次观察的支持。"
+          ],
+          "visible_when": [
+            {
+              "type": "clue",
+              "id": "patrol_hypothesis"
+            }
+          ],
+          "object": "绕塔脚步"
+        },
+        {
+          "id": "observe_cover",
+          "label": "确认入口至崖边的遮蔽物",
+          "area": "entrance",
+          "minutes": 0,
+          "next": "lighthouse",
+          "requires": [
+            {
+              "type": "clue",
+              "id": "patrol_verified"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "tower_cover"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "低矮石墙连向崖边，足以遮住接近时的身形。"
+          ],
+          "visible_when": [
+            {
+              "type": "clue",
+              "id": "patrol_verified"
+            }
+          ],
+          "object": "石墙掩体"
+        },
+        {
+          "id": "approach_cover",
+          "label": "趁空档沿掩体接近崖边",
+          "area": "entrance",
+          "minutes": 3,
+          "next": "lighthouse",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "clue",
+              "id": "patrol_verified"
+            },
+            {
+              "type": "clue",
+              "id": "tower_cover"
+            }
+          ],
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "cliff_access",
+              "value": true
+            },
+            {
+              "type": "add_clue",
+              "id": "bay_approach"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "你在已核验的空档穿过石墙间隙，抵达崖边。守灯人没有被消灭，返回仍需沿原路。"
+          ],
+          "visible_when": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "clue",
+              "id": "patrol_verified"
+            },
+            {
+              "type": "clue",
+              "id": "tower_cover"
+            }
+          ],
+          "object": "石墙掩体"
+        },
+        {
+          "id": "inspect_sound",
+          "label": "检查松动吊环与绳头",
+          "area": "rear",
+          "minutes": 2,
+          "next": "lighthouse",
+          "requires": [],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "tower_sound"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "固定吊环可以敲响，旁边绳头能挂住铜杯。声音会沿塔后的石壁传播。"
+          ],
+          "object": "吊环与绳头"
+        },
+        {
+          "id": "ring_lure",
+          "label": "敲响固定吊环",
+          "area": "rear",
+          "minutes": 2,
+          "next": "lighthouse",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "deduction",
+              "id": "R22"
+            },
+            {
+              "type": "flag_false",
+              "key": "tower_lure_used"
+            }
+          ],
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "tower_lure_used",
+              "value": true
+            },
+            {
+              "type": "set_flag",
+              "key": "tower_lure_alerted",
+              "value": true
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "塔后响起金属声，守灯人折向声源。你得到这一次绕行机会；他已经警觉，不能重复使用同一手段。"
+          ],
+          "visible_when": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "deduction",
+              "id": "R22"
+            },
+            {
+              "type": "flag_false",
+              "key": "tower_lure_used"
+            }
+          ],
+          "object": "吊环与绳头"
+        },
+        {
+          "id": "place_cup_lure",
+          "label": "把铜杯挂在绳头制造声响",
+          "area": "rear",
+          "minutes": 2,
+          "next": "lighthouse",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "deduction",
+              "id": "R22"
+            },
+            {
+              "type": "flag_false",
+              "key": "tower_lure_used"
+            },
+            {
+              "type": "item",
+              "id": "copper_cup"
+            }
+          ],
+          "effects": [
+            {
+              "type": "remove_item",
+              "id": "copper_cup",
+              "destination": "lighthouse:rear"
+            },
+            {
+              "type": "set_flag",
+              "key": "tower_lure_used",
+              "value": true
+            },
+            {
+              "type": "set_flag",
+              "key": "tower_lure_alerted",
+              "value": true
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "塔后响起金属声，守灯人折向声源。你得到这一次绕行机会；他已经警觉，不能重复使用同一手段。"
+          ],
+          "visible_when": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "deduction",
+              "id": "R22"
+            },
+            {
+              "type": "flag_false",
+              "key": "tower_lure_used"
+            },
+            {
+              "type": "item",
+              "id": "copper_cup"
+            }
+          ],
+          "object": "吊环与绳头"
+        },
+        {
+          "id": "approach_lure",
+          "label": "利用这一次诱导绕行",
+          "area": "rear",
+          "minutes": 3,
+          "next": "lighthouse",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "tower_lure_used"
+            },
+            {
+              "type": "flag_false",
+              "key": "tower_lure_spent"
+            },
+            {
+              "type": "clue",
+              "id": "tower_cover"
+            }
+          ],
+          "effects": [
+            {
+              "type": "set_flag",
+              "key": "tower_lure_spent",
+              "value": true
+            },
+            {
+              "type": "set_flag",
+              "key": "cliff_access",
+              "value": true
+            },
+            {
+              "type": "add_clue",
+              "id": "bay_approach"
+            }
+          ],
+          "max_uses": 1,
+          "feedback": [
+            "你沿石墙绕到崖边。这一次声响的机会已经用完。"
+          ],
+          "visible_when": [
+            {
+              "type": "flag_true",
+              "key": "tower_lure_used"
+            },
+            {
+              "type": "flag_false",
+              "key": "tower_lure_spent"
+            },
+            {
+              "type": "clue",
+              "id": "tower_cover"
+            }
+          ],
+          "object": "石墙掩体"
+        },
+        {
+          "id": "watch_distant_water",
+          "label": "在塔前远望浪线",
+          "area": "entrance",
+          "minutes": 3,
+          "next": "lighthouse",
+          "max_uses": 1,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "distant_wave"
+            }
+          ],
+          "feedback": [
+            "塔前只能看见浪线反复折回，无法确认哪边可下海。你需要安全接近崖边并作进一步判断。"
+          ],
+          "object": "远处浪线"
         }
       ],
-      "background": "lighthouse"
+      "background": "lighthouse",
+      "site": "lighthouse"
     },
     {
       "id": "lighthouse_route",
@@ -4483,7 +5490,8 @@
       "location": "旧灯塔",
       "kind": "scene",
       "text": [
-        "“左侧礁石下有暗流；右侧海湾相对平缓。你看出短暂的潮汐窗口。”"
+        "“左侧礁石下有暗流；右侧海湾相对平缓。你看出短暂的潮汐窗口。”",
+        "漂浮物在左侧礁石外突然被卷回，右侧海湾的浪线较平。记录可靠下海点还需要猎人的现场分析。"
       ],
       "choices": [
         {
@@ -4518,6 +5526,29 @@
             {
               "type": "flag_false",
               "key": "safe_sea_route_known"
+            },
+            {
+              "type": "clue",
+              "id": "water_observation"
+            },
+            {
+              "type": "clue",
+              "id": "bay_approach"
+            }
+          ],
+          "area": "cliff",
+          "requires": [
+            {
+              "type": "flag_true",
+              "key": "is_hunter"
+            },
+            {
+              "type": "clue",
+              "id": "water_observation"
+            },
+            {
+              "type": "clue",
+              "id": "bay_approach"
             }
           ]
         },
@@ -4525,10 +5556,14 @@
           "id": "return",
           "label": "回到灯塔",
           "next": "lighthouse",
-          "minutes": 0
+          "minutes": 0,
+          "area": "cliff"
         }
       ],
-      "background": "lighthouse"
+      "background": "lighthouse",
+      "site": "lighthouse",
+      "map_locked": true,
+      "entry_area": "cliff"
     },
     {
       "id": "sea_prep",
@@ -4594,14 +5629,16 @@
           ],
           "available_from": 1803,
           "available_until": 1823,
-          "map": true
+          "map": true,
+          "area": "bay"
         },
         {
           "label": "下海",
           "next": "death_sea",
           "minutes": 0,
           "id": "unsafe_swim",
-          "alternative_to": "swim"
+          "alternative_to": "swim",
+          "area": "bay"
         },
         {
           "label": "继续在崖边等候",
@@ -4620,14 +5657,16 @@
               "value": 1823
             }
           ],
-          "map": true
+          "map": true,
+          "area": "bay"
         },
         {
           "id": "return",
           "label": "退回灯塔检查准备",
           "next": "lighthouse",
           "minutes": 0,
-          "map": true
+          "map": true,
+          "area": "bay"
         },
         {
           "id": "wait_for_ship",
@@ -4652,7 +5691,8 @@
           ],
           "feedback": [
             "你留在崖边，直到远处亮起一点船灯。"
-          ]
+          ],
+          "area": "bay"
         }
       ],
       "background": "lighthouse",
@@ -4684,7 +5724,9 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "sea",
+      "map_locked": true
     },
     {
       "id": "sea_escape",
@@ -4704,10 +5746,13 @@
           "label": "接受隔离，结束第一幕",
           "next": "ending_b",
           "minutes": 0,
-          "id": "accept_isolation"
+          "id": "accept_isolation",
+          "area": "bay"
         }
       ],
-      "background": "sea_escape"
+      "background": "sea_escape",
+      "site": "sea",
+      "map_locked": true
     },
     {
       "id": "death_headless",
@@ -4744,7 +5789,8 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "street"
     },
     {
       "id": "death_telegraph",
@@ -4766,7 +5812,8 @@
           "id": "E"
         }
       ],
-      "background": "telegraph_night"
+      "background": "telegraph_night",
+      "site": "street"
     },
     {
       "id": "death_sea",
@@ -4860,7 +5907,8 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "street"
     },
     {
       "id": "ending_a",
@@ -4885,7 +5933,8 @@
           "id": "A"
         }
       ],
-      "background": "dock_ship"
+      "background": "dock_ship",
+      "site": "street"
     },
     {
       "id": "ending_b",
@@ -4906,7 +5955,8 @@
           "id": "B"
         }
       ],
-      "background": "sea_escape"
+      "background": "sea_escape",
+      "site": "street"
     },
     {
       "id": "doom",
@@ -4948,7 +5998,8 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "street"
     },
     {
       "id": "ending_f",
@@ -4971,7 +6022,8 @@
           "id": "F"
         }
       ],
-      "background": "mural"
+      "background": "mural",
+      "site": "street"
     },
     {
       "id": "door_confirm",
@@ -5007,7 +6059,9 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "home",
+      "map_locked": true
     },
     {
       "id": "street_encounter",
@@ -5053,7 +6107,8 @@
               "id": "night_street",
               "value": 1
             }
-          ]
+          ],
+          "area": "road"
         },
         {
           "id": "cross_with_light",
@@ -5073,7 +6128,8 @@
               "value": true
             }
           ],
-          "fallback": "灯还没点亮，或剩余燃烧时间不足 8 分钟。"
+          "fallback": "灯还没点亮，或剩余燃烧时间不足 8 分钟。",
+          "area": "road"
         },
         {
           "id": "watch",
@@ -5089,7 +6145,8 @@
           ],
           "feedback": [
             "漂浮的灯火来回徘徊，始终没有照出提灯人的脚。"
-          ]
+          ],
+          "area": "road"
         },
         {
           "id": "detour",
@@ -5109,7 +6166,8 @@
               "id": "night_street",
               "value": 2
             }
-          ]
+          ],
+          "area": "road"
         },
         {
           "id": "rush",
@@ -5122,7 +6180,8 @@
               "key": "street_attack",
               "value": true
             }
-          ]
+          ],
+          "area": "road"
         },
         {
           "id": "detour_alerted",
@@ -5145,7 +6204,8 @@
           ],
           "feedback": [
             "漂浮的灯火朝墙根转来。你绕过两处院墙才甩开它。"
-          ]
+          ],
+          "area": "road"
         }
       ],
       "redirects": [
@@ -5183,7 +6243,9 @@
             "那团灯火在原地转了一圈，开始朝你藏身的街角漂来。"
           ]
         }
-      ]
+      ],
+      "site": "street",
+      "map_locked": true
     },
     {
       "id": "tavern_later",
@@ -5203,7 +6265,9 @@
           "label": "离开餐厅",
           "next": "street",
           "minutes": 10,
-          "map": true
+          "map": true,
+          "area": "foyer",
+          "travel": true
         },
         {
           "id": "observe_fire",
@@ -5223,7 +6287,8 @@
           ],
           "feedback": [
             "火还稳定地燃着。要用它点灯，得先把手提灯带到这里。"
-          ]
+          ],
+          "area": "counter"
         },
         {
           "id": "extinguish",
@@ -5249,7 +6314,8 @@
           ],
           "feedback": [
             "你熄灭了手提灯。"
-          ]
+          ],
+          "area": "counter"
         },
         {
           "id": "ask_fire",
@@ -5275,7 +6341,8 @@
           ],
           "feedback": [
             "值夜人：“借火？我替你挡着风。两块钱，等我两分钟。”"
-          ]
+          ],
+          "area": "counter"
         },
         {
           "id": "relight_paid",
@@ -5326,7 +6393,8 @@
           ],
           "feedback": [
             "值夜人护着灯罩替你点燃灯芯。旧街的身影不会因此忘记你。"
-          ]
+          ],
+          "area": "counter"
         }
       ],
       "variants": [
@@ -5357,7 +6425,8 @@
             }
           ]
         }
-      ]
+      ],
+      "site": "tavern"
     },
     {
       "id": "market",
@@ -5386,7 +6455,9 @@
           ],
           "feedback": [
             "收货人检查一件旧物，付了钱：“灯、刀、旧家当，还能用的都看看。”"
-          ]
+          ],
+          "area": "goods",
+          "available_until": 453
         },
         {
           "id": "observe_news",
@@ -5403,15 +6474,169 @@
           ],
           "feedback": [
             "他为一条讲得出来源的消息付钱，又在册上打了个记号：“同一件事，不付第二遍。”"
-          ]
+          ],
+          "area": "counter",
+          "available_until": 453
         },
         {
           "id": "return",
           "label": "返回旧街",
           "minutes": 5,
           "next": "street",
-          "map": true
+          "map": true,
+          "area": "counter",
+          "travel": true
+        },
+        {
+          "id": "observe_goods_day",
+          "label": "看看他收什么旧物",
+          "minutes": 1,
+          "next": "market",
+          "object": "收货人",
+          "max_uses": 1,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "buyer_goods"
+            }
+          ],
+          "feedback": [
+            "收货人检查一件旧物，付了钱：“灯、刀、旧家当，还能用的都看看。”"
+          ],
+          "area": "goods",
+          "available_until": 1183,
+          "available_from": 703
+        },
+        {
+          "id": "observe_news_day",
+          "label": "旁听另一笔交易",
+          "minutes": 1,
+          "next": "market",
+          "object": "收货人",
+          "max_uses": 1,
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "buyer_information"
+            }
+          ],
+          "feedback": [
+            "他为一条讲得出来源的消息付钱，又在册上打了个记号：“同一件事，不付第二遍。”"
+          ],
+          "area": "counter",
+          "available_until": 1183,
+          "available_from": 703
+        },
+        {
+          "id": "observe_shelter",
+          "label": "看看收货台后的歇脚处",
+          "area": "counter",
+          "minutes": 1,
+          "next": "market",
+          "requires": [
+            {
+              "type": "clue",
+              "id": "buyer_goods"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "market_shelter_offer"
+            }
+          ],
+          "max_uses": 1,
+          "available_from": 703,
+          "available_until": 1183,
+          "feedback": [
+            "收货人把凳子让到柜台内侧：“十点到傍晚六点我在。你问过我再歇，不能堵住卸货口。”"
+          ],
+          "object": "柜台后的歇脚处",
+          "visible_when": [
+            {
+              "type": "clue",
+              "id": "buyer_goods"
+            }
+          ]
+        },
+        {
+          "id": "ask_shelter",
+          "label": "请收货人同意看顾",
+          "area": "counter",
+          "minutes": 1,
+          "next": "market",
+          "requires": [
+            {
+              "type": "clue",
+              "id": "market_shelter_offer"
+            }
+          ],
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "market_shelter_permission"
+            }
+          ],
+          "max_uses": 1,
+          "available_from": 703,
+          "available_until": 1183,
+          "feedback": [
+            "收货人点头同意你在柜台内歇脚，他只看顾到18:00。"
+          ],
+          "object": "柜台后的歇脚处",
+          "visible_when": [
+            {
+              "type": "clue",
+              "id": "market_shelter_offer"
+            }
+          ]
+        },
+        {
+          "id": "safe_rest",
+          "label": "在收货人看顾下休整一小时",
+          "area": "counter",
+          "minutes": 60,
+          "next": "market",
+          "requires": [
+            {
+              "type": "clue",
+              "id": "market_shelter_permission"
+            },
+            {
+              "type": "minute_gte",
+              "value": 703
+            },
+            {
+              "type": "minute_lt",
+              "value": 1183
+            }
+          ],
+          "effects": [],
+          "rest": true,
+          "available_from": 703,
+          "available_until": 1243,
+          "feedback": [
+            "收货人看顾着柜台。看顾结束时必须停下休整，只恢复已经完成的整小时体力。"
+          ],
+          "object": "柜台后的歇脚处",
+          "visible_when": [
+            {
+              "type": "clue",
+              "id": "market_shelter_permission"
+            }
+          ]
         }
+      ],
+      "site": "market",
+      "trade_windows": [
+        [
+          0,
+          453
+        ],
+        [
+          703,
+          1183
+        ]
       ]
     }
   ],
@@ -5457,5 +6682,720 @@
       "x": 70,
       "y": 74
     }
-  }
+  },
+  "exploration": {
+    "sites": {
+      "home": {
+        "name": "玩家住所",
+        "x": 18,
+        "y": 25,
+        "entry": "home_search",
+        "default_area": "bedroom",
+        "areas": [
+          {
+            "id": "bedroom",
+            "name": "卧室",
+            "x": 20,
+            "y": 25
+          },
+          {
+            "id": "living",
+            "name": "客厅",
+            "x": 50,
+            "y": 25
+          },
+          {
+            "id": "kitchen",
+            "name": "厨房",
+            "x": 80,
+            "y": 25
+          },
+          {
+            "id": "hall",
+            "name": "门厅",
+            "x": 20,
+            "y": 70
+          }
+        ],
+        "fire_area": "kitchen",
+        "observations": [
+          {
+            "text": "住所门窗仍待现场检查。"
+          }
+        ]
+      },
+      "street": {
+        "name": "血雾旧街",
+        "x": 37,
+        "y": 40,
+        "entry": "street",
+        "default_area": "road",
+        "areas": [
+          {
+            "id": "road",
+            "name": "旧街路口",
+            "x": 20,
+            "y": 25
+          }
+        ],
+        "observations": [
+          {
+            "requires": [
+              {
+                "type": "clue_any",
+                "ids": [
+                  "headless_shadow",
+                  "floating_light",
+                  "lamp_hesitation"
+                ]
+              }
+            ],
+            "text": "街雾中曾出现危险的身影。",
+            "risk": "夜雾中的异常可能致命，灯火只能暂时掩护。"
+          },
+          {
+            "text": "已经走过的街道，雾仍未散。"
+          }
+        ]
+      },
+      "tavern": {
+        "name": "青柠檬餐厅",
+        "x": 27,
+        "y": 58,
+        "entry": "tavern",
+        "default_area": "foyer",
+        "areas": [
+          {
+            "id": "foyer",
+            "name": "门厅",
+            "x": 20,
+            "y": 25
+          },
+          {
+            "id": "tables",
+            "name": "餐桌区",
+            "x": 50,
+            "y": 25
+          },
+          {
+            "id": "counter",
+            "name": "柜台",
+            "x": 80,
+            "y": 25
+          },
+          {
+            "id": "kitchen",
+            "name": "后厨",
+            "x": 20,
+            "y": 70
+          },
+          {
+            "id": "rear",
+            "name": "后门",
+            "x": 50,
+            "y": 70
+          }
+        ],
+        "fire_area": "counter",
+        "observations": [
+          {
+            "requires": [
+              {
+                "type": "minute_gte",
+                "value": 2983
+              }
+            ],
+            "text": "餐厅的门已经反锁。"
+          },
+          {
+            "requires": [
+              {
+                "type": "flag_true",
+                "key": "ship_departed"
+              }
+            ],
+            "text": "旅客已经离去，餐厅的气氛发生了变化。"
+          },
+          {
+            "text": "上次到访时餐厅仍在营业。"
+          }
+        ]
+      },
+      "telegraph": {
+        "name": "电报局",
+        "x": 51,
+        "y": 28,
+        "entry": "telegraph_night",
+        "default_area": "porch",
+        "areas": [
+          {
+            "id": "porch",
+            "name": "门廊",
+            "x": 20,
+            "y": 25
+          },
+          {
+            "id": "window",
+            "name": "窗口",
+            "x": 50,
+            "y": 25
+          },
+          {
+            "id": "workroom",
+            "name": "工作间",
+            "x": 80,
+            "y": 25,
+            "requires": [
+              {
+                "type": "flag_false",
+                "key": "telegraph_staff_present"
+              }
+            ]
+          },
+          {
+            "id": "wall",
+            "name": "旧墙",
+            "x": 20,
+            "y": 70,
+            "requires": [
+              {
+                "type": "flag_false",
+                "key": "telegraph_staff_present"
+              }
+            ]
+          }
+        ],
+        "observations": [
+          {
+            "requires": [
+              {
+                "type": "node_in",
+                "ids": [
+                  "telegraph_day",
+                  "mural",
+                  "hunter_awaken"
+                ]
+              }
+            ],
+            "text": "工作间只剩血迹与旧墙。"
+          },
+          {
+            "requires": [
+              {
+                "type": "clue_any",
+                "ids": [
+                  "telegraph_silhouettes",
+                  "telegram_notes"
+                ]
+              }
+            ],
+            "text": "门内两人状态异常，尚未确认能安全进入。",
+            "risk": "门内异常尚未解除，强闯有致命危险。"
+          },
+          {
+            "text": "只查看过门廊，内部情况待调查。"
+          }
+        ]
+      },
+      "dock": {
+        "name": "白玛瑙号码头",
+        "x": 65,
+        "y": 65,
+        "entry": "dock",
+        "default_area": "entrance",
+        "areas": [
+          {
+            "id": "entrance",
+            "name": "岸上入口",
+            "x": 20,
+            "y": 25
+          },
+          {
+            "id": "gangway",
+            "name": "登船栈桥",
+            "x": 50,
+            "y": 25
+          },
+          {
+            "id": "shed",
+            "name": "值夜棚",
+            "x": 80,
+            "y": 25
+          },
+          {
+            "id": "berth",
+            "name": "海堤与泊位",
+            "x": 20,
+            "y": 70
+          }
+        ],
+        "fire_area": "shed",
+        "observations": [
+          {
+            "requires": [
+              {
+                "type": "flag_true",
+                "key": "ship_departed"
+              }
+            ],
+            "text": "白玛瑙号已经离港，泊位空了。"
+          },
+          {
+            "text": "白玛瑙号仍在泊位。"
+          }
+        ]
+      },
+      "market": {
+        "name": "港边货棚",
+        "x": 48,
+        "y": 65,
+        "entry": "market",
+        "default_area": "counter",
+        "areas": [
+          {
+            "id": "counter",
+            "name": "收货柜台",
+            "x": 20,
+            "y": 25
+          },
+          {
+            "id": "goods",
+            "name": "旧货堆",
+            "x": 50,
+            "y": 25
+          }
+        ],
+        "trade_windows": [
+          [
+            0,
+            453
+          ],
+          [
+            703,
+            1183
+          ]
+        ],
+        "observations": [
+          {
+            "requires": [
+              {
+                "type": "clue_any",
+                "ids": [
+                  "buyer_goods",
+                  "buyer_information"
+                ]
+              }
+            ],
+            "text": "已确认收货人的交易；营业与看顾须按现场时段办理。"
+          },
+          {
+            "text": "见到港边货棚，交易情况待询问。"
+          }
+        ]
+      },
+      "church": {
+        "name": "风暴教堂外围",
+        "x": 21,
+        "y": 10,
+        "entry": "church_outside",
+        "default_area": "front",
+        "areas": [
+          {
+            "id": "front",
+            "name": "正门",
+            "x": 20,
+            "y": 25
+          },
+          {
+            "id": "side",
+            "name": "侧门",
+            "x": 50,
+            "y": 25
+          },
+          {
+            "id": "lane",
+            "name": "卸货道",
+            "x": 80,
+            "y": 25
+          }
+        ],
+        "observations": [
+          {
+            "text": "仅调查教堂外围，不清楚内部状况。"
+          }
+        ]
+      },
+      "harbor": {
+        "name": "港务值班室",
+        "x": 76,
+        "y": 46,
+        "entry": "harbor_log",
+        "default_area": "porch",
+        "areas": [
+          {
+            "id": "porch",
+            "name": "外廊",
+            "x": 20,
+            "y": 25
+          },
+          {
+            "id": "notice",
+            "name": "公告栏",
+            "x": 50,
+            "y": 25
+          },
+          {
+            "id": "desk",
+            "name": "登记桌",
+            "x": 80,
+            "y": 25
+          }
+        ],
+        "observations": [
+          {
+            "requires": [
+              {
+                "type": "flag_true",
+                "key": "ship_schedule_known"
+              }
+            ],
+            "text": "已经抄录过航运原件。"
+          },
+          {
+            "requires": [
+              {
+                "type": "minute_gte",
+                "value": 824
+              }
+            ],
+            "text": "交班原件已经收走。"
+          },
+          {
+            "text": "见到值班室，原件须在交班时段查阅。"
+          }
+        ]
+      },
+      "lighthouse": {
+        "name": "旧灯塔",
+        "x": 87,
+        "y": 23,
+        "entry": "lighthouse",
+        "default_area": "entrance",
+        "areas": [
+          {
+            "id": "entrance",
+            "name": "入口",
+            "x": 20,
+            "y": 25
+          },
+          {
+            "id": "rear",
+            "name": "塔后",
+            "x": 50,
+            "y": 25
+          },
+          {
+            "id": "cliff",
+            "name": "崖边",
+            "x": 80,
+            "y": 25
+          },
+          {
+            "id": "bay",
+            "name": "右侧海湾",
+            "x": 20,
+            "y": 70
+          }
+        ],
+        "observations": [
+          {
+            "requires": [
+              {
+                "type": "flag_true",
+                "key": "safe_sea_route_known"
+              }
+            ],
+            "text": "已核验局部下海路线；临出海仍须核对海况与信号。"
+          },
+          {
+            "requires": [
+              {
+                "type": "clue",
+                "id": "patrol_verified"
+              }
+            ],
+            "text": "已亲眼核验守灯人的巡逻空档。"
+          },
+          {
+            "text": "塔前可观察，巡逻与海况尚待核验。"
+          }
+        ]
+      },
+      "sea": {
+        "name": "右侧海湾下海点",
+        "x": 94,
+        "y": 11,
+        "entry": "sea_prep",
+        "default_area": "bay",
+        "areas": [
+          {
+            "id": "bay",
+            "name": "下海点",
+            "x": 20,
+            "y": 25
+          }
+        ],
+        "requires": [
+          {
+            "type": "flag_true",
+            "key": "safe_sea_route_known"
+          }
+        ],
+        "visible_when": [
+          {
+            "type": "flag_true",
+            "key": "safe_sea_route_known"
+          }
+        ],
+        "observations": [
+          {
+            "text": "已经到达下海前的准备位置。",
+            "risk": "下海需要现场已核实的航线、体力和求救信号。"
+          }
+        ]
+      }
+    },
+    "routes": [
+      {
+        "id": "home_street",
+        "from": "home",
+        "to": "street",
+        "minutes": 10
+      },
+      {
+        "id": "street_home",
+        "from": "street",
+        "to": "home",
+        "minutes": 10
+      },
+      {
+        "id": "street_tavern",
+        "from": "street",
+        "to": "tavern",
+        "minutes": 12
+      },
+      {
+        "id": "tavern_street",
+        "from": "tavern",
+        "to": "street",
+        "minutes": 10
+      },
+      {
+        "id": "street_telegraph",
+        "from": "street",
+        "to": "telegraph",
+        "minutes": 12
+      },
+      {
+        "id": "telegraph_street",
+        "from": "telegraph",
+        "to": "street",
+        "minutes": 10
+      },
+      {
+        "id": "street_dock",
+        "from": "street",
+        "to": "dock",
+        "minutes": 15
+      },
+      {
+        "id": "dock_street",
+        "from": "dock",
+        "to": "street",
+        "minutes": 10
+      },
+      {
+        "id": "street_market",
+        "from": "street",
+        "to": "market",
+        "minutes": 5
+      },
+      {
+        "id": "market_street",
+        "from": "market",
+        "to": "street",
+        "minutes": 5
+      },
+      {
+        "id": "street_church",
+        "from": "street",
+        "to": "church",
+        "minutes": 15
+      },
+      {
+        "id": "church_street",
+        "from": "church",
+        "to": "street",
+        "minutes": 5
+      },
+      {
+        "id": "street_harbor",
+        "from": "street",
+        "to": "harbor",
+        "minutes": 15
+      },
+      {
+        "id": "harbor_street",
+        "from": "harbor",
+        "to": "street",
+        "minutes": 5
+      },
+      {
+        "id": "street_lighthouse",
+        "from": "street",
+        "to": "lighthouse",
+        "minutes": 20
+      },
+      {
+        "id": "lighthouse_street",
+        "from": "lighthouse",
+        "to": "street",
+        "minutes": 15
+      },
+      {
+        "id": "dock_market",
+        "from": "dock",
+        "to": "market",
+        "minutes": 5
+      },
+      {
+        "id": "market_dock",
+        "from": "market",
+        "to": "dock",
+        "minutes": 5
+      },
+      {
+        "id": "tavern_dock",
+        "from": "tavern",
+        "to": "dock",
+        "minutes": 8
+      },
+      {
+        "id": "dock_tavern",
+        "from": "dock",
+        "to": "tavern",
+        "minutes": 8
+      },
+      {
+        "id": "lighthouse_sea",
+        "from": "lighthouse",
+        "to": "sea",
+        "minutes": 0,
+        "requires": [
+          {
+            "type": "flag_true",
+            "key": "safe_sea_route_known"
+          }
+        ]
+      },
+      {
+        "id": "sea_lighthouse",
+        "from": "sea",
+        "to": "lighthouse",
+        "minutes": 0,
+        "requires": [
+          {
+            "type": "flag_true",
+            "key": "safe_sea_route_known"
+          }
+        ]
+      }
+    ]
+  },
+  "known_windows": [
+    {
+      "id": "gehrman_contact",
+      "name": "餐厅的格尔曼行踪时段",
+      "from": 123,
+      "to": 173,
+      "requires": [
+        {
+          "type": "clue",
+          "id": "gehrman_whereabouts"
+        },
+        {
+          "type": "flag_false",
+          "key": "gehrman_intro_done"
+        }
+      ]
+    },
+    {
+      "id": "last_parley",
+      "name": "船长最后申请时段",
+      "from": 403,
+      "to": 433,
+      "requires": [
+        {
+          "type": "clue",
+          "id": "captain_schedule"
+        },
+        {
+          "type": "flag_false",
+          "key": "boarding_approved"
+        },
+        {
+          "type": "flag_false",
+          "key": "ship_departed"
+        }
+      ]
+    },
+    {
+      "id": "white_agate_leaves",
+      "name": "白玛瑙号离港",
+      "from": 463,
+      "to": 463,
+      "requires": [
+        {
+          "type": "clue",
+          "id": "captain_schedule"
+        },
+        {
+          "type": "flag_false",
+          "key": "ship_departed"
+        }
+      ]
+    },
+    {
+      "id": "harbor_records",
+      "name": "港务原件查阅",
+      "from": 703,
+      "to": 823,
+      "requires": [
+        {
+          "type": "clue",
+          "id": "harbor_notice"
+        },
+        {
+          "type": "event_pending",
+          "id": "harbor_records"
+        }
+      ]
+    },
+    {
+      "id": "grey_gull",
+      "name": "灰鸥号接近窗口",
+      "from": 1803,
+      "to": 1823,
+      "requires": [
+        {
+          "type": "clue",
+          "id": "grey_gull_schedule"
+        },
+        {
+          "type": "event_pending",
+          "id": "grey_gull_rescue"
+        }
+      ]
+    }
+  ]
 }

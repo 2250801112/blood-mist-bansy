@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+Thumbs.db
+.DS_Store
+
+# 开发包的原始校验清单不代表当前源码版本。
+MANIFEST.json

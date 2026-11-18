@@ -6,16 +6,25 @@ import { createGame, commitRun, startNewRun } from '../game/engine.mjs';
 const read = (name) => JSON.parse(readFileSync(new URL(`../data/${name}.json`, import.meta.url)));
 const game = createGame(read('scenes'), read('items'));
 const start = () => game.start({ name: '安', gender: '未指定' });
+const atAction = (state, id) => {
+  const choice = game.nodes[state.node].choices.find((entry) => entry.id === id);
+  if (!choice?.area || game.area(state) === choice.area) return state;
+  const moved = game.moveArea(state, choice.area);
+  assert.ok(moved, `${state.node}: 应能进入 ${choice.area}`);
+  return moved;
+};
+const chooseAt = (state, id) => game.choose(atAction(state, id), id);
 const walk = (state, ...ids) => ids.reduce((run, id) => {
   const choice = game.nodes[run.node].choices.find((entry) => entry.id === id);
   if (choice?.region && run.home_area !== choice.region) run = game.moveRoom(run, choice.region);
+  run = atAction(run, id);
   const next = game.choose(run, id);
   assert.ok(next, `${run.node} @ ${run.elapsed_minutes}: ${id}`);
   return next;
 }, state);
 const home = () => walk(start(), 'begin', 'search');
 const outside = () => walk(home(), 'receipt', 'window', 'record_light', 'check_door', 'talk', 'quiet', 'leave', 'detour');
-const has = (state, id) => game.actions(state).some((choice) => choice.id === id);
+const has = (state, id) => game.actions(atAction(state, id)).some((choice) => choice.id === id);
 const reload = (state) => game.restore(JSON.parse(JSON.stringify(state)));
 
 test('苏醒登记任务，房内移动零分钟且刀只在厨房可取，放下后位置保留', () => {
@@ -92,7 +101,7 @@ test('收据合并后仍能出示，同组信任奖励不能因换卡重复领�
   assert.equal(has(room, 'receipt'), true);
   room = walk(room, 'receipt', 'submit_receipt');
   assert.equal(room.stats.gehrman_trust, 35);
-  assert.equal(game.choose(reload(room), 'receipt'), null);
+  assert.equal(chooseAt(reload(room), 'receipt'), null);
 });
 
 test('情报按原始事实付款，组合前售过的事实不能再次卖，物品出售改变所有权', () => {
@@ -126,7 +135,7 @@ test('重燃只恢复照明，实际火源与收费线索必需，原路段的�
 });
 
 test('提示显示实际属性差值，晋升卡刷新不重复发奖、主动确认才关闭', () => {
-  const day = walk(outside(), 'rest_to_day', 'find_other_way', 'telegraph_day', 'inspect_wall');
+  const day = walk(outside(), 'wait_for_dawn', 'find_other_way', 'telegraph_exterior', 'read_hours', 'wait_open', 'inspect_wall');
   const low = { ...day, stats: { ...day.stats, sanity: 4 } };
   const depleted = walk(low, 'sketch');
   assert.ok(depleted.notifications.some((entry) => entry.text.includes('理智 −4')));
@@ -151,7 +160,7 @@ test('版本迁移保留证据和奖励，不把灯笼持有误当作实测，�
   legacy.inventory = ['brass_lantern'];
   legacy.flags.receipt_shown = true;
   const restored = reload(legacy);
-  assert.equal(restored.save_version, 2);
+  assert.equal(restored.save_version, 3);
   assert.ok(game.hasFact(restored, 'church_receipt'));
   assert.equal(game.hasFact(restored, 'lamp_hesitation'), false);
   assert.equal(restored.money, 24);
@@ -184,15 +193,15 @@ test('高价路线用实际调查和售卖筹资，在合法船期成交，筛�
   assert.ok(run.elapsed_minutes < 403);
   const funded = walk(run, 'return', 'dock', 'screen', 'wait_parley');
   assert.equal(funded.stats.gehrman_trust, 0);
-  assert.equal(game.choose({ ...funded, elapsed_minutes: 431 }, 'pay_berth'), null);
-  assert.equal(game.choose({ ...funded, flags: { ...funded.flags, contamination_screen_passed: false } }, 'pay_berth'), null);
-  assert.equal(game.choose({ ...funded, money: 119 }, 'pay_berth'), null);
+  assert.equal(chooseAt({ ...funded, elapsed_minutes: 431 }, 'pay_berth'), null);
+  assert.equal(chooseAt({ ...funded, flags: { ...funded.flags, contamination_screen_passed: false } }, 'pay_berth'), null);
+  assert.equal(chooseAt({ ...funded, money: 119 }, 'pay_berth'), null);
   const approved = reload(walk(funded, 'pay_berth'));
   assert.equal(approved.money, 3);
   assert.equal(approved.elapsed_minutes, 406);
   const revoked = walk(approved, 'conceal');
-  assert.equal(game.choose(revoked, 'resume_boarding'), null);
-  assert.equal(game.choose(revoked, 'pay_berth'), null);
+  assert.equal(chooseAt(revoked, 'resume_boarding'), null);
+  assert.equal(chooseAt(revoked, 'pay_berth'), null);
   const escaped = walk(approved, 'honest_check', 'board');
   assert.equal(escaped.ending, 'A');
   assert.equal(escaped.elapsed_minutes, 416);
@@ -227,7 +236,7 @@ test('整理线索与确认演出不重复上次步行；听到汽笛即登记�
 
 test('夜路不能凭空重燃熄灭的灯，必须先在实际火源点燃再举灯', () => {
   const unlit = walk(home(), 'lantern', 'check_door', 'quiet', 'leave');
-  assert.equal(game.choose(unlit, 'light'), null);
+  assert.equal(chooseAt(unlit, 'light'), null);
 });
 
 test('迁移只追赶世界钟，不把错过的本地事件补成亲眼目击', () => {
