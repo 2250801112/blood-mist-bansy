@@ -139,6 +139,27 @@
         "梅兰妮",
         "帕沃"
       ]
+    },
+    {
+      "id": "hunter_awakening",
+      "path": "assets/backgrounds/hunter_awakening.png",
+      "image_type": "background",
+      "status": "ready",
+      "description": "墙内封存特性破裂并经伤口异常吸收，晋升专用插画。"
+    },
+    {
+      "id": "house_plan",
+      "path": "assets/backgrounds/house_plan.png",
+      "role": "四区域住宅调查图",
+      "status": "ready",
+      "image_type": "background"
+    },
+    {
+      "id": "bedroom_waking",
+      "path": "assets/backgrounds/bedroom_waking.png",
+      "role": "第一人称苏醒卧室",
+      "status": "ready",
+      "image_type": "background"
     }
   ]
 }

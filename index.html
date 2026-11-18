@@ -29,11 +29,18 @@
       <button class="narration-passage" type="button" aria-live="polite"></button>
     </div>
     <footer class="narration-controls">
-      <button type="button" class="utility narration-previous">上一段</button>
-      <button type="button" class="utility narration-pause">暂停</button>
+      <span class="narration-hint">点击画面继续 · 全文呈现后停留五秒</span>
+      <details class="reading-settings">
+        <summary>阅读设置</summary>
+        <button type="button" class="utility narration-previous">上一段</button>
+        <button type="button" class="utility narration-pause">暂停自动播放</button>
+      </details>
       <button type="button" class="utility narration-skip" hidden>跳过序章</button>
-      <button type="button" class="action primary narration-next">下一段</button>
     </footer>
   </dialog>
+  <dialog id="journal-dialog" aria-labelledby="journal-title"></dialog>
+  <dialog id="event-dialog" aria-labelledby="event-title"></dialog>
+  <div id="transition" hidden aria-label="正在步行，点击可跳过" role="button" tabindex="0"><div class="walker" aria-hidden="true"><i class="walker-head"></i><i class="walker-body"></i><i class="walker-leg"></i><i class="walker-leg other"></i></div><p></p><small>点击跳过</small></div>
+  <div id="notices" aria-live="polite"></div>
 </body>
 </html>

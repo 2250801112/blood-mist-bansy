@@ -1,4 +1,23 @@
-const PAGE_DURATION = 2000;
+const PAGE_DURATION = 5000;
+
+function paginate(lines) {
+  return lines.flatMap((line) => {
+    const sentences = line.match(/[^。！？!?；;]+[。！？!?；;]?[”’」』]?/gu) ?? [line];
+    const pages = [];
+    let page = '';
+    for (const sentence of sentences) {
+      if (page && Array.from(page + sentence).length > 90) { pages.push(page); page = ''; }
+      const glyphs = Array.from(sentence);
+      while (glyphs.length > 90) {
+        if (page) { pages.push(page); page = ''; }
+        pages.push(glyphs.splice(0, 90).join(''));
+      }
+      page += glyphs.join('');
+    }
+    if (page) pages.push(page);
+    return pages.map((text) => ({ text, original: line }));
+  });
+}
 
 export function createNarrator(dialog, portraitFor) {
   const title = dialog.querySelector('h2');
@@ -7,9 +26,9 @@ export function createNarrator(dialog, portraitFor) {
   const progress = dialog.querySelector('.narration-progress');
   const previous = dialog.querySelector('.narration-previous');
   const pause = dialog.querySelector('.narration-pause');
-  const next = dialog.querySelector('.narration-next');
   const skip = dialog.querySelector('.narration-skip');
-  let story, index, playing, timer, reveal;
+  const hint = dialog.querySelector('.narration-hint');
+  let story, index, playing = true, timer, reveal, fullText, line, complete = false, pointer;
 
   function dismiss() {
     clearTimeout(timer);
@@ -24,81 +43,98 @@ export function createNarrator(dialog, portraitFor) {
     onFinish?.();
   }
 
-  function advance() {
-    if (!story) return;
-    if (index + 1 === story.pages.length) finish();
-    else {
-      index += 1;
-      renderPage();
+  function setTimer() {
+    clearTimeout(timer);
+    if (story && complete && playing && !document.hidden && !dialog.querySelector('details').open) {
+      timer = setTimeout(advance, PAGE_DURATION);
     }
   }
 
-  function setTimer() {
-    clearTimeout(timer);
-    if (playing) timer = setTimeout(advance, PAGE_DURATION);
+  function revealAll() {
+    cancelAnimationFrame(reveal);
+    line.textContent = fullText;
+    complete = true;
+    setTimer();
+  }
+
+  function advance() {
+    if (!story) return;
+    if (!complete) { revealAll(); return; }
+    if (index + 1 === story.pages.length) finish();
+    else { index += 1; renderPage(); }
   }
 
   function renderPage() {
-    const text = story.pages[index];
-    const src = portraitFor(text);
+    clearTimeout(timer);
+    cancelAnimationFrame(reveal);
+    const page = story.pages[index];
+    fullText = page.text;
+    const src = portraitFor(page.original);
     portrait.hidden = !src;
     if (src) portrait.src = src;
     else portrait.removeAttribute('src');
-    // Replace only the text span so held keyboard focus stays on the same control.
-    const line = document.createElement('span');
+    line = document.createElement('span');
     passage.replaceChildren(line);
-    passage.ariaLabel = text;
-    cancelAnimationFrame(reveal);
-    if (story.skipIntro && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const glyphs = Array.from(text);
+    passage.ariaLabel = fullText;
+    complete = false;
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const glyphs = Array.from(fullText);
       const start = performance.now();
       function type(time) {
-        const count = Math.min(glyphs.length, 1 + Math.floor((time - start) / 28));
+        if (!story) return;
+        const count = Math.min(glyphs.length, 1 + Math.floor((time - start) / 24));
         line.textContent = glyphs.slice(0, count).join('');
         if (count < glyphs.length) reveal = requestAnimationFrame(type);
+        else { complete = true; setTimer(); }
       }
       reveal = requestAnimationFrame(type);
-    } else {
-      line.textContent = text;
-    }
+    } else revealAll();
     dialog.classList.toggle('intro-finale', story.skipIntro && index + 1 === story.pages.length);
     progress.textContent = `${index + 1} / ${story.pages.length}`;
     previous.disabled = index === 0;
-    next.textContent = index + 1 === story.pages.length ? story.finishLabel : '下一段';
-    setTimer();
   }
 
   pause.onclick = () => {
     playing = !playing;
-    pause.textContent = playing ? '暂停' : '自动播放';
+    pause.textContent = playing ? '暂停自动播放' : '开启自动播放';
     setTimer();
   };
   previous.onclick = () => {
-    if (index > 0) {
-      index -= 1;
-      renderPage();
-    }
+    if (index > 0) { index -= 1; renderPage(); }
   };
-  next.onclick = passage.onclick = advance;
+  dialog.querySelector('details').addEventListener('toggle', setTimer);
+  dialog.addEventListener('pointerdown', (event) => { pointer = [event.clientX, event.clientY]; });
+  dialog.addEventListener('click', (event) => {
+    if (event.target.closest('details, .narration-skip')) return;
+    if (event.detail && pointer && Math.hypot(event.clientX - pointer[0], event.clientY - pointer[1]) > 8) return;
+    advance();
+  });
+  dialog.addEventListener('keydown', (event) => {
+    if (event.target.closest('details, .narration-skip')) return;
+    if ([' ', 'Enter'].includes(event.key)) { event.preventDefault(); advance(); }
+  });
+  document.addEventListener('visibilitychange', setTimer);
   skip.onclick = finish;
   dialog.oncancel = (event) => {
     event.preventDefault();
-    dismiss();
+    const settings = dialog.querySelector('details');
+    settings.open = !settings.open;
   };
 
-  function open({ label, pages, onFinish, skipIntro = false, finishLabel = '继续游戏' }) {
+  function open({ label, pages, onFinish, skipIntro = false }) {
     dismiss();
-    if (pages.length === 0) return;
-    story = { pages, onFinish, skipIntro, finishLabel };
+    if (pages.length === 0) { onFinish?.(); return; }
+    story = { pages: paginate(pages), onFinish, skipIntro };
     index = 0;
-    playing = true;
     title.textContent = label;
     dialog.classList.toggle('prologue', skipIntro);
-    pause.textContent = playing ? '暂停' : '自动播放';
+    pause.textContent = playing ? '暂停自动播放' : '开启自动播放';
     skip.hidden = !skipIntro;
+    hint.hidden = sessionStorage.getItem('bansy-reading-hint') === 'seen';
+    sessionStorage.setItem('bansy-reading-hint', 'seen');
     renderPage();
     dialog.showModal();
-    next.focus();
+    passage.focus();
   }
 
   return { open, dismiss, get isOpen() { return dialog.open; } };

@@ -1,0 +1,102 @@
+{
+  "schema_version": "0.1",
+  "characters": [
+    {
+      "id": "player",
+      "name": "玩家",
+      "type": "custom",
+      "occupation": "班西港杂工",
+      "pathway": null,
+      "role": "主角，可自定义姓名和性别",
+      "goal": "生存并调查遗失记忆"
+    },
+    {
+      "id": "gehrman",
+      "name": "格尔曼·斯帕罗",
+      "type": "canon",
+      "role": "冷淡冒险家、独立行动的重要NPC",
+      "goal": "在危机中独立调查与判断",
+      "trust_initial": 0,
+      "trust_threshold_for_guarantee": 60,
+      "dialogue_style": "短句、警惕、注重证据",
+      "asset": "gehrman"
+    },
+    {
+      "id": "danitz",
+      "name": "达尼兹",
+      "type": "canon",
+      "role": "格尔曼同行者",
+      "goal": "避开危险、完成同行任务",
+      "dialogue_style": "急躁、有抱怨但不莽撞",
+      "asset": "danitz"
+    },
+    {
+      "id": "elland",
+      "name": "艾尔兰",
+      "type": "canon",
+      "role": "白玛瑙号船长",
+      "goal": "确保乘客与船员安全",
+      "dialogue_style": "务实、重职责",
+      "asset": "elland"
+    },
+    {
+      "id": "donna",
+      "name": "堂娜",
+      "type": "canon",
+      "role": "年轻旅客、目击者",
+      "goal": "获得理解，安全离开",
+      "dialogue_style": "直接、好奇又害怕",
+      "asset": "donna"
+    },
+    {
+      "id": "marena",
+      "name": "玛蕾娜·科恩",
+      "type": "original",
+      "age": 42,
+      "role": "餐厅店员，受污染但有人性",
+      "goal": "寻找丈夫、守住自我、惦记女儿",
+      "daily_states": {
+        "night1": "机械但尚能回应",
+        "day2": "害怕失去记忆与嗜血冲动",
+        "day3": "根据支线进度自锁或异变"
+      },
+      "asset": "marena"
+    },
+    {
+      "id": "melanie",
+      "name": "梅兰妮",
+      "type": "original",
+      "role": "电报局职员",
+      "daily_states": {
+        "night1": "隔门机械应答",
+        "day2": "消失，仅余血迹"
+      }
+    },
+    {
+      "id": "pavo",
+      "name": "帕沃·考特",
+      "type": "original",
+      "role": "电报局职员",
+      "daily_states": {
+        "night1": "反复告诫来客远离",
+        "day2": "消失，仅余血迹"
+      }
+    },
+    {
+      "id": "headless_visitor",
+      "name": "无头访客",
+      "type": "encounter",
+      "role": "第一夜即死风险",
+      "dialogue_style": "重复邻居称谓、无法理解问题"
+    },
+    {
+      "id": "lighthouse_keeper",
+      "name": "旧灯塔守灯人",
+      "type": "original",
+      "role": "只能规避的危险守卫",
+      "daily_states": {
+        "day2": "旧灯塔附近异常巡逻"
+      }
+    }
+  ]
+}

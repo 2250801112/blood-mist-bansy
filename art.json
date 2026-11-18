@@ -15,5 +15,8 @@
   "elland": "./assets/characters/elland.png",
   "donna": "./assets/characters/donna.png",
   "marena": "./assets/characters/marena.png",
-  "telegraph_staff": "./assets/characters/telegraph_staff.png"
+  "telegraph_staff": "./assets/characters/telegraph_staff.png",
+  "hunter_awakening": "./assets/backgrounds/hunter_awakening.png",
+  "house_plan": "./assets/backgrounds/house_plan.png",
+  "bedroom_waking": "./assets/backgrounds/bedroom_waking.png"
 }

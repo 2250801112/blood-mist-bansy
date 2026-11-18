@@ -51,5 +51,26 @@ export function createSound() {
     }
   }
 
-  return { setEnabled, intro };
+  function steps() {
+    if (context?.state !== 'running') return null;
+    const sources = [];
+    for (const offset of [0, 0.33, 0.66]) {
+      const start = context.currentTime + offset;
+      const tone = context.createOscillator();
+      const envelope = context.createGain();
+      tone.type = 'triangle';
+      tone.frequency.setValueAtTime(95, start);
+      tone.frequency.exponentialRampToValueAtTime(48, start + 0.09);
+      envelope.gain.setValueAtTime(0.001, start);
+      envelope.gain.exponentialRampToValueAtTime(0.14, start + 0.012);
+      envelope.gain.exponentialRampToValueAtTime(0.001, start + 0.11);
+      tone.connect(envelope).connect(master);
+      tone.start(start);
+      tone.stop(start + 0.12);
+      sources.push(tone);
+    }
+    return () => sources.forEach((source) => source.stop());
+  }
+
+  return { setEnabled, intro, steps };
 }
