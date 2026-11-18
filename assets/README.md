@@ -2,6 +2,8 @@
 
 第一幕随游戏附带 14 张场景/事件图和 6 张透明立绘，使用内置 ImageGen 生成。场景图存放在 `backgrounds/`，立绘存放在 `characters/`，加载路径及对白称呼登记在 `../data/assets.json`。住宅地图使用四区域插画，区域视图裁取对应象限；步行剪影由界面绘制。原有卧室图保留归档，当前苏醒使用与新物件位置一致的插画。
 
+网页实际读取同名 WebP，PNG 保留为原始素材。WebP 最长边为 1280 像素，常规质量 80、住宅地图质量 75，透明立绘保留透明通道。20 张网页图片从约 47.4 MB 缩减为 2.6 MB，用于减少公开站点首次加载时的下载量。下文的 PNG 名称及提示词仍对应原始素材。
+
 ## 场景图生成提示
 
 > Cinematic painterly-realistic concept art for a Chinese offline gothic maritime fantasy visual novel. Victorian port architecture, restrained uncanny atmosphere, detailed tactile materials, soft volumetric mist, quiet natural silhouettes, subtle fine-grained oil-paint texture. Wide horizontal landscape composition, intended for center-cropped 16:9 game background. Full-bleed single scene, no branding, text, lettering, UI, watermark, panel borders or collage. Subdued neutral colors and believable warm light; legible midtones, no overt gore.

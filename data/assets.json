@@ -4,84 +4,84 @@
   "assets": [
     {
       "id": "main_menu",
-      "path": "assets/backgrounds/main_menu.png",
+      "path": "assets/backgrounds/main_menu.webp",
       "role": "灰雾主菜单",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "bedroom",
-      "path": "assets/backgrounds/bedroom.png",
+      "path": "assets/backgrounds/bedroom.webp",
       "role": "玩家卧室",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "red_street",
-      "path": "assets/backgrounds/red_street.png",
+      "path": "assets/backgrounds/red_street.webp",
       "role": "血色街道",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "lemon_tavern",
-      "path": "assets/backgrounds/lemon_tavern.png",
+      "path": "assets/backgrounds/lemon_tavern.webp",
       "role": "青柠檬餐厅",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "telegraph_night",
-      "path": "assets/backgrounds/telegraph_night.png",
+      "path": "assets/backgrounds/telegraph_night.webp",
       "role": "电报局夜晚",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "telegraph_day",
-      "path": "assets/backgrounds/telegraph_day.png",
+      "path": "assets/backgrounds/telegraph_day.webp",
       "role": "电报局次日",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "mural",
-      "path": "assets/backgrounds/mural.png",
+      "path": "assets/backgrounds/mural.webp",
       "role": "壁画",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "dock_ship",
-      "path": "assets/backgrounds/dock_ship.png",
+      "path": "assets/backgrounds/dock_ship.webp",
       "role": "码头和客船",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "lighthouse",
-      "path": "assets/backgrounds/lighthouse.png",
+      "path": "assets/backgrounds/lighthouse.webp",
       "role": "旧灯塔",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "sea_escape",
-      "path": "assets/backgrounds/sea_escape.png",
+      "path": "assets/backgrounds/sea_escape.webp",
       "role": "海上逃生",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "doom",
-      "path": "assets/backgrounds/doom.png",
+      "path": "assets/backgrounds/doom.webp",
       "role": "毁灭结局",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "gehrman",
-      "path": "assets/characters/gehrman.png",
+      "path": "assets/characters/gehrman.webp",
       "role": "格尔曼立绘",
       "status": "ready",
       "image_type": "portrait",
@@ -91,7 +91,7 @@
     },
     {
       "id": "danitz",
-      "path": "assets/characters/danitz.png",
+      "path": "assets/characters/danitz.webp",
       "role": "达尼兹立绘",
       "status": "ready",
       "image_type": "portrait",
@@ -101,7 +101,7 @@
     },
     {
       "id": "elland",
-      "path": "assets/characters/elland.png",
+      "path": "assets/characters/elland.webp",
       "role": "艾尔兰立绘",
       "status": "ready",
       "image_type": "portrait",
@@ -111,7 +111,7 @@
     },
     {
       "id": "donna",
-      "path": "assets/characters/donna.png",
+      "path": "assets/characters/donna.webp",
       "role": "堂娜立绘",
       "status": "ready",
       "image_type": "portrait",
@@ -121,7 +121,7 @@
     },
     {
       "id": "marena",
-      "path": "assets/characters/marena.png",
+      "path": "assets/characters/marena.webp",
       "role": "玛蕾娜立绘",
       "status": "ready",
       "image_type": "portrait",
@@ -131,7 +131,7 @@
     },
     {
       "id": "telegraph_staff",
-      "path": "assets/characters/telegraph_staff.png",
+      "path": "assets/characters/telegraph_staff.webp",
       "role": "电报局职员",
       "status": "ready",
       "image_type": "portrait",
@@ -142,21 +142,21 @@
     },
     {
       "id": "hunter_awakening",
-      "path": "assets/backgrounds/hunter_awakening.png",
+      "path": "assets/backgrounds/hunter_awakening.webp",
       "image_type": "background",
       "status": "ready",
       "description": "墙内封存特性破裂并经伤口异常吸收，晋升专用插画。"
     },
     {
       "id": "house_plan",
-      "path": "assets/backgrounds/house_plan.png",
+      "path": "assets/backgrounds/house_plan.webp",
       "role": "四区域住宅调查图",
       "status": "ready",
       "image_type": "background"
     },
     {
       "id": "bedroom_waking",
-      "path": "assets/backgrounds/bedroom_waking.png",
+      "path": "assets/backgrounds/bedroom_waking.webp",
       "role": "第一人称苏醒卧室",
       "status": "ready",
       "image_type": "background"

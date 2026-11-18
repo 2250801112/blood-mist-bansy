@@ -24,9 +24,14 @@ class LauncherTest(unittest.TestCase):
     def test_serves_repository_subpath_resources(self):
         with running_game(base_path='/preview/') as url:
             self.assertTrue(url.endswith('/preview/'))
-            for path in ('', 'game/app.mjs', 'data/items.json', 'assets/backgrounds/hunter_awakening.png'):
+            for path in ('', 'game/app.mjs', 'data/items.json', 'assets/backgrounds/hunter_awakening.webp'):
                 with urlopen(url + path, timeout=5) as response:
                     self.assertEqual(response.status, 200)
+                    if path.endswith('.webp'):
+                        self.assertEqual(response.headers.get_content_type(), 'image/webp')
+                        signature = response.read(12)
+                        self.assertEqual(signature[:4], b'RIFF')
+                        self.assertEqual(signature[8:12], b'WEBP')
 
     def test_rejects_second_instance_and_restarts_on_original_port(self):
         with running_game() as url:

@@ -69,7 +69,7 @@ node --test tests/browser.test.mjs
 
 ## 本地插画
 
-场景图和对白立绘均随游戏离线加载。文件及生成说明见 [美术资源](assets/README.md)。维护资源时按 `data/assets.json` 中登记的路径放入 PNG，并刷新页面。
+场景图和对白立绘均随游戏离线加载。文件及生成说明见 [美术资源](assets/README.md)。网页使用 WebP，PNG 原图保留归档；维护资源时按 `data/assets.json` 中登记的路径更新图片，并刷新页面。
 
 ## 制作原则
 
